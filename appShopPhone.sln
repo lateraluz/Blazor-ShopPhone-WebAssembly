@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Server", "ShopPhone\Server\ShopPhone.Server.csproj", "{B3EA2CAB-6C40-44FD-BA45-CD32CDC51D84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Server", "ShopPhone\Server\ShopPhone.Server.csproj", "{B3EA2CAB-6C40-44FD-BA45-CD32CDC51D84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Client", "ShopPhone\Client\ShopPhone.Client.csproj", "{BB1A2FAE-2355-42BA-A858-3839CC146942}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Client", "ShopPhone\Client\ShopPhone.Client.csproj", "{BB1A2FAE-2355-42BA-A858-3839CC146942}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Shared", "ShopPhone\Shared\ShopPhone.Shared.csproj", "{3B68DCE7-FE8A-4A24-A0BF-6E3C89B7F91C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Shared", "ShopPhone\Shared\ShopPhone.Shared.csproj", "{3B68DCE7-FE8A-4A24-A0BF-6E3C89B7F91C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Services", "ShopPhone.Services\ShopPhone.Services.csproj", "{B634E5BE-598A-4A0C-98CF-656D497FED79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.DataAccess", "ShopPhone.DataAccess\ShopPhone.DataAccess.csproj", "{B968D9B8-53BD-4723-9C7F-11604AD59E3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{3B68DCE7-FE8A-4A24-A0BF-6E3C89B7F91C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B68DCE7-FE8A-4A24-A0BF-6E3C89B7F91C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B68DCE7-FE8A-4A24-A0BF-6E3C89B7F91C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B634E5BE-598A-4A0C-98CF-656D497FED79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B634E5BE-598A-4A0C-98CF-656D497FED79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B634E5BE-598A-4A0C-98CF-656D497FED79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B634E5BE-598A-4A0C-98CF-656D497FED79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B968D9B8-53BD-4723-9C7F-11604AD59E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B968D9B8-53BD-4723-9C7F-11604AD59E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B968D9B8-53BD-4723-9C7F-11604AD59E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B968D9B8-53BD-4723-9C7F-11604AD59E3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
