@@ -10,13 +10,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Client.Proxies;
+using ShopPhone.Repositories.Implementations;
+using ShopPhone.Services.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-
+// Dependency Injection
+builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddTransient<ICategoriaService, CategoriaService>();
 
 // Add services to the container.
 // Aqui mapeo el archivo de configuracion en una clase fuertemente tipada
@@ -35,8 +36,11 @@ builder.Services.AddDbContext<ShopphoneContext>(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net("log4nettest.config", true);
 
-// Dependency Injection
-builder.Services.AddTransient<ICategoriaService, CategoriaService>();
+// Mapppers
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddProfile<MapperCategoria>();
+});
 
 
 

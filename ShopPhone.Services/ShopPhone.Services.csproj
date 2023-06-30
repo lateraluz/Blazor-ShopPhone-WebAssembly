@@ -7,14 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mappers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShopPhone.Repositories\ShopPhone.Repositories.csproj" />
     <ProjectReference Include="..\ShopPhone\Shared\ShopPhone.Shared.csproj" />
   </ItemGroup>
 

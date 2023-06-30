@@ -2,9 +2,9 @@
 @inject ProxyCategoria ProxyCategoria
 @inject SweetAlertService Swal
 
-
-
 <PageTitle>Mantenimiento Categoria</PageTitle>
+
+
 <div class="container">
     <div class="card ">
         <h5 class="card-header">Consulta Categoría</h5>
@@ -107,15 +107,16 @@
     private async Task OnCheckDetails(int id)
     {
         await Task.FromResult(1);
-
     }
 
 
     private async Task OnSearch()
     {
-        var response = await ProxyCategoria.FindByDescriptionAsync(NombreCategoria);
+     
         try
         {
+            var response = await ProxyCategoria.FindByDescriptionAsync(NombreCategoria);
+
             if (response.Success == true)
             {
                 List = response.Data!.ToList();
