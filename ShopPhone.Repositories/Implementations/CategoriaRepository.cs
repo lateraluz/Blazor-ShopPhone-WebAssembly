@@ -13,6 +13,7 @@ namespace ShopPhone.Repositories.Implementations;
 
 public class CategoriaRepository : ICategoriaRepository
 {
+     
 
     private readonly ShopphoneContext _Context;
     public CategoriaRepository(ShopphoneContext context)

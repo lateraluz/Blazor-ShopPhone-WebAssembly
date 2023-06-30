@@ -2,6 +2,7 @@
 using ShopPhone.Shared.Response;
 using System.Net.Http.Json;
 
+
 namespace ShopPhone.Client.Proxies;
 
 public class ProxyCategoria
@@ -9,17 +10,28 @@ public class ProxyCategoria
 
     private readonly HttpClient _HttpClient;
 
+
     public ProxyCategoria(HttpClient pHttpClient)
     {
         _HttpClient = pHttpClient;
+
     }
 
     public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> FindByDescriptionAsync(string description)
     {
-        string url = $"api/categoria/FindByDescription?description={description}";
-        var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<CategoriaDTO>>>(url);
+        try
+        {
+            string url = $"api/categoria/FindByDescription?description={description}";
+            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<CategoriaDTO>>>(url);
 
-        return response!;
+            return response!;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
     }
 
     /*

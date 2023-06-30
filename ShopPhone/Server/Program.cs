@@ -33,8 +33,12 @@ builder.Services.AddDbContext<ShopphoneContext>(options =>
 
 // Config log4Net
 // Solo si se inyecta
-builder.Logging.ClearProviders();
-builder.Logging.AddLog4Net("log4nettest.config", true);
+//builder.Logging.ClearProviders();
+//builder.Logging.AddLog4Net("log4nettest.config", true);
+
+XmlConfigurator.Configure(new FileInfo("log4net.config"));
+builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
+builder.Logging.AddLog4Net();
 
 // Mapppers
 builder.Services.AddAutoMapper(config =>
