@@ -1,3 +1,3 @@
 # ShopPhone
 
-EShop Project in Blazor for Mitocode Course
+ShopPhone Project with Blazor for Mitocode Course
