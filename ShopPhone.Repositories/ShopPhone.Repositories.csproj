@@ -7,15 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mappers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.15" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ShopPhone\Shared\ShopPhone.Shared.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
   </ItemGroup>
 
 </Project>

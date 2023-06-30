@@ -1,0 +1,194 @@
+﻿@page "/PageCategoria"
+@inject ProxyCategoria ProxyCategoria
+@inject SweetAlertService Swal
+
+
+
+<PageTitle>Mantenimiento Categoria</PageTitle>
+<div class="container">
+    <div class="card ">
+        <h5 class="card-header">Consulta Categoría</h5>
+        <div class="card-body border-radius: .5rem">
+            <div class="row">
+
+                <div class="col-3">
+                    <input type="text" @bind="NombreCategoria" class="form-control" placeholder="Ingrese la descripcion" />
+                </div>
+
+                <div class="col-2">
+                    <button class="btn btn-primary form-control" @onclick="OnSearch">Buscar</button>
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-secondary form-control" @onclick="OnClear">Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card mt-2">
+        <div class="card-body">
+            <section class="intro">
+                <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
+                    <thead style="background-color: #002D62; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                        <tr>
+                            <th scope="col" @onclick='(()=> Sort("IdCategoria"))'>
+                                Cedula Nueva
+                            </th>
+                            <th scope="col" class="" @onclick='(()=> Sort("NombreCategoria"))'>
+                                Categoria
+                            </th>
+                            <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                                Estado
+                            </th>
+                            <th scope="col">
+                                Acción
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
+                        {
+                            <tr style="">
+                                <td>@item.IdCategoria</td>
+                                <td>@item.NombreCategoria</td>
+                                <td>@item.Estado</td>
+                                <td>
+                                    <button class="btn btn-primary " @onclick="() => OnCheckDetails(item.IdCategoria)">Ver Detalle</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </section>
+
+            @if (List!.Count > 0)
+            {
+                <div class="card-footer">
+                    <div class="row">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
+                                </li>
+                                @{
+                                    decimal cantidad = List!.Count / RECORDS_PER_PAGE;
+                                    if (List!.Count % RECORDS_PER_PAGE > 0)
+                                        cantidad++;
+
+                                    for (int index = 1; index <= (int)cantidad; index++)
+                                    {
+                                        int currentIndex = index;
+                                        <li class="page-item">
+                                            <button class="page-link btn" @onclick="()=>GoToPage(currentIndex)">@index</button>
+                                        </li>
+                                    }
+                                }
+                                <li class="page-item">
+                                    <button class="page-link" @onclick="()=>Next()">Next</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IList<CategoriaDTO>? List { get; set; } = new List<CategoriaDTO>();
+    private string NombreCategoria { set; get; } = "";
+    private const int RECORDS_PER_PAGE = 20;
+    private int PaginaActual { set; get; }
+
+    private async Task OnCheckDetails(int id)
+    {
+        await Task.FromResult(1);
+
+    }
+
+
+    private async Task OnSearch()
+    {
+        var response = await ProxyCategoria.FindByDescriptionAsync(NombreCategoria);
+        try
+        {
+            if (response.Success == true)
+            {
+                List = response.Data!.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Warning,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
+    private async Task OnClear()
+    {
+        await Task.FromResult(NombreCategoria = "");
+    }
+
+    private void Sort(string tipo)
+    {
+        /*
+        List<ExtranjeroSolicitanteDTO>
+    lista = new List<ExtranjeroSolicitanteDTO>
+        ();
+        if (ListExtranjeros!.Count > 0)
+        lista = ListExtranjeros!.ToList();
+
+        tipo = tipo.ToUpper();
+        switch (tipo)
+        {
+        case "NOMBRE":
+        ListExtranjeros = lista.OrderBy(x => x.Nombre).ToList();
+        break;
+        case "APELLIDO1":
+        ListExtranjeros = lista.OrderBy(x => x.Apellido1).ToList();
+        break;
+        case "APELLIDO2":
+        ListExtranjeros = lista.OrderBy(x => x.Apellido2).ToList();
+        break;
+        case "CEDULANUEVA":
+        ListExtranjeros = lista.OrderBy(x => x.CedulaNueva).ToList();
+        break;
+        case "CEDULAVIEJA":
+        ListExtranjeros = lista.OrderBy(x => x.CedulaVieja).ToList();
+        break;
+
+        }
+        GoToPage(1);
+        */
+    }
+
+    private void GoToPage(int pIndex)
+    {
+        PaginaActual = pIndex;
+    }
+
+    private void Next()
+    {
+        decimal cantidad = List!.Count / RECORDS_PER_PAGE;
+        if (List!.Count % RECORDS_PER_PAGE > 0)
+            cantidad++;
+
+        if (PaginaActual != cantidad)
+            PaginaActual++;
+    }
+
+    private void Previous()
+    {
+        if (!(PaginaActual - 1 <= 0))
+            PaginaActual--;
+    }
+}
