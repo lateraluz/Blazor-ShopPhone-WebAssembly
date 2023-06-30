@@ -17,7 +17,7 @@ public interface IRepositoryBase<TEntity> where TEntity : EntityBase
     Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>(
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TInfo>> selector,
-        Expression<Func<TEntity, TKey>> orderBy,
+        Expression<Func<TEntity, TKey>> orderBy, 
         int page, int rows);
 
     // Listar los objetos con un selector
