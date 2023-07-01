@@ -20,6 +20,11 @@ namespace ShopPhone.Services.Mappers
                 .ForMember(dest => dest.NombreCategoria, orig => orig.MapFrom(x => x.NombreCategoria))
                 .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado));
 
+            CreateMap<CategoriaDTO, Categorium>()
+              .ForMember(dest => dest.IdCategoria, orig => orig.MapFrom(x => x.IdCategoria))
+              .ForMember(dest => dest.NombreCategoria, orig => orig.MapFrom(x => x.NombreCategoria))
+              .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado));
+
         }
     }
 }

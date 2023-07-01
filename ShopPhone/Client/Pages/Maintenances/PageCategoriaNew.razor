@@ -1,5 +1,62 @@
-﻿<h3>PageCategoriaNew</h3>
+﻿@page "/PageCategoriaNew"
+@inject ProxyCategoria ProxyCategoria
+
+<PageTitle>Nueva Categoria</PageTitle>
+
+<div class="container">
+    <div class="card">
+        <h5 class="card-header">Consulta de Extranjeros</h5>
+        <div class="card-body border-radius: .5rem">
+
+            <EditForm Model="@_CategoriaDTO" OnSubmit="Save">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="name" class="col-form-label">Código:</label>                    
+                        <input type="number" class="form-control" id="IdCategoria" @bind-value="@_CategoriaDTO.IdCategoria" />
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="name" class="col-form-label">Categoria:</label>                   
+                        <input type="text" class="form-control" @bind-value="@_CategoriaDTO.NombreCategoria" />
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-check-label">Habilitado</label>
+                    </div>
+                    <div class=" form-switch  col-md-11  mx-3">
+                        <input class="form-check-input" type="checkbox" @bind-value="_CategoriaDTO.Estado">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+
+                    <button class="btn btn-secondary" @onclick="OnClear">Limpiar</button>
+
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+
 
 @code {
 
+    private CategoriaDTO _CategoriaDTO { get; set; } = new();
+
+    private void OnClear()
+    {
+        _CategoriaDTO = new();
+    }
+
+    private async void Save()
+    {
+        await ProxyCategoria.AddAsync(_CategoriaDTO);
+    }
 }

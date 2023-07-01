@@ -5,6 +5,8 @@ using log4net;
 using System.Reflection;
 using System.Text;
 using ShopPhone.Shared.Util;
+using Microsoft.AspNetCore.Authorization;
+using ShopPhone.Shared.Response;
 
 namespace ShopPhone.Server.Controllers
 {
@@ -32,11 +34,29 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod());
+                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
                 _Logger.Error(msg, ex);
                 throw;
             }  
-        } 
+        }
+
+        [HttpPost]
+      
+        public async Task<IActionResult> Post(CategoriaDTO request)
+        {
+            try
+            {
+                return Ok(await _CategoriaService.AddAsync(request));
+            }
+            catch (Exception ex)
+            {
+                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
+                _Logger.Error(msg, ex);
+                throw;
+            }
+        }
+
+
 
     }
 }

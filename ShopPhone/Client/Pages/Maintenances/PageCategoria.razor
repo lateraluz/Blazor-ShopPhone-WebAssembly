@@ -4,6 +4,8 @@
 @inject ProxyCategoria ProxyCategoria
 @inject SweetAlertService Swal
 @inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
 
 <PageTitle>Mantenimiento Categoria</PageTitle>
 
@@ -117,7 +119,7 @@
 
     private async Task OnCreate()    
     {
-        
+        NavigationManager.NavigateTo("/PageCategoriaNew");
     }
     private async Task OnSearch()
     {

@@ -6,5 +6,7 @@ namespace ShopPhone.Repositories.Implementations
     public interface ICategoriaRepository
     {
         Task<ICollection<Categorium>> FindByDescriptionAsync(string description);
+
+        Task<int> AddAsync(Categorium entity);
     }
 }

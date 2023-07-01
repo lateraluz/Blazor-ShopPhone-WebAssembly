@@ -1,5 +1,6 @@
 ﻿
 using ShopPhone.Shared.Response;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 
@@ -34,28 +35,27 @@ public class ProxyCategoria
 
     }
 
-    /*
-    public async Task<BaseResponseGeneric<ICollection<ExtranjeroSolicitanteDTO>>> FindExtranjeroByIdAsync(string Id)
+    public async Task AddAsync(CategoriaDTO request)
     {
-        string url = $"api/extranjero/FindExtranjeroById?id={Id}";
-        var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ExtranjeroSolicitanteDTO>>>(url);
 
-        return response!;
+        string url = $"api/categoria";
+
+        try
+        {
+            var response = await _HttpClient.PostAsJsonAsync(url, request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return;
+            }
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+        
     }
 
-    public async Task<BaseResponseGeneric<ICollection<DetalleCobro>>> GetPaymentById(string Id)
-    {
-        string url = $"api/extranjero/GetPaymentById?id={Id}";
-        var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<DetalleCobro>>>(url);
 
-        return response!;
-    }
-    public async Task<BaseResponseGeneric<ICollection<DetalleCobro>>> CalculateCharge(string TipoCategoria, string FechaInicial, string FechaFinal)
-    {
-        string url = $"api/extranjero/CalculateCharge?TipoCategoria={TipoCategoria}&FechaInicial={FechaInicial}&FechaFinal={FechaFinal}";
-        var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<DetalleCobro>>>(url);
-
-        return response!; 
-    }
-    */
 }

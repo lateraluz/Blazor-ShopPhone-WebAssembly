@@ -35,6 +35,11 @@ public class CategoriaRepository : ICategoriaRepository
 
     }
 
-
+    public async Task<int> AddAsync(Categorium entity)
+    {
+        await _Context.Set<Categorium>().AddAsync(entity);
+        await _Context.SaveChangesAsync();
+        return entity.IdCategoria;
+    }
 
 }
