@@ -1,6 +1,9 @@
 ﻿@page "/PageCategoria"
+@using Blazored.Toast.Configuration;
+
 @inject ProxyCategoria ProxyCategoria
 @inject SweetAlertService Swal
+@inject IToastService ToastService
 
 <PageTitle>Mantenimiento Categoria</PageTitle>
 
@@ -92,11 +95,14 @@
                             </ul>
                         </nav>
                     </div>
-                </div>
+                </div>               
             }
-        </div>
+        </div>        
     </div>
+    <button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
 </div>
+
+
 
 @code {
     private IList<CategoriaDTO>? List { get; set; } = new List<CategoriaDTO>();
@@ -109,17 +115,45 @@
         await Task.FromResult(1);
     }
 
-
+    private async Task OnCreate()    
+    {
+        
+    }
     private async Task OnSearch()
     {
-     
         try
         {
+
+            if (string.IsNullOrEmpty(NombreCategoria))
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "Atención",
+                        Text = "Ingrese la descripción de la categoría",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                        Timer = 1500
+                    });
+                return; 
+            } 
+
+
             var response = await ProxyCategoria.FindByDescriptionAsync(NombreCategoria);
 
             if (response.Success == true)
-            {
+            {   
                 List = response.Data!.ToList();
+
+                if (List.Count == 0)                
+                {
+                    ToastService.ShowWarning("No existen registro ", settings =>
+                    {                        
+                        settings.ShowProgressBar = true;
+                        settings.IconType = IconType.Blazored;
+                        settings.Timeout = 5;
+                    });
+                }
             }
         }
         catch (Exception ex)

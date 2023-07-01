@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ShopPhone.Services.Implementations;
 using log4net;
+using System.Reflection;
+using System.Text;
+using ShopPhone.Shared.Util;
 
 namespace ShopPhone.Server.Controllers
 {
@@ -23,18 +26,17 @@ namespace ShopPhone.Server.Controllers
             try
             {
                 var response = await _CategoriaService.FindByDescriptionAsync(description);
+                    
+
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error(ex);
+                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod());
+                _Logger.Error(msg, ex);
                 throw;
-            }
-
-           
-
-        }
-
+            }  
+        } 
 
     }
 }

@@ -32,7 +32,6 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-
             var collection = await _CategoriaRepository.FindByDescriptionAsync(description);
 
             response.Success = true;

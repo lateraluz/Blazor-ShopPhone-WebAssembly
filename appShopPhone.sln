@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Services", "ShopP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.DataAccess", "ShopPhone.DataAccess\ShopPhone.DataAccess.csproj", "{B968D9B8-53BD-4723-9C7F-11604AD59E3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Repositories", "ShopPhone.Repositories\ShopPhone.Repositories.csproj", "{E9F911E0-98A4-497B-8001-0C03E7118480}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Repositories", "ShopPhone.Repositories\ShopPhone.Repositories.csproj", "{E9F911E0-98A4-497B-8001-0C03E7118480}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
