@@ -1,5 +1,6 @@
 ﻿using ShopPhone.DataAccess;
 using ShopPhone.Shared.Entities;
+using ShopPhone.Shared.Response;
 
 namespace ShopPhone.Repositories.Implementations
 {
@@ -8,5 +9,10 @@ namespace ShopPhone.Repositories.Implementations
         Task<ICollection<Categorium>> FindByDescriptionAsync(string description);
 
         Task<int> AddAsync(Categorium entity);
+        Task DeleteAsync(int id);
+
+        Task<Categorium?> FindAsync(int id);
+
+        Task UpdateAsync();
     }
 }

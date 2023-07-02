@@ -16,14 +16,14 @@
         <div class="card-body border-radius: .5rem">
             <div class="row">
 
-                <div class="col-3">
+                <div class="col-md-3">
                     <input type="text" @bind="NombreCategoria" class="form-control" placeholder="Ingrese la descripcion" />
                 </div>
 
-                <div class="col-2">
+                <div class="col-md-2">
                     <button class="btn btn-primary form-control" @onclick="OnSearch">Buscar</button>
                 </div>
-                <div class="col-2">
+                <div class="col-md-2">
                     <button class="btn btn-secondary form-control" @onclick="OnClear">Limpiar</button>
                 </div>
             </div>
@@ -35,10 +35,10 @@
         <div class="card-body">
             <section class="intro">
                 <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
-                    <thead style="background-color: #002D62; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
                         <tr>
                             <th scope="col" @onclick='(()=> Sort("IdCategoria"))'>
-                                Cedula Nueva
+                                Código
                             </th>
                             <th scope="col" class="" @onclick='(()=> Sort("NombreCategoria"))'>
                                 Categoria
@@ -46,21 +46,22 @@
                             <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
                                 Estado
                             </th>
-                            <th scope="col">
+                            <th scope="col" align="center">
                                 Acción
                             </th>
 
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
+                        @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
                         {
                             <tr style="">
                                 <td>@item.IdCategoria</td>
                                 <td>@item.NombreCategoria</td>
-                                <td>@item.Estado</td>
+                                <td>@(item.Estado == true ? "Activo" : "Inactivo")</td>
                                 <td>
-                                    <button class="btn btn-primary " @onclick="() => OnCheckDetails(item.IdCategoria)">Ver Detalle</button>
+                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdCategoria)">Editar</button>
+                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdCategoria )">Delete</button>
                                 </td>
                             </tr>
                         }
@@ -69,7 +70,7 @@
 
             </section>
 
-            @if (List!.Count > 0)
+            @if (_List!.Count > 0)
             {
                 <div class="card-footer">
                     <div class="row">
@@ -79,8 +80,8 @@
                                     <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
                                 </li>
                                 @{
-                                    decimal cantidad = List!.Count / RECORDS_PER_PAGE;
-                                    if (List!.Count % RECORDS_PER_PAGE > 0)
+                                    decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
+                                    if (_List!.Count % RECORDS_PER_PAGE > 0)
                                         cantidad++;
 
                                     for (int index = 1; index <= (int)cantidad; index++)
@@ -97,9 +98,9 @@
                             </ul>
                         </nav>
                     </div>
-                </div>               
+                </div>
             }
-        </div>        
+        </div>
     </div>
     <button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
 </div>
@@ -107,20 +108,59 @@
 
 
 @code {
-    private IList<CategoriaDTO>? List { get; set; } = new List<CategoriaDTO>();
+    private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
     private string NombreCategoria { set; get; } = "";
-    private const int RECORDS_PER_PAGE = 20;
+    private const int RECORDS_PER_PAGE = 3;
     private int PaginaActual { set; get; }
 
-    private async Task OnCheckDetails(int id)
-    {
-        await Task.FromResult(1);
-    }
 
-    private async Task OnCreate()    
+    private void OnCreate()
     {
         NavigationManager.NavigateTo("/PageCategoriaNew");
     }
+
+    private void OnEdit(int id)
+    {
+        NavigationManager.NavigateTo($"/PageCategoriaEdit/edit/{id}");
+    }
+
+    private async Task OnDelete(int id)
+    {
+        try
+        {
+            var response = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = $"Desea Borrar el registro {id}",
+                    Title = "Atención",
+                    Icon = SweetAlertIcon.Question,
+                    ShowCancelButton = true,
+                    ShowConfirmButton = true
+                });
+
+            if (response.IsConfirmed)
+            {
+                await ProxyCategoria.DeleteAsync(id);
+                await OnSearch();
+                /* No se borra se actualiza
+                var categoria = _List!.ToList().Find(p => p.IdCategoria == id);
+                if (categoria != null)
+                    _List!.Remove(categoria);
+            */
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
     private async Task OnSearch()
     {
         try
@@ -137,20 +177,20 @@
                         TimerProgressBar = true,
                         Timer = 1500
                     });
-                return; 
-            } 
+                return;
+            }
 
 
             var response = await ProxyCategoria.FindByDescriptionAsync(NombreCategoria);
 
             if (response.Success == true)
-            {   
-                List = response.Data!.ToList();
+            {
+                _List = response.Data!.ToList();
 
-                if (List.Count == 0)                
+                if (_List.Count == 0)
                 {
                     ToastService.ShowWarning("No existen registro ", settings =>
-                    {                        
+                    {
                         settings.ShowProgressBar = true;
                         settings.IconType = IconType.Blazored;
                         settings.Timeout = 5;
@@ -164,7 +204,7 @@
                 {
                     Text = ex.Message,
                     Title = "Error",
-                    Icon = SweetAlertIcon.Warning,
+                    Icon = SweetAlertIcon.Error,
                     ShowCloseButton = true
                 });
         }
@@ -172,40 +212,38 @@
 
     private async Task OnClear()
     {
+        _List = new List<CategoriaDTO>();
         await Task.FromResult(NombreCategoria = "");
     }
 
     private void Sort(string tipo)
     {
-        /*
-        List<ExtranjeroSolicitanteDTO>
-    lista = new List<ExtranjeroSolicitanteDTO>
-        ();
-        if (ListExtranjeros!.Count > 0)
-        lista = ListExtranjeros!.ToList();
 
-        tipo = tipo.ToUpper();
+        List<CategoriaDTO> lista = new List<CategoriaDTO>();
+
+        if (_List == null)
+            return;
+
+        if (_List.Count > 0)
+            lista = _List.ToList();
+
+        
         switch (tipo)
         {
-        case "NOMBRE":
-        ListExtranjeros = lista.OrderBy(x => x.Nombre).ToList();
-        break;
-        case "APELLIDO1":
-        ListExtranjeros = lista.OrderBy(x => x.Apellido1).ToList();
-        break;
-        case "APELLIDO2":
-        ListExtranjeros = lista.OrderBy(x => x.Apellido2).ToList();
-        break;
-        case "CEDULANUEVA":
-        ListExtranjeros = lista.OrderBy(x => x.CedulaNueva).ToList();
-        break;
-        case "CEDULAVIEJA":
-        ListExtranjeros = lista.OrderBy(x => x.CedulaVieja).ToList();
-        break;
+            case "IdCategoria":
+                _List = lista.OrderBy(x => x.IdCategoria).ToList();
+                break;
+            case "NombreCategoria":
+                _List = lista.OrderBy(x => x.NombreCategoria).ToList();
+                break;
+            case "Estado":
+                _List = lista.OrderBy(x => x.Estado).ToList();
+                break;
+            
 
         }
         GoToPage(1);
-        */
+
     }
 
     private void GoToPage(int pIndex)
@@ -215,8 +253,8 @@
 
     private void Next()
     {
-        decimal cantidad = List!.Count / RECORDS_PER_PAGE;
-        if (List!.Count % RECORDS_PER_PAGE > 0)
+        decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
+        if (_List!.Count % RECORDS_PER_PAGE > 0)
             cantidad++;
 
         if (PaginaActual != cantidad)

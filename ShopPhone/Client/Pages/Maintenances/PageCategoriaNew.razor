@@ -1,6 +1,7 @@
 ﻿@page "/PageCategoriaNew"
 @inject ProxyCategoria ProxyCategoria
-
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal 
 <PageTitle>Nueva Categoria</PageTitle>
 
 <div class="container">
@@ -8,7 +9,7 @@
         <h5 class="card-header">Consulta de Extranjeros</h5>
         <div class="card-body border-radius: .5rem">
 
-            <EditForm Model="@_CategoriaDTO" OnSubmit="Save">
+            <EditForm Model="@_CategoriaDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label for="name" class="col-form-label">Código:</label>                    
@@ -28,7 +29,7 @@
                         <label class="form-check-label">Habilitado</label>
                     </div>
                     <div class=" form-switch  col-md-11  mx-3">
-                        <input class="form-check-input" type="checkbox" @bind-value="_CategoriaDTO.Estado">
+                        <input class="form-check-input" type="checkbox" @bind-value="_CategoriaDTO.Estado" checked="@(_CategoriaDTO.Estado? "checked":null)">
                     </div>
                 </div>
 
@@ -55,8 +56,24 @@
         _CategoriaDTO = new();
     }
 
-    private async void Save()
+    private async void OnSave()
     {
-        await ProxyCategoria.AddAsync(_CategoriaDTO);
+        try
+        {
+            await ProxyCategoria.AddAsync(_CategoriaDTO);
+            NavigationManager.NavigateTo("PageCategoria");
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Warning,
+                    ShowCloseButton = true
+                });
+        }
+
+      
     }
 }

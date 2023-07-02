@@ -1,0 +1,124 @@
+﻿@page "/PageCategoriaEdit/edit/{Id:int}"
+@inject ProxyCategoria ProxyCategoria
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+<PageTitle>Editar Categoria</PageTitle>
+
+<div class="container">
+    <div class="card">
+        <h5 class="card-header">Consulta de Extranjeros</h5>
+        <div class="card-body border-radius: .5rem">
+
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label for="name" class="col-form-label">Código:</label>
+                    <input type="number" class="form-control" id="IdCategoria" disabled @bind-value="@_CategoriaDTO.IdCategoria" />
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label class="col-form-label">Categoria:</label>
+                    <input type="text" class="form-control" @bind-value="@_CategoriaDTO.NombreCategoria" />
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <label class="form-check-label">Habilitado</label>
+                </div>
+                <div class="custom-control custom-switch">
+                    <div class="form-switch  col-md-11 ">
+                        <input class="form-check-input" type="checkbox" @bind-value="@_CategoriaDTO.Estado" checked="@(_CategoriaDTO.Estado? "checked":null)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" @onclick="()=> OnSave()">Salvar</button>
+                <button class="btn btn-secondary" @onclick="OnClose">Salir</button>
+            </div>
+
+        </div>
+
+       
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private CategoriaDTO _CategoriaDTO { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await ProxyCategoria.FindByIdAsync(Id);
+            if (response.Success == true)
+            {
+                _CategoriaDTO = response.Data!.ToList()[0];
+            }
+            else
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = response.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
+
+    private void OnClose()
+    {
+        // _CategoriaDTO.Estado = false;
+        NavigationManager.NavigateTo("/PageCategoria");
+    }
+
+    private async void OnSave()
+    {
+        try
+        {
+            await ProxyCategoria.UpdateAsync(Id, _CategoriaDTO);
+
+            await Swal.FireAsync(new SweetAlertOptions()
+                {
+                    Title = "Atención",
+                    Text = "Registro actualizado con exito",
+                    Icon = SweetAlertIcon.Success,
+                    Timer = 1500,
+                    TimerProgressBar = true,
+                    Position = SweetAlertPosition.TopRight
+        });
+            //NavigationManager.NavigateTo("PageCategoria");
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+}
