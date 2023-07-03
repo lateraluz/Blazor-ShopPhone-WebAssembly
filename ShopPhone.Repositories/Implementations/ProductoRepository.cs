@@ -5,29 +5,27 @@ using ShopPhone.DataAccess;
 
 namespace ShopPhone.Repositories.Implementations;
 
-
-public class CategoriaRepository : ICategoriaRepository
+public class ProductoRepository : IProductoRepository
 {
-
     private ILog _Logger;
     private readonly ShopphoneContext _Context;
-    public CategoriaRepository(ShopphoneContext context, ILog logger)
+    public ProductoRepository(ShopphoneContext context, ILog logger)
     {
         _Context = context;
         _Logger = logger;
     }
 
 
-    public async Task<ICollection<Categorium>> FindByDescriptionAsync(string description)
+    public async Task<ICollection<Producto>> FindByDescriptionAsync(string description)
     {
         try
-        {
+        { 
+            
             var response = await _Context
-                                .Set<Categorium>()
-                                .Where(p => p.NombreCategoria.Contains(description))
-                                .ToListAsync();
+                                .Set<Producto>()
+                                .Where(p => p.Descripcion.Contains(description))
+                                .ToListAsync();                                    
             return response;
-
         }
         catch (Exception e)
         {
@@ -36,13 +34,13 @@ public class CategoriaRepository : ICategoriaRepository
         }
 
     }
-     
 
-    public async Task<int> AddAsync(Categorium entity)
+
+    public async Task<int> AddAsync(Producto entity)
     {
         try
         {
-            await _Context.Set<Categorium>().AddAsync(entity);
+            await _Context.Set<Producto>().AddAsync(entity);
             await _Context.SaveChangesAsync();
             return entity.IdCategoria;
         }
@@ -76,21 +74,21 @@ public class CategoriaRepository : ICategoriaRepository
         }
     }
 
-    public async Task<Categorium?> FindAsync(int id)
+    public async Task<Producto?> FindAsync(int id)
     {
         try
         {
             var response = await _Context
-                                .Set<Categorium>()
+                                .Set<Producto>()
                                 .FindAsync(id);
-            return response;
+            return response!;
         }
         catch (Exception e)
         {
             _Logger.Error(e.Message);
             throw;
-        } 
-    } 
+        }
+    }
 
     public async Task UpdateAsync()
     {
@@ -105,6 +103,4 @@ public class CategoriaRepository : ICategoriaRepository
         }
 
     }
- 
-     
 }

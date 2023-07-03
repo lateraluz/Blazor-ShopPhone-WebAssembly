@@ -1,0 +1,150 @@
+﻿@page "/PageProductoNew"
+@inject ProxyProducto ProxyProducto
+@inject ProxyCategoria ProxyCategoria
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+
+
+<PageTitle>Nuevo Producto</PageTitle>
+
+
+<div class="container">
+    <div class="card">
+        <h5 class="card-header">Agregar Producto</h5>
+        <div class="card-body border-radius: .5rem ">
+
+            <EditForm Model="@_ProductoDTO" OnSubmit="OnSave">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Código Producto</label>
+                        <input type="number" class="form-control" placeholder="Código del Producto" @bind-value="@_ProductoDTO.IdProducto">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" placeholder="Nombre Producto" @bind-value="@_ProductoDTO.Descripcion">
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6 ">
+                        <label class="form-label">Categoría</label>
+                        <input type="number" class="form-control" placeholder="Código del Producto" @bind-value="@_ProductoDTO.IdCategoria">
+                    </div>
+                    <div class="col-md-6 ">
+                        <label class="form-label">Stock Inventario</label>
+                        <input type="number" class="form-control" placeholder="Stock Inventario" @bind-value="@_ProductoDTO.Inventario">
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Precio Unitario</label>
+                        <input type="number" class="form-control" placeholder="Precio Unitario" @bind-value="@_ProductoDTO.PrecioUnitario">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Comentarios</label>
+                        <input type="text" class="form-control" placeholder="Comentarios" @bind-value="@_ProductoDTO.Comentarios">
+                    </div>
+                </div>
+
+
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-check-label">Estado</label>
+                    </div>
+                    <div class=" form-switch  col-md-11  mx-3">
+                        <input class="form-check-input" type="checkbox" @bind-value="@_ProductoDTO.Estado" checked="@(_ProductoDTO.Estado? "checked":null)">
+                    </div>
+                </div>
+                 
+                <div class="col mb-2">
+                    <div class="card">
+                        <div class="card-body">
+                            @if (_ProductoDTO.Base64Image is not null)
+                            {
+                                <div style="margin:10px">
+                                    <img src="data:image/jpeg;base64,@_ProductoDTO.Base64Image"   style="width: 150px;height: 150px" />
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="@_ProductoDTO.URLImagen"  style="width: 150px" />
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <InputFile accept="image/png, image/jpeg, image/webp" style="display: none; width:25;height:25;"
+                                       OnChange="OnFileUploaded" id="file" />
+                            <label for="file" class="btn btn-success">Escoger Imagen</label>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button class="btn btn-secondary" @onclick="OnClear">Limpiar</button>
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+ 
+
+@code {
+    private ProductoDTO _ProductoDTO { get; set; } = new();
+
+    private void OnClear()
+    {
+        _ProductoDTO = new();
+    }
+
+    private async void OnSave()
+    {
+        try
+        {  
+            await ProxyProducto.AddAsync(_ProductoDTO);
+            NavigationManager.NavigateTo("PageProducto");
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        } 
+    }
+
+    private async Task OnFileUploaded(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var imagen = e.File;
+            var buffer = new byte[imagen.Size];
+            var _ = await imagen.OpenReadStream().ReadAsync(buffer);
+
+            _ProductoDTO.Base64Image = Convert.ToBase64String(buffer);
+            _ProductoDTO.FileName = imagen.Name;
+            _ProductoDTO.URLImagen= "";
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
+    
+
+}

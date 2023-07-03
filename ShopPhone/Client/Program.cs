@@ -13,8 +13,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+// Register 
 builder.Services.AddScoped<ProxyCategoria>();
- 
+builder.Services.AddScoped<ProxyProducto>();
 
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredSessionStorage();

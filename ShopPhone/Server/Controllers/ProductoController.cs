@@ -1,26 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using log4net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopPhone.Services.Implementations;
-using log4net;
-using System.Reflection;
-using System.Text;
-using ShopPhone.Shared.Util;
-using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Shared.Response;
-using ShopPhone.DataAccess;
+using ShopPhone.Shared.Util;
+using System.Reflection;
 
 namespace ShopPhone.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class ProductoController : ControllerBase
     {
-
-        private ICategoriaService _CategoriaService;
+        private IProductoService _ProductoService;
         private ILog _Logger;
-        public CategoriaController(ICategoriaService categoriaService, ILog logger)
+        public ProductoController(IProductoService service, ILog logger)
         {
-            _CategoriaService = categoriaService;
+            _ProductoService = service;
             _Logger = logger;
         }
 
@@ -29,7 +25,7 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.FindByDescriptionAsync(description);
+                var response = await _ProductoService.FindByDescriptionAsync(description);
 
                 return response.Success ? Ok(response) : NotFound(response);
             }
@@ -44,9 +40,9 @@ namespace ShopPhone.Server.Controllers
 
         [HttpPut("{id:int}")]
 
-        public async Task<IActionResult> Put(int id, CategoriaDTO request)
+        public async Task<IActionResult> Put(int id, ProductoDTO request)
         {
-            await _CategoriaService.UpdateAsync(id, request);
+            await _ProductoService.UpdateAsync(id, request);
 
             return Ok();
         }
@@ -56,7 +52,7 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.FindByIdAsync(id);
+                var response = await _ProductoService.FindByIdAsync(id);
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
@@ -68,11 +64,11 @@ namespace ShopPhone.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(CategoriaDTO request)
+        public async Task<IActionResult> Post(ProductoDTO request)
         {
             try
             {
-                var response = await _CategoriaService.AddAsync(request);
+                var response = await _ProductoService.AddAsync(request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -90,7 +86,7 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.DeleteAsync(id);
+                var response = await _ProductoService.DeleteAsync(id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -100,7 +96,6 @@ namespace ShopPhone.Server.Controllers
                 throw;
             }
         }
-
 
 
     }

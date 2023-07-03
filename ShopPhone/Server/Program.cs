@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Dependency Injection
 builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
+builder.Services.AddTransient<IProductoService, ProductoService>();
 builder.Services.AddTransient<ICategoriaService, CategoriaService>();
 
 // Add services to the container.
@@ -44,6 +46,7 @@ builder.Logging.AddLog4Net();
 builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<MapperCategoria>();
+    config.AddProfile<MapperProducto>();
 });
 
 

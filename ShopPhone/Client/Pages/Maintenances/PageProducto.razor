@@ -1,17 +1,15 @@
-﻿@page "/PageCategoria"
-
-@inject ProxyCategoria ProxyCategoria
+﻿@page "/PageProducto"
+@inject ProxyProducto ProxyProducto
 @inject SweetAlertService Swal
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
 
-
-<PageTitle>Mantenimiento Categoria</PageTitle>
+<PageTitle>Mantenimiento Producto</PageTitle>
 
 
 <div class="container">
     <div class="card ">
-        <h5 class="card-header">Consulta Categoría</h5>
+        <h5 class="card-header">Consulta Producto</h5>
         <div class="card-body border-radius: .5rem">
             <div class="row">
 
@@ -34,33 +32,48 @@
         <div class="card-body">
             <section class="intro">
                 <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
-                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
-                        <tr>
-                            <th scope="col" @onclick='(()=> Sort("IdCategoria"))'>
-                                Código
+                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px; vertical-align: middle;">
+                        <tr style="">
+                            <th scope="col" @onclick='(()=> Sort("IdProducto"))'>
+                                Producto
                             </th>
-                            <th scope="col" class="" @onclick='(()=> Sort("NombreCategoria"))'>
-                                Categoria
+                            <th scope="col" class="" @onclick='(()=> Sort("Descripcion"))'>
+                                Descripción
                             </th>
                             <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                                Categoria
+                            </th>
+                            <th scope="col" align="center">
+                                Stock
+                            </th>
+                            <th scope="col" style="text-align: center;" align="center">
+                                Precio
+                            </th>
+                            <th scope="col" style="text-align: center;" align="Center">
                                 Estado
+                            </th>
+                            <th scope="col" align="center">
+                                Comentario
                             </th>
                             <th scope="col" style="text-align: center;">
                                 Accion
                             </th>
-
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
                         {
                             <tr style="">
+                                <td>@item.IdProducto</td>
+                                <td>@item.Descripcion</td>
                                 <td>@item.IdCategoria</td>
-                                <td>@item.NombreCategoria</td>
-                                <td>@(item.Estado == true ? "Activo" : "Inactivo")</td>
+                                <td>@item.Inventario</td>
+                                <td align="right">@item.PrecioUnitario.ToString("N2")</td>
+                                <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
+                                <td>@item.Comentarios</td>
                                 <td align="Center">
-                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdCategoria)">Editar</button>
-                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdCategoria )">Delete</button>
+                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
+                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
                                 </td>
                             </tr>
                         }
@@ -106,8 +119,9 @@
 
 
 
+
 @code {
-    private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
+    private IList<ProductoDTO>? _List { get; set; } = new List<ProductoDTO>();
     private string Descripcion { set; get; } = "";
     private const int RECORDS_PER_PAGE = 3;
     private int PaginaActual { set; get; }
@@ -115,12 +129,12 @@
 
     private void OnCreate()
     {
-        NavigationManager.NavigateTo("/PageCategoriaNew");
+        NavigationManager.NavigateTo("/PageProductoNew");
     }
 
     private void OnEdit(int id)
     {
-        NavigationManager.NavigateTo($"/PageCategoriaEdit/edit/{id}");
+        NavigationManager.NavigateTo($"/PageProductoEdit/edit/{id}");
     }
 
     private async Task OnDelete(int id)
@@ -138,7 +152,7 @@
 
             if (response.IsConfirmed)
             {
-                await ProxyCategoria.DeleteAsync(id);
+                await ProxyProducto.DeleteAsync(id);
                 await OnSearch();
                 /* No se borra se actualiza
                 var categoria = _List!.ToList().Find(p => p.IdCategoria == id);
@@ -180,7 +194,7 @@
             }
 
 
-            var response = await ProxyCategoria.FindByDescriptionAsync(Descripcion);
+            var response = await ProxyProducto.FindByDescriptionAsync(Descripcion);
 
             if (response.Success == true)
             {
@@ -211,14 +225,14 @@
 
     private async Task OnClear()
     {
-        _List = new List<CategoriaDTO>();
+        _List = new List<ProductoDTO>();
         await Task.FromResult(_List);
     }
 
     private void Sort(string tipo)
     {
 
-        List<CategoriaDTO> lista = new List<CategoriaDTO>();
+        List<ProductoDTO> lista = new List<ProductoDTO>();
 
         if (_List == null)
             return;
@@ -226,19 +240,19 @@
         if (_List.Count > 0)
             lista = _List.ToList();
 
-        
+
         switch (tipo)
         {
-            case "IdCategoria":
-                _List = lista.OrderBy(x => x.IdCategoria).ToList();
+            case "IdProducto":
+                _List = lista.OrderBy(x => x.IdProducto).ToList();
                 break;
-            case "NombreCategoria":
-                _List = lista.OrderBy(x => x.NombreCategoria).ToList();
+            case "Descripcion":
+                _List = lista.OrderBy(x => x.Descripcion).ToList();
                 break;
             case "Estado":
                 _List = lista.OrderBy(x => x.Estado).ToList();
                 break;
-            
+
 
         }
         GoToPage(1);
