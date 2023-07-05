@@ -1,6 +1,10 @@
-﻿using log4net;
+﻿using Azure;
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.DataAccess;
+using ShopPhone.Shared.Response;
+using System.Reflection;
+using System.Security.Principal;
 
 
 namespace ShopPhone.Repositories.Implementations;
@@ -19,37 +23,34 @@ public class ProductoRepository : IProductoRepository
     public async Task<ICollection<Producto>> FindByDescriptionAsync(string description)
     {
         try
-        { 
-            
+        {
             var response = await _Context
                                 .Set<Producto>()
                                 .Where(p => p.Descripcion.Contains(description))
-                                .ToListAsync();                                    
+                                .ToListAsync();
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _Logger.Error(ex.Message);
             throw;
         }
-
     }
 
 
-    public async Task<int> AddAsync(Producto entity)
+    public async Task<BaseResponse> AddAsync(Producto entity)
     {
         try
         {
             await _Context.Set<Producto>().AddAsync(entity);
             await _Context.SaveChangesAsync();
-            return entity.IdCategoria;
+            return new BaseResponse() { Success = true };
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);            
             throw;
         }
-
     }
 
     public async Task DeleteAsync(int id)
@@ -67,9 +68,9 @@ public class ProductoRepository : IProductoRepository
                 throw new InvalidOperationException($"No se encontro el registro con el Id {id}");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _Logger.Error(ex.Message);
             throw;
         }
     }
@@ -83,22 +84,23 @@ public class ProductoRepository : IProductoRepository
                                 .FindAsync(id);
             return response!;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _Logger.Error(ex.Message);
             throw;
         }
     }
 
-    public async Task UpdateAsync()
+    public async Task<BaseResponse> UpdateAsync()
     {
         try
         {
             await _Context.SaveChangesAsync();
+            return new BaseResponse() { Success = true };
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _Logger.Error(ex.Message);
             throw;
         }
 

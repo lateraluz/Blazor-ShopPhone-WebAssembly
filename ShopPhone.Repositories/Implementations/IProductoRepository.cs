@@ -1,4 +1,5 @@
 ﻿using ShopPhone.DataAccess;
+using ShopPhone.Shared.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,10 @@ public interface IProductoRepository
 {
     Task<ICollection<Producto>> FindByDescriptionAsync(string description);
 
-    Task<int> AddAsync(Producto entity);
+    Task<BaseResponse> AddAsync(Producto entity);
     Task DeleteAsync(int id);
 
     Task<Producto?> FindAsync(int id);
 
-    Task UpdateAsync();
+    Task<BaseResponse> UpdateAsync();
 }

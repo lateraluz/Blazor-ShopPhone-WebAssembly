@@ -12,11 +12,8 @@ namespace ShopPhone.Services.Implementations
 
         Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByDescriptionAsync(string description);
         Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByIdAsync(int id);
-
-        Task<BaseResponseGeneric<int>> AddAsync(ProductoDTO identity);
-
+        Task<BaseResponse> AddAsync(ProductoDTO identity);
         Task<BaseResponse> DeleteAsync(int id);
-
         Task<BaseResponse> UpdateAsync(int id, ProductoDTO request);
     }
 }

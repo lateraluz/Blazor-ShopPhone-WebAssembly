@@ -1,4 +1,4 @@
-﻿@page "/PageProductoNew"
+﻿@page "/PageProductoEdit/edit/{Id:int}"
 @inject ProxyProducto ProxyProducto
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
@@ -10,14 +10,14 @@
 
 <div class="container">
     <div class="card">
-        <h5 class="card-header">Agregar Producto</h5>
+        <h5 class="card-header">Actualizar Producto</h5>
         <div class="card-body border-radius: .5rem ">
 
             <EditForm Model="@_ProductoDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Código Producto</label>
-                        <input type="number" class="form-control" placeholder="Código del Producto" @bind-value="@_ProductoDTO.IdProducto">
+                        <input type="number" class="form-control" placeholder="Código del Producto" disabled @bind-value="@_ProductoDTO.IdProducto">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nombre del Producto</label>
@@ -86,7 +86,7 @@
 
                 <div class="button-group">
                     <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button class="btn btn-secondary" @onclick="OnClear">Limpiar</button>
+                    <button class="btn btn-secondary" @onclick="OnClose">Salir</button>
                 </div>
 
             </EditForm>
@@ -94,12 +94,11 @@
     </div>
 </div>
 
-
-
 @code {
     private ProductoDTO _ProductoDTO { get; set; } = new();
     private List<CategoriaDTO> _ListCategoria { get; set; } = new();
-
+    [Parameter]
+    public int Id { set; get; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,10 +109,29 @@
     {
         try
         {
-            var response = await ProxyCategoria.ListAsync();
+            var responseCategoria = await ProxyCategoria.ListAsync();
 
-            _ListCategoria = response.Data!.ToList();
-            _ProductoDTO.IdCategoria = 0;
+            _ListCategoria = responseCategoria.Data!.ToList();
+
+
+            var responseProducto = await ProxyProducto.FindByIdAsync(Id);
+
+            if (responseProducto.Success)
+            {
+                _ProductoDTO = responseProducto.Data!.ToList()[0];
+            }
+            else
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = responseProducto.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+                return;
+            }
+
         }
         catch (Exception ex)
         {
@@ -137,7 +155,7 @@
     {
         try
         {
-            // Validations 
+            // Validations
             if (_ProductoDTO.IdProducto <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
@@ -195,7 +213,8 @@
                 return;
             }
 
-            if (string.IsNullOrEmpty(_ProductoDTO.Base64Image) == true )
+
+            if (string.IsNullOrEmpty(_ProductoDTO.URLImagen) && string.IsNullOrEmpty(_ProductoDTO.Base64Image) == true)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -209,20 +228,33 @@
                 return;
             }
 
-             
-            var oProductoDTO =  await ProxyProducto.AddAsync(_ProductoDTO);
 
-            if (!oProductoDTO.Success)            
+            var baseResponse = await ProxyProducto.UpdateAsync(Id, _ProductoDTO);
+
+
+            if (baseResponse.Success)
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = "Atención",
+                        Text = "Registro actualizado con exito",
+                        Icon = SweetAlertIcon.Success,
+                        Timer = 1500,
+                        TimerProgressBar = true
+                    });
+            }
+            else
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
-                        Text = oProductoDTO.ErrorMessage,
+                        Text = baseResponse.ErrorMessage,
                         Title = "Error",
                         Icon = SweetAlertIcon.Error,
                         ShowCloseButton = true
                     });
+                return;
             }
-            
+
         }
         catch (Exception e)
         {
@@ -237,6 +269,14 @@
                 });
         }
     }
+
+    private void OnClose()
+    {
+        // _CategoriaDTO.Estado = false;
+        NavigationManager.NavigateTo("/PageProducto");
+    }
+
+
 
     private async Task OnFileUploaded(InputFileChangeEventArgs e)
     {

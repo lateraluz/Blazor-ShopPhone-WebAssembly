@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using log4net;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Implementations;
@@ -6,6 +7,8 @@ using ShopPhone.Shared.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,12 +20,14 @@ public class ProductoService : IProductoService
     private IProductoRepository _ProductoRepository;
     private readonly IMapper _Mapper;
     private ILog _Logger;
+    private IFileUploader _FileUploader;
 
-    public ProductoService(IProductoRepository repository, IMapper mapper, ILog logger)
+    public ProductoService(IProductoRepository repository, IMapper mapper, ILog logger, IFileUploader fileUploader)
     {
         _ProductoRepository = repository;
         _Mapper = mapper;
         _Logger = logger;
+        _FileUploader = fileUploader;
     }
 
     public async Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByDescriptionAsync(string description)
@@ -38,31 +43,36 @@ public class ProductoService : IProductoService
 
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Exception ex = e;
-            _Logger.Error(ex);
+            response.Success = false;
+            response.ErrorMessage = $"Error al buscar el Producto con al descripción {description}";
+            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            return response;
             throw;
         }
     }
 
-    public async Task<BaseResponseGeneric<int>> AddAsync(ProductoDTO identitiy)
+    public async Task<BaseResponse> AddAsync(ProductoDTO identity)
     {
-        var response = new BaseResponseGeneric<int>();
-
+        BaseResponse response = new BaseResponse();
         try
         {
-            var @object = _Mapper.Map<Producto>(identitiy);
-            response.Data = await _ProductoRepository.AddAsync(@object);
+            identity.URLImagen = await _FileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
+
+            var @object = _Mapper.Map<Producto>(identity);
+
+            var baseResponse = await _ProductoRepository.AddAsync(@object);
             response.Success = true;
-            _Logger.Info("Categoria agregado con exito");
+            response.ErrorMessage = baseResponse.ErrorMessage;
+            _Logger.Info($"Producto agregado con exito");
             return response;
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.ErrorMessage = "Error al Agregar el Categoria";
-            _Logger.Error(ex.Message);
+            response.ErrorMessage = $"Error al Agregar el Producto {identity.IdProducto}- {identity.Descripcion}";
+            _Logger.Error($"{response.ErrorMessage} {identity.IdProducto} {identity.Descripcion} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
     }
@@ -77,9 +87,10 @@ public class ProductoService : IProductoService
             return response;
         }
         catch (Exception ex)
-        {
-            _Logger.Error(ex.Message);
-            response.ErrorMessage = "Error al Eliminar";
+        {            
+            response.Success = false;
+            response.ErrorMessage = $"Error al eliminar el Producto {id}";
+            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -101,15 +112,16 @@ public class ProductoService : IProductoService
 
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Exception ex = e;
-            _Logger.Error(ex);
+            response.Success = false;
+            response.ErrorMessage =$"Error al Buscar  el Producto {id}";
+            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
 
-    public async Task<BaseResponse> UpdateAsync(int id, ProductoDTO request)
+    public async Task<BaseResponse> UpdateAsync(int id, ProductoDTO identity)
     {
         var response = new BaseResponse();
 
@@ -119,13 +131,16 @@ public class ProductoService : IProductoService
             if (entity == null)
             {
                 response.Success = false;
-                response.ErrorMessage = "No se encontro la categoria";
+                response.ErrorMessage = $"No se encontro el Producto {id}";
                 return response;
             }
+             
+            if (!string.IsNullOrEmpty(identity.Base64Image) == true)
+                identity.URLImagen = await _FileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
 
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
-            _Mapper.Map(request, entity);
+            _Mapper.Map(identity, entity);
 
             await _ProductoRepository.UpdateAsync();
             response.Success = true;
@@ -133,14 +148,14 @@ public class ProductoService : IProductoService
 
         }
         catch (Exception ex)
-        {
-            _Logger.Error(ex.Message);
-            response.ErrorMessage = "Error al Actualizar el Genero";
+        {             
+            response.Success = false;
+            response.ErrorMessage = $"Error al Actualizar el Producto {id}";
+            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
-
     }
 
-    
+
 }

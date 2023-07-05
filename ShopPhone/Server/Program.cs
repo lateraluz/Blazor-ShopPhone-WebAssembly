@@ -20,6 +20,7 @@ builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
 builder.Services.AddTransient<IProductoService, ProductoService>();
 builder.Services.AddTransient<ICategoriaService, CategoriaService>();
+builder.Services.AddTransient<IFileUploader, FileUploader>();
 
 // Add services to the container.
 // Aqui mapeo el archivo de configuracion en una clase fuertemente tipada

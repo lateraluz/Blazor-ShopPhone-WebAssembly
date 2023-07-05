@@ -45,6 +45,22 @@ public class ProxyCategoria
 
     }
 
+    public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> ListAsync()
+    {
+        try
+        {
+            string url = $"api/categoria/List";
+            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<CategoriaDTO>>>(url);
+            return response!;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
+    }
+
 
     public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> FindByDescriptionAsync(string description)
     {

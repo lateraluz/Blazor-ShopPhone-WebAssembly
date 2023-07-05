@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Shared.Response;
-using ShopPhone.Shared.Util;
+using System.Net;
 using System.Reflection;
 
 namespace ShopPhone.Server.Controllers
@@ -31,8 +31,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -42,9 +41,16 @@ namespace ShopPhone.Server.Controllers
 
         public async Task<IActionResult> Put(int id, ProductoDTO request)
         {
-            await _ProductoService.UpdateAsync(id, request);
-
-            return Ok();
+            try
+            {
+                var response = await _ProductoService.UpdateAsync(id, request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                throw;
+            }
         }
 
         [HttpGet("FindById")]
@@ -57,8 +63,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -69,17 +74,16 @@ namespace ShopPhone.Server.Controllers
             try
             {
                 var response = await _ProductoService.AddAsync(request);
-                return Ok(response);
+
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
-
-
+         
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> DeleteAsync(int id)
@@ -91,8 +95,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }

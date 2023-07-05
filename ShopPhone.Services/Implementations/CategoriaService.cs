@@ -50,6 +50,28 @@ public class CategoriaService : ICategoriaService
         }
     }
 
+
+    public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> ListAsync()
+    {
+        BaseResponseGeneric<ICollection<CategoriaDTO>> response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
+
+        try
+        {
+            var collection = await _CategoriaRepository.ListAsync();
+
+            response.Success = true;
+            response.Data = _Mapper.Map<ICollection<CategoriaDTO>>(collection);
+
+            return response;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            _Logger.Error(ex);
+            throw;
+        }
+    }
+
     public async Task<BaseResponseGeneric<int>> AddAsync(CategoriaDTO identitiy)
     {
         var response = new BaseResponseGeneric<int>();
@@ -88,6 +110,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Eliminar";
+            _Logger.Error(ex.Message);
             return response;
         }
 

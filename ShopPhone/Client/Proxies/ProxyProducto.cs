@@ -1,5 +1,8 @@
-﻿using ShopPhone.Shared.Response;
+﻿using ShopPhone.Shared;
+using ShopPhone.Shared.Response;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ShopPhone.Client.Proxies;
 
@@ -12,15 +15,35 @@ public class ProxyProducto
         _HttpClient = pHttpClient;
     }
 
-    public async Task UpdateAsync(int id, ProductoDTO request)
+    public async Task<BaseResponse> UpdateAsync(int id, ProductoDTO request)
     {
         string url = $"api/producto/{id}";
-        var response = await _HttpClient.PutAsJsonAsync(url, request);
+        BaseResponse baseResponse = new();
+        string json = "";
 
-        if (response.IsSuccessStatusCode)
+        try
         {
-            return;
+            var response = await _HttpClient.PutAsJsonAsync(url, request);
+
+            json = response.Content.ReadAsStringAsync().Result;
+
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
+                                            throw new InvalidOperationException();
+
+            return baseResponse!;
+
         }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
     }
 
     public async Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByIdAsync(int id)
@@ -47,7 +70,7 @@ public class ProxyProducto
             string url = $"api/producto/FindByDescription?description={description}";
             var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
 
-            return response;
+            return response!;
         }
         catch (Exception e)
         {
@@ -57,19 +80,30 @@ public class ProxyProducto
 
     }
 
-    public async Task AddAsync(ProductoDTO request)
+    public async Task<BaseResponse> AddAsync(ProductoDTO request)
     {
 
         string url = $"api/producto";
-
+        BaseResponse baseResponse = new();
+        string json = "";
         try
         {
+
+            //ShopPhone.Shared.Response.BaseResponse<ProductoDTO> d = new ShopPhone.Shared.Response.BaseResponse<ProductoDTO>();
             var response = await _HttpClient.PostAsJsonAsync(url, request);
 
-            if (response.IsSuccessStatusCode)
+            json = response.Content.ReadAsStringAsync().Result;
+
+            JsonSerializerOptions options = new JsonSerializerOptions
             {
-                return;
-            }
+                PropertyNameCaseInsensitive = true
+            };
+
+            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
+                                            throw new InvalidOperationException();
+
+            return baseResponse!;
+
         }
         catch (Exception e)
         {

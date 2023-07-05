@@ -4,7 +4,6 @@ using ShopPhone.Services.Implementations;
 using log4net;
 using System.Reflection;
 using System.Text;
-using ShopPhone.Shared.Util;
 using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Shared.Response;
 using ShopPhone.DataAccess;
@@ -35,8 +34,24 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                throw;
+            }
+        }
+
+
+        [HttpGet("List")]
+        public async Task<IActionResult> ListAsync()
+        {
+            try
+            {
+                var response = await _CategoriaService.ListAsync();
+
+                return response.Success ? Ok(response) : NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -46,9 +61,16 @@ namespace ShopPhone.Server.Controllers
 
         public async Task<IActionResult> Put(int id, CategoriaDTO request)
         {
-            await _CategoriaService.UpdateAsync(id, request);
-
-            return Ok();
+            try
+            {
+                await _CategoriaService.UpdateAsync(id, request);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                throw;
+            }
         }
 
         [HttpGet("FindById")]
@@ -61,8 +83,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -77,8 +98,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -95,8 +115,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                string msg = UtilLog.Error(ex, MethodBase.GetCurrentMethod()!);
-                _Logger.Error(msg, ex);
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }

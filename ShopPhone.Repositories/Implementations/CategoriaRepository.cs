@@ -36,7 +36,25 @@ public class CategoriaRepository : ICategoriaRepository
         }
 
     }
-     
+
+    public async Task<ICollection<Categorium>> ListAsync()
+    {
+        try
+        {
+            var response = await _Context
+                                .Set<Categorium>()                               
+                                .ToListAsync();
+            return response;
+
+        }
+        catch (Exception e)
+        {
+            _Logger.Error(e.Message);
+            throw;
+        }
+
+    }
+
 
     public async Task<int> AddAsync(Categorium entity)
     {
