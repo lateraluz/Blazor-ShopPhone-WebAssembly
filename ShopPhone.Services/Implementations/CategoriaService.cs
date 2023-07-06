@@ -132,10 +132,9 @@ public class CategoriaService : ICategoriaService
 
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Exception ex = e;
-            _Logger.Error(ex);
+            _Logger.Error(ex.Message);
             throw;
         }
     }
@@ -166,6 +165,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Actualizar el Genero";
+            _Logger.Error(ex.Message);
             return response;
         }
 

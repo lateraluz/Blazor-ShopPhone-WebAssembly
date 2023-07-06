@@ -2,14 +2,13 @@
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
 @inject SweetAlertService Swal
+@inject IJSRuntime JS
 <PageTitle>Editar Categoria</PageTitle>
 
 <div class="container">
     <div class="card">
         <h5 class="card-header">Consulta de Extranjeros</h5>
         <div class="card-body border-radius: .5rem">
-
-
             <div class="row mb-2">
                 <div class="col-md-6">
                     <label for="name" class="col-form-label">Código:</label>
@@ -39,10 +38,8 @@
                 <button class="btn btn-primary" @onclick="()=> OnSave()">Salvar</button>
                 <button class="btn btn-secondary" @onclick="OnClose">Salir</button>
             </div>
-
+            <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
         </div>
-
-
     </div>
 </div>
 
@@ -50,8 +47,9 @@
     [Parameter]
     public int Id { get; set; }
 
-
+    public bool _FormPostedSuccessfully { get; set; }
     private CategoriaDTO _CategoriaDTO { get; set; } = new();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,7 +70,6 @@
                         ShowCloseButton = true
                     });
             }
-
         }
         catch (Exception ex)
         {
@@ -86,10 +83,35 @@
         }
     }
 
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var response = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Text = $"Desea salir y perder los datos ingresados",
+                Title = "Atención",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                ShowConfirmButton = true
+            });
+
+        if (!response.IsConfirmed)
+        {
+            context.PreventNavigation();
+        }
+
+        /*
+        // Si sirve
+        var isConfirm = await JS.InvokeAsync<bool>("confirm", "Salir sin salvar cambios ?");
+        if (!isConfirm)
+        {
+            context.PreventNavigation();
+        }
+        */
+    }
+   
 
     private void OnClose()
     {
-        // _CategoriaDTO.Estado = false;
         NavigationManager.NavigateTo("/PageCategoria");
     }
 
@@ -107,7 +129,7 @@
                     Timer = 1500,
                     TimerProgressBar = true
                 });
-            //NavigationManager.NavigateTo("PageCategoria");
+             NavigationManager.NavigateTo("PageCategoria");
         }
         catch (Exception ex)
         {
@@ -120,4 +142,7 @@
                 });
         }
     }
+
+
+
 }

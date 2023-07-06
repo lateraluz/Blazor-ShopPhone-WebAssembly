@@ -1,0 +1,170 @@
+﻿@page "/PageShopping"
+@inject ProxyProducto ProxyProducto
+@inject SweetAlertService Swal
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<style>
+    .autocomplete {
+        position: relative;
+    }
+
+        .autocomplete .options {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: white;
+            width: 100%;
+            padding: 0;
+            z-index: 10;
+            border: 1px solid #ced4da;
+            border-radius: 0.5rem;
+            box-shadow: 0 30px 25px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .autocomplete .option {
+            display: block;
+            padding: 0.25rem;
+        }
+
+            .autocomplete .option .option-text {
+                padding: 0.25rem 0.5rem;
+            }
+
+            .autocomplete .option:hover {
+                background: #1E90FF;
+                color: #fff;
+            }
+
+            .autocomplete .option.disabled {
+                background-color: lightgrey;
+                cursor: not-allowed;
+            }
+
+                .autocomplete .option.disabled:hover {
+                    background: lightgrey;
+                    color: var(--bs-body);
+                }
+</style>
+<PageTitle>Compra</PageTitle>
+
+
+
+<div class="container">
+    <div class="card ">
+        <h5 class="card-header">Facturación</h5>
+        <div class="card-body border-radius: .5rem">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="autocomplete">
+                        <input @bind=_SelectedProductName @oninput=HandleInput class="form-control filter" />
+                        @if (_ListProducto is not null)
+                        {
+                            <ul class="options">
+                                @if (_ListProducto.Any())
+                                {
+                                    @foreach (var item in _ListProducto)
+                                    {
+                                        <li class="option" @onclick=@(_ => SelectProduct(item.IdProducto))>
+                                            <span class="option-text">@item.Descripcion</span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="disabled option">No results</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary form-control" @onclick="OnSearch">Buscar</button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-secondary form-control" @onclick="OnClear">Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string _Descripcion { set; get; } = "";
+    private int _IdProducto { set; get; }
+    private List<ProductoDTO>? _ListProducto = null;
+    private ProductoDTO? _ProductoDTO { set; get; } = new();
+    private string? _SelectedProductName;
+    private string? filter;
+
+    private void OnkeyPress(KeyboardEventArgs e)
+    {
+       // Console.WriteLine(_Descripcion);
+    }
+    // https://github.com/mikebrind/Blazor-Autocomplete/blob/master/Blazor%20Autocomplete/Client/wwwroot/index.html
+    // Ver video
+    async Task HandleInput(ChangeEventArgs e)
+    {
+        string filter = e.Value?.ToString();
+        if (filter?.Length >= 1)
+        {
+            var response = await ProxyProducto.FindByDescriptionAsync(filter);
+            if (response.Success && response.Data!.Count > 0)
+                _ListProducto = response.Data.ToList();
+            else
+                _ListProducto = null;
+        }
+        else
+        {
+            _ProductoDTO = null;
+            _SelectedProductName = "";
+
+        }
+    }
+
+    async void SelectProduct(int id)
+    {
+        _IdProducto = id;
+        _ListProducto = null;
+        Console.WriteLine("seleccionado "+id.ToString());
+        string input = "";
+        var result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Ingrese la cantidad",
+                Input = "text",
+                InputLabel = "Cantidad",
+                InputValue = input,
+                ShowCancelButton = true,
+                ShowConfirmButton = true
+            });
+
+             
+        Console.WriteLine("My input " + result.Value);
+
+        //  _SelectedProductName = _ListProducto!.First(c => c.IdProducto.Equals(_IdProducto)).Descripcion;
+        //  _ListProducto = new List<ProductoDTO>();
+    }
+
+    private async Task OnSearch(string descripcion)
+    {
+
+    }
+    private async Task OnKey()
+    {
+        Console.WriteLine("Key");
+        await Task.FromResult(1);
+    }
+
+    private async Task OnSearch()
+    {
+        await Task.FromResult(1);
+    }
+
+    private async Task OnClear()
+    {
+
+        await Task.FromResult(1);
+    }
+}
