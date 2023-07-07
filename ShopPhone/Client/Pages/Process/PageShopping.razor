@@ -4,163 +4,358 @@
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
 
-<style>
-    .autocomplete {
-        position: relative;
-    }
 
-        .autocomplete .options {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            background: white;
-            width: 100%;
-            padding: 0;
-            z-index: 10;
-            border: 1px solid #ced4da;
-            border-radius: 0.5rem;
-            box-shadow: 0 30px 25px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .autocomplete .option {
-            display: block;
-            padding: 0.25rem;
-        }
-
-            .autocomplete .option .option-text {
-                padding: 0.25rem 0.5rem;
-            }
-
-            .autocomplete .option:hover {
-                background: #1E90FF;
-                color: #fff;
-            }
-
-            .autocomplete .option.disabled {
-                background-color: lightgrey;
-                cursor: not-allowed;
-            }
-
-                .autocomplete .option.disabled:hover {
-                    background: lightgrey;
-                    color: var(--bs-body);
-                }
-</style>
 <PageTitle>Compra</PageTitle>
-
 
 
 <div class="container">
     <div class="card ">
         <h5 class="card-header">Facturación</h5>
         <div class="card-body border-radius: .5rem">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="autocomplete">
-                        <input @bind=_SelectedProductName @oninput=HandleInput class="form-control filter" />
-                        @if (_ListProducto is not null)
-                        {
-                            <ul class="options">
-                                @if (_ListProducto.Any())
-                                {
-                                    @foreach (var item in _ListProducto)
-                                    {
-                                        <li class="option" @onclick=@(_ => SelectProduct(item.IdProducto))>
-                                            <span class="option-text">@item.Descripcion</span>
-                                        </li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li class="disabled option">No results</li>
-                                }
-                            </ul>
-                        }
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="Identificacion" class="form-label">Identificacion</label>
+                        <input type="text" class="form-control" id="Identificacion">
                     </div>
 
+                    <div class="col-md-9">
+                        <label for="Nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="Nombre">
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary form-control" @onclick="OnSearch">Buscar</button>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="Nombre" class="form-label">Producto</label>
+                        <div class="autocomplete">
+                            <input @bind="@_FilterProductoName" @oninput=HandleInput class="form-control filter" />
+                            @if (_ListProducto is not null)
+                            {
+                                <ul class="options">
+                                    @if (_ListProducto.Any())
+                                    {
+                                        @foreach (var item in _ListProducto)
+                                        {
+                                            <li class="option" @onclick=@(_ => SelectProduct(item))>
+                                                <span class="option-text">@item.Descripcion</span>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li class="disabled option">No results</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-1 ">
+                        <label for="" class="form-label" style="visibility:hidden">dummy</label>
+                        @if (_ListProducto != null)
+                        {
+                            <div class="spinner-grow text-success" role="status">
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-2 ">
+                        <label for="" class="form-label" style="visibility:hidden">dummy</label>
+                        <button class="btn btn-primary form-control" @onclick="OnSearch">Buscar</button>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="" class="form-label" style="visibility:hidden">dummy</label>
+                        <button class="btn btn-secondary form-control" @onclick="OnClear">Limpiar</button>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-secondary form-control" @onclick="OnClear">Limpiar</button>
-                </div>
+
+
+                <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
+                    <caption></caption>
+                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                        <tr>
+                            <th scope="col">
+                                No
+                            </th>
+                            <th scope="col" class="">
+                                Código
+                            </th>
+                            <th scope="col" class="">
+                                Producto
+                            </th>
+                            <th scope="col" style="text-align: right;">
+                                Cantidad
+                            </th>
+
+                            <th scope="col" style="text-align: right;">
+                                Precio
+                            </th>
+                            <th scope="col" style="text-align: right;">
+                                Impuesto
+                            </th>
+                            <th scope="col" style="text-align: right;">
+                                Total
+                            </th>
+                            <th scope="col" style="text-align: center;">
+                                Acción
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 0;
+                            double impuesto = 0d;
+                            double total = 0d;
+                            double totalImpuesto = 0d;
+                            double granTotal = 0d;
+
+                            if (_ListaFacturaDetalleDTO.Any())
+                                foreach (var item in _ListaFacturaDetalleDTO)
+                                {
+
+                                    index = index + 1;
+                                    impuesto = (double)@item.PrecioUnitario * @item.Cantidad * 0.13;
+                                    totalImpuesto = totalImpuesto + impuesto;
+                                    total = impuesto + (double)@item.PrecioUnitario * @item.Cantidad;
+                                    granTotal = granTotal + total;
+                                    <tr style="">
+                                        <td>@index</td>
+                                        <td>@item.IdProducto</td>
+                                        <td>@item.Descripcion.Trim().PadRight(40,'.').Substring(1,20)</td>
+                                        <td align="right">@item.Cantidad</td>
+                                        <td align="right">@item.PrecioUnitario.ToString("N2")</td>
+                                        <td align="right">@impuesto.ToString("N2")</td>
+                                        <td align="right">@total.ToString("N2")</td>
+                                        <td align="Center">
+                                            <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto)">Delete</button>
+                                        </td>
+                                    </tr>
+
+                                }
+                            if (_ListaFacturaDetalleDTO.Any())
+                            {
+                                <tr style="background-color:black">
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td align="right"></td>
+                                    <td align="right"></td>
+                                    <td align="right" style="color:whitesmoke;  font-weight: bold"> Total</td>
+                                    <td align="right" style="color:whitesmoke;  font-weight: bold">@granTotal</td>
+                                    <td align="right"></td>
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 
+
+
 @code {
     private string _Descripcion { set; get; } = "";
     private int _IdProducto { set; get; }
-    private List<ProductoDTO>? _ListProducto = null;
+    private FacturaDTO _Factura = new FacturaDTO();
+    private IList<FacturaDetalleDTO> _ListaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
     private ProductoDTO? _ProductoDTO { set; get; } = new();
-    private string? _SelectedProductName;
-    private string? filter;
+    private List<ProductoDTO>? _ListProducto = null;
+    private string? _FilterProductoName;
+
 
     private void OnkeyPress(KeyboardEventArgs e)
     {
-       // Console.WriteLine(_Descripcion);
+        // Console.WriteLine(_Descripcion);
     }
     // https://github.com/mikebrind/Blazor-Autocomplete/blob/master/Blazor%20Autocomplete/Client/wwwroot/index.html
     // Ver video
     async Task HandleInput(ChangeEventArgs e)
     {
-        string filter = e.Value?.ToString();
-        if (filter?.Length >= 1)
+        string filter = "";
+        try
         {
-            var response = await ProxyProducto.FindByDescriptionAsync(filter);
-            if (response.Success && response.Data!.Count > 0)
-                _ListProducto = response.Data.ToList();
-            else
-                _ListProducto = null;
-        }
-        else
-        {
-            _ProductoDTO = null;
-            _SelectedProductName = "";
-
-        }
-    }
-
-    async void SelectProduct(int id)
-    {
-        _IdProducto = id;
-        _ListProducto = null;
-        Console.WriteLine("seleccionado "+id.ToString());
-        string input = "";
-        var result = await Swal.FireAsync(new SweetAlertOptions
+            if (e.Value == null)
             {
-                Title = "Ingrese la cantidad",
-                Input = "text",
-                InputLabel = "Cantidad",
-                InputValue = input,
-                ShowCancelButton = true,
-                ShowConfirmButton = true
-            });
+                return;
+            }
 
-             
-        Console.WriteLine("My input " + result.Value);
+            filter = e.Value?.ToString();
 
-        //  _SelectedProductName = _ListProducto!.First(c => c.IdProducto.Equals(_IdProducto)).Descripcion;
-        //  _ListProducto = new List<ProductoDTO>();
+            if (filter?.Length >= 1)
+            {
+                var response = await ProxyProducto.FindByDescriptionAsync(filter);
+                if (response.Success && response.Data!.Count > 0)
+                    _ListProducto = response.Data.ToList();
+                else
+                    _ListProducto = null;
+            }
+            else
+            {
+                _ProductoDTO = null;
+                _FilterProductoName = "";
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
     }
 
-    private async Task OnSearch(string descripcion)
+    private async Task SelectProduct(ProductoDTO producto)
     {
 
+        string input = "";
+        int cantidad = 0;
+        Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+        try
+        {
+            _IdProducto = producto.IdProducto;
+            _ListProducto = null;
+
+            Console.WriteLine("Producto Seleccionado " + _IdProducto);
+            // Config inpunt validator
+            dictionary.Add("min", "1");
+            dictionary.Add("max", "9999999");
+            dictionary.Add("step", "1");
+
+            var result = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    ImageUrl = producto.URLImagen,
+                    ImageHeight = 150,
+                    ImageWidth = 150,
+                    Title = producto.Descripcion.PadRight(30, '.').Substring(1, 20),
+                    Input = "number",
+                    InputLabel = "Cantidad disponible: " + producto.Inventario,
+                    InputValue = input,
+                    InputPlaceholder = "Ingrese la cantidad",
+                    Icon = SweetAlertIcon.Question,
+                    ShowCancelButton = true,
+                    ShowConfirmButton = true,
+                    InputAttributes = dictionary,
+                    AllowEnterKey = true,
+                    ValidationMessage = "Debe agregar un valor mayor que cero",
+                    ImageAlt = producto.Descripcion,
+                    AllowEscapeKey = true
+                });
+
+            if (result.Value is null)
+            {
+                _FilterProductoName = "";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(result.Value.Trim()))
+            {
+                _FilterProductoName = "";
+                return;
+            }
+
+            cantidad = Convert.ToInt32(result.Value.Trim());
+
+            if (cantidad > producto.Inventario)
+            {
+
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = "No hay inventario suficiente para la compra",
+                        Title = "Atención",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        Timer = 3000,
+                        AllowEscapeKey = true,
+                        TimerProgressBar = true
+
+                    });
+
+                return;
+            }
+
+
+
+            double impuesto = (double)producto.PrecioUnitario * cantidad * 0.13;
+            double total = impuesto + (double)producto.PrecioUnitario * cantidad;
+
+            // Create detail
+            FacturaDetalleDTO detalle = new FacturaDetalleDTO()
+                {
+                    IdProducto = producto.IdProducto,
+                    Cantidad = cantidad,
+                    Impuesto = (int)impuesto,
+                    PrecioUnitario = producto.PrecioUnitario,
+                    Descripcion = producto.Descripcion
+                };
+
+            // Add to List attached this page
+            _ListaFacturaDetalleDTO.Add(detalle);
+            // Add to list componsed
+            _Factura!._DetalleFactura.Add(detalle);
+            _Factura.FechaVenta = DateTime.Now;
+
+            // Clear input
+            _FilterProductoName = "";
+
+            Console.WriteLine("Detalle " + _Factura._DetalleFactura.Count);
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
     }
+
+
+
+    private async Task OnDelete(int id)
+    {
+        try
+        {
+            //int index = _ListaFacturaDetalleDTO.ToList().FindIndex(p => p.IdProducto == id);
+            int index = _Factura._DetalleFactura.FindIndex(p => p.IdProducto == id);
+            _Factura._DetalleFactura.RemoveAt(index);
+
+            // List attached Page
+            _ListaFacturaDetalleDTO.RemoveAt(index);
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
+    private async Task OnSearch()
+    {
+
+        await Task.FromResult(1);
+    }
+
     private async Task OnKey()
     {
         Console.WriteLine("Key");
         await Task.FromResult(1);
     }
 
-    private async Task OnSearch()
-    {
-        await Task.FromResult(1);
-    }
+
 
     private async Task OnClear()
     {

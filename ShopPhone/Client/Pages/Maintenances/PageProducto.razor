@@ -14,7 +14,7 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <input type="text" @bind="Descripcion" class="form-control" placeholder="Ingrese la descripcion" />
+                    <input type="text" @bind="_Descripcion" class="form-control" placeholder="Ingrese la descripcion" />
                 </div>
 
                 <div class="col-md-2">
@@ -122,7 +122,7 @@
 
 @code {
     private IList<ProductoDTO>? _List { get; set; } = new List<ProductoDTO>();
-    private string Descripcion { set; get; } = "";
+    private string _Descripcion { set; get; } = "";
     private const int RECORDS_PER_PAGE = 3;
     private int PaginaActual { set; get; }
 
@@ -179,7 +179,7 @@
         try
         {
 
-            if (string.IsNullOrEmpty(Descripcion))
+            if (string.IsNullOrEmpty(_Descripcion))
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -194,7 +194,7 @@
             }
 
 
-            var response = await ProxyProducto.FindByDescriptionAsync(Descripcion);
+            var response = await ProxyProducto.FindByDescriptionAsync(_Descripcion);
 
             if (response.Success == true)
             {
