@@ -19,10 +19,10 @@
                         <th scope="col" class="" @onclick='(()=> Sort("FechaVenta"))'>
                             Fecha
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                        <th scope="col" class="" @onclick='(()=> Sort("Cliente"))'>
                             Cliente
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                        <th scope="col" class="" @onclick='(()=> Sort("Cantidad"))'>
                             Cantidad Items
                         </th>
                         <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
@@ -144,23 +144,29 @@
 
         if (_List.Count > 0)
             lista = _List.ToList();
-        /*
-
-    switch (tipo)
-    {
-        case "IdCategoria":
-            _List = lista.OrderBy(x => x.IdCategoria).ToList();
-            break;
-        case "NombreCategoria":
-            _List = lista.OrderBy(x => x.NombreCategoria).ToList();
-            break;
-        case "Estado":
-            _List = lista.OrderBy(x => x.Estado).ToList();
-            break;
 
 
-    }
-    */
+        switch (tipo)
+        {
+            case "IdFactura":
+                _List = lista.OrderBy(x => x.IdFactura).ToList();
+                break;
+            case "Cliente":
+                _List = lista.OrderBy(x => x._Cliente.Nombre).ToList();
+                break;
+            case "Estado":
+                _List = lista.OrderBy(x => x.Estado).ToList();
+                break;
+            case "FechaVenta":
+                _List = lista.OrderBy(x => x.FechaVenta).ToList();
+                break;
+            case "Cantidad":
+                _List = lista.OrderBy(x => x._FacturaDetalle.Count()).ToList();
+                break;
+
+
+        }
+
         GoToPage(1);
 
     }

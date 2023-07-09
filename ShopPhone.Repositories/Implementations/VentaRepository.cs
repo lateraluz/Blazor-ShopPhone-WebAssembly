@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace ShopPhone.Repositories.Implementations;
 
 public class VentaRepository : IVentaRepository
@@ -74,9 +75,18 @@ public class VentaRepository : IVentaRepository
         try
         {
             entity.FechaVenta = DateTime.Now;
-
+            // inicio de transaccion
+            await _Context.Database.BeginTransactionAsync();
+            // Salvar encabezado
             await _Context.Set<FacturaEncabezado>().AddAsync(entity);
             await _Context.SaveChangesAsync();
+
+            // Rebajar inventario
+            foreach (var item in entity.FacturaDetalles)
+            {
+               await _Context.Database.ExecuteSqlAsync($"Update Producto set Inventario = Inventario - {item.Cantidad} where IdProducto = {item.IdProducto}");
+            }
+            await _Context.Database.CommitTransactionAsync();
             return new BaseResponse() { Success = true };
         }
         catch (Exception ex)
@@ -107,7 +117,7 @@ public class VentaRepository : IVentaRepository
         {
             var response = await _Context
                                 .Set<FacturaEncabezado>()
-                                .Include(c=> c.IdClienteNavigation)
+                                .Include(c => c.IdClienteNavigation)
                                 .Include(g => g.FacturaDetalles)
                                 .ToListAsync();
             return response;

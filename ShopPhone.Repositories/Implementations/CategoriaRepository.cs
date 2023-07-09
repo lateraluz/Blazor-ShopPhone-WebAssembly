@@ -60,8 +60,10 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
+            await _Context.Database.BeginTransactionAsync();
             await _Context.Set<Categorium>().AddAsync(entity);
             await _Context.SaveChangesAsync();
+            await _Context.Database.CommitTransactionAsync(); ;
             return entity.IdCategoria;
         }
         catch (Exception e)

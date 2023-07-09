@@ -85,8 +85,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button class="btn btn-secondary" @onclick="OnClose">Salir</button>
+                    <button type="submit" class="btn btn-primary w-25">Salvar</button>
+                    <button class="btn btn-secondary w-25" @onclick="OnClose">Salir</button>
                 </div>
 
             </EditForm>
@@ -271,8 +271,7 @@
     }
 
     private void OnClose()
-    {
-        // _CategoriaDTO.Estado = false;
+    {        
         NavigationManager.NavigateTo("/PageProducto");
     }
 

@@ -134,5 +134,23 @@ public class ProxyCliente
         }
 
     }
+
+    public async Task<BaseResponseGeneric<ICollection<ClienteDTO>>> ListAsync()
+    {
+        try
+        {
+            string url = $"api/Cliente/List";
+            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
+
+            return response!;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
+    }
+
 }
 

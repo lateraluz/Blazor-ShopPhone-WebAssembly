@@ -104,4 +104,19 @@ public class ProductoRepository : IProductoRepository
         }
 
     }
+
+    public async Task<ICollection<Producto>> ListAsync()
+    {
+        try
+        {
+            var response = await _Context
+                                .Set<Producto>().ToListAsync();
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _Logger.Error(ex.Message);
+            throw;
+        }
+    }
 }

@@ -157,5 +157,25 @@ public class ProductoService : IProductoService
 
     }
 
+    public async Task<BaseResponseGeneric<ICollection<ProductoDTO>>> ListAsync()
+    {
+        BaseResponseGeneric<ICollection<ProductoDTO>> response = new BaseResponseGeneric<ICollection<ProductoDTO>>();
 
+        try
+        {
+            var collection = await _ProductoRepository.ListAsync();
+
+            response.Success = true;
+            response.Data = _Mapper.Map<ICollection<ProductoDTO>>(collection);
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            response.Success = false;
+            response.ErrorMessage = $"Error al listar producto";
+            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            throw;
+        }
+    }
 }

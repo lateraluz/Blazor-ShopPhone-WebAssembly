@@ -1,7 +1,7 @@
 ﻿@page "/PageCategoriaNew"
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
-@inject SweetAlertService Swal 
+@inject SweetAlertService Swal
 <PageTitle>Nueva Categoria</PageTitle>
 
 <div class="container">
@@ -12,14 +12,14 @@
             <EditForm Model="@_CategoriaDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
-                        <label for="name" class="col-form-label">Código:</label>                    
+                        <label for="name" class="col-form-label">Código:</label>
                         <input type="number" class="form-control" id="IdCategoria" @bind-value="@_CategoriaDTO.IdCategoria" />
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
-                        <label for="name" class="col-form-label">Categoria:</label>                   
+                        <label for="name" class="col-form-label">Categoria:</label>
                         <input type="text" class="form-control" @bind-value="@_CategoriaDTO.NombreCategoria" />
                     </div>
                 </div>
@@ -34,9 +34,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-primary  ">Salvar</button>
 
-                    <button class="btn btn-secondary" @onclick="OnClear">Limpiar</button>
+                    <button class="btn btn-secondary  " @onclick="OnClear">Limpiar</button>
+                    <button class="btn btn-warning  " @onclick="OnReturn">Salir</button>
 
                 </div>
 
@@ -53,7 +54,12 @@
 
     private void OnClear()
     {
-        _CategoriaDTO = new();
+        _CategoriaDTO = new() {  Estado = true};
+    }
+
+    private void OnReturn()
+    {
+        NavigationManager.NavigateTo("/PageCategoria");
     }
 
     private async void OnSave()
@@ -61,7 +67,30 @@
         try
         {
             await ProxyCategoria.AddAsync(_CategoriaDTO);
+            /*
+             * var  response = await ProxyCategoria.AddAsync(_CategoriaDTO);
+            if (!response.Success)
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = response.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+            }
+            */
+
+            await Swal.FireAsync(new SweetAlertOptions()
+                {
+                    Title = "Atención",
+                    Text = "Registro salvado con éxito",
+                    Icon = SweetAlertIcon.Success,
+                    Timer = 1500,
+                    TimerProgressBar = true
+                });
             NavigationManager.NavigateTo("PageCategoria");
+
         }
         catch (Exception ex)
         {
@@ -74,6 +103,6 @@
                 });
         }
 
-      
+
     }
 }

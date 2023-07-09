@@ -63,8 +63,10 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                await _CategoriaService.UpdateAsync(id, request);
-                return Ok();
+                
+                var response = await _CategoriaService.UpdateAsync(id, request);
+                return Ok(response);
+
             }
             catch (Exception ex)
             {

@@ -1,20 +1,21 @@
-﻿@page "/PageProducto"
-@inject ProxyProducto ProxyProducto
+﻿@page "/PageCliente"
+
+@inject ProxyCliente ProxyCliente
 @inject SweetAlertService Swal
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Mantenimiento Producto</PageTitle>
+<PageTitle>Mantenimiento Cliente</PageTitle>
 
 
 <div class="container">
     <div class="card ">
-        <h5 class="card-header">Consulta Producto</h5>
+        <h5 class="card-header">Consulta Cliente</h5>
         <div class="card-body border-radius: .5rem">
             <div class="row">
 
                 <div class="col-md-3">
-                    <input type="text" @bind="_Descripcion" class="form-control" placeholder="Ingrese la descripcion" />
+                    <input type="text" @bind="_Filtro" class="form-control" placeholder="Ingrese el nombre" />
                 </div>
 
                 <div class="col-md-2">
@@ -32,48 +33,43 @@
         <div class="card-body">
             <section class="intro">
                 <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
-                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px; vertical-align: middle;">
-                        <tr style="">
-                            <th scope="col" @onclick='(()=> Sort("IdProducto"))'>
-                                Producto
+                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                        <tr>
+                            <th scope="col" @onclick='(()=> Sort("IdCategoria"))'>
+                                Código
                             </th>
-                            <th scope="col" class="" @onclick='(()=> Sort("Descripcion"))'>
-                                Descripción
+                            <th scope="col" class="" @onclick='(()=> Sort("Nombre"))'>
+                                Nombre
                             </th>
                             <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
-                                Categoria
-                            </th>
-                            <th scope="col" align="center">
-                                Stock
-                            </th>
-                            <th scope="col" style="text-align: center;" align="center">
-                                Precio
-                            </th>
-                            <th scope="col" style="text-align: center;" align="Center">
                                 Estado
                             </th>
-                            <th scope="col" align="center">
-                                Comentario
+                            <th scope="col" class="" @onclick='(()=> Sort("Telefono"))'>
+                                Telefono
                             </th>
+                            <th scope="col" class="" @onclick='(()=> Sort("Correo"))'>
+                                Correo
+                            </th>
+
                             <th scope="col" style="text-align: center;">
                                 Accion
                             </th>
+
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
                         {
+                            string nombre = $"{item.Nombre} {item.Apellidos}";
                             <tr style="">
-                                <td>@item.IdProducto</td>
-                                <td>@item.Descripcion</td>
-                                <td>@item.IdCategoria</td>
-                                <td>@item.Inventario</td>
-                                <td align="right">@item.PrecioUnitario.ToString("N2")</td>
-                                <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
-                                <td>@item.Comentarios</td>
+                                <td>@item.IdCliente</td>
+                                <td>@nombre</td>
+                                <td>@(item.Estado == true ? "Activo" : "Inactivo")</td>
+                                <td>@item.Telefono</td>
+                                <td>@item.CorreoElectronico</td>
                                 <td align="Center">
-                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
-                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
+                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdCliente)">Editar</button>
+                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdCliente )">Delete</button>
                                 </td>
                             </tr>
                         }
@@ -120,21 +116,22 @@
 
 
 
+
 @code {
-    private IList<ProductoDTO>? _List { get; set; } = new List<ProductoDTO>();
-    private string _Descripcion { set; get; } = "";
+    private IList<ClienteDTO>? _List { get; set; } = new List<ClienteDTO>();
+    private string _Filtro { set; get; } = "";
     private const int RECORDS_PER_PAGE = 3;
     private int PaginaActual { set; get; }
 
 
     private void OnCreate()
     {
-        NavigationManager.NavigateTo("/PageProductoNew");
+        NavigationManager.NavigateTo("/PageClienteNew");
     }
 
     private void OnEdit(int id)
     {
-        NavigationManager.NavigateTo($"/PageProductoEdit/edit/{id}");
+        NavigationManager.NavigateTo($"/PageClienteEdit/edit/{id}");
     }
 
     private async Task OnDelete(int id)
@@ -152,7 +149,7 @@
 
             if (response.IsConfirmed)
             {
-                await ProxyProducto.DeleteAsync(id);
+                await ProxyCliente.DeleteAsync(id);
                 await OnSearch();
                 /* No se borra se actualiza
                 var categoria = _List!.ToList().Find(p => p.IdCategoria == id);
@@ -176,29 +173,29 @@
 
     private async Task OnSearch()
     {
-
-        var response = new BaseResponseGeneric<ICollection<ProductoDTO>>();
+        var response = new BaseResponseGeneric<ICollection<ClienteDTO>>();
         try
         {
-
-           /* if (string.IsNullOrEmpty(_Descripcion))
+            /*
+            if (string.IsNullOrEmpty(_Filtro))
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Title = "Atención",
-                        Text = "Ingrese la descripción del Producto",
+                        Text = "Ingrese la nombre del cliente",
                         Icon = SweetAlertIcon.Warning,
                         ShowCloseButton = true,
                         TimerProgressBar = true,
                         Timer = 1500
                     });
                 return;
-            }*/
+            }
+            */
 
-            if (string.IsNullOrEmpty(_Descripcion))
-                response = await ProxyProducto.ListAsync();
+            if (!string.IsNullOrEmpty(_Filtro))
+                response = await ProxyCliente.FindByDescriptionAsync(_Filtro);
             else
-                response = await ProxyProducto.FindByDescriptionAsync(_Descripcion);
+                response = await ProxyCliente.ListAsync();
 
             if (response.Success == true)
             {
@@ -229,14 +226,14 @@
 
     private async Task OnClear()
     {
-        _List = new List<ProductoDTO>();
+        _List = new List<ClienteDTO>();
         await Task.FromResult(_List);
     }
 
     private void Sort(string tipo)
     {
 
-        List<ProductoDTO> lista = new List<ProductoDTO>();
+        List<ClienteDTO> lista = new List<ClienteDTO>();
 
         if (_List == null)
             return;
@@ -247,17 +244,21 @@
 
         switch (tipo)
         {
-            case "IdProducto":
-                _List = lista.OrderBy(x => x.IdProducto).ToList();
+            case "IdCliente":
+                _List = lista.OrderBy(x => x.IdCliente).ToList();
                 break;
-            case "Descripcion":
-                _List = lista.OrderBy(x => x.Descripcion).ToList();
+            case "Nombre":
+                _List = lista.OrderBy(x => x.Nombre).ToList();
                 break;
             case "Estado":
                 _List = lista.OrderBy(x => x.Estado).ToList();
                 break;
-
-
+            case "Telefono":
+                _List = lista.OrderBy(x => x.Telefono).ToList();
+                break;
+            case "Correo":
+                _List = lista.OrderBy(x => x.CorreoElectronico).ToList();
+                break;
         }
         GoToPage(1);
 
@@ -283,4 +284,5 @@
         if (!(PaginaActual - 1 <= 0))
             PaginaActual--;
     }
+
 }

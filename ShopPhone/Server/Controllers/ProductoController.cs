@@ -36,6 +36,22 @@ namespace ShopPhone.Server.Controllers
             }
         }
 
+        [HttpGet("List")]
+        public async Task<IActionResult> ListAsync()
+        {
+            try
+            {
+                var response = await _ProductoService.ListAsync();
+
+                return response.Success ? Ok(response) : NotFound(response);
+            }
+            catch (Exception ex)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                throw;
+            }
+        }
+
 
         [HttpPut("{id:int}")]
 

@@ -134,4 +134,20 @@ public class ProxyProducto
         }
 
     }
+
+    public async Task<BaseResponseGeneric<ICollection<ProductoDTO>>> ListAsync()
+    {
+        try
+        {
+            string url = $"api/producto/List";
+            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
+            return response!;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
+    }
 }

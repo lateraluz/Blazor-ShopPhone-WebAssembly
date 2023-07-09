@@ -18,4 +18,6 @@ public interface IProductoRepository
     Task<Producto?> FindAsync(int id);
 
     Task<BaseResponse> UpdateAsync();
+
+    Task<ICollection<Producto>> ListAsync();
 }

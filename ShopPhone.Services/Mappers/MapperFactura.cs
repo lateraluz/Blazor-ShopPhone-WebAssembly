@@ -14,7 +14,8 @@ namespace ShopPhone.Services.Mappers
         public MapperFactura()
         {
             CreateMap<FacturaDTO, FacturaEncabezado>();
-            CreateMap<FacturaDetalleDTO, FacturaDetalle>();            
+            CreateMap<FacturaDetalleDTO, FacturaDetalle>();
+            CreateMap<FacturaDetalle, FacturaDetalleDTO>();
 
             CreateMap<FacturaDTO, FacturaEncabezado>()
             .ForMember(dest => dest.IdFactura, orig => orig.MapFrom(x => x.IdFactura))

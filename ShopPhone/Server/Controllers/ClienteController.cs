@@ -60,8 +60,8 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                await _ClienteService.UpdateAsync(id, request);
-                return Ok();
+                var response = await _ClienteService.UpdateAsync(id, request);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {

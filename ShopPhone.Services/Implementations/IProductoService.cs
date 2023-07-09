@@ -1,4 +1,5 @@
-﻿using ShopPhone.Shared.Response;
+﻿using ShopPhone.DataAccess;
+using ShopPhone.Shared.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace ShopPhone.Services.Implementations
         Task<BaseResponse> AddAsync(ProductoDTO identity);
         Task<BaseResponse> DeleteAsync(int id);
         Task<BaseResponse> UpdateAsync(int id, ProductoDTO request);
+        Task<BaseResponseGeneric<ICollection<ProductoDTO>>> ListAsync();
     }
 }

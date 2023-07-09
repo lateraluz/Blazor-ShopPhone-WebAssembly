@@ -15,11 +15,11 @@
         <h5 class="card-header">Facturación</h5>
         <div class="card-body border-radius: .5rem">
             <div class="container">
-                <div class="row"> 
-                    <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-6">
                         <label for="Nombre" class="form-label">Nombre</label>
                         <div class="autocomplete">
-                            <input @bind="@_FilterClienteName" @oninput="HandleInputCliente" @onclick="OnFocusFilterCliente" class="form-control filter" />
+                            <input @bind="@_FilterClienteName" @oninput="HandleInputCliente" @onclick="OnFocusFilterCliente" class="form-control filter" placeholder="Nombre del Cliente" />
                             @if (_ListCliente is not null)
                             {
                                 <ul class="options">
@@ -39,7 +39,7 @@
                                 </ul>
                             }
                         </div>
-                        @*<input type="text" class="form-control" id="Nombre">*@
+
                     </div>
                     <div class="col-md-1 ">
                         <label for="" class="form-label" style="visibility:hidden">dummy</label>
@@ -55,7 +55,7 @@
                     <div class="col-md-6">
                         <label for="Nombre" class="form-label">Producto</label>
                         <div class="autocomplete">
-                            <input @bind="@_FilterProductoName" @oninput="HandleInputProducto" @onclick="OnFocusFilterProducto" class="form-control filter" />
+                            <input @bind="@_FilterProductoName" @oninput="HandleInputProducto" @onclick="OnFocusFilterProducto" class="form-control filter" placeholder="Nombre del Producto" />
                             @if (_ListProducto is not null)
                             {
                                 <ul class="options">
@@ -189,23 +189,23 @@
 
 
 @code {
-    private string _Descripcion { set; get; } = "";    
+    private string _Descripcion { set; get; } = "";
     private FacturaDTO _Factura = new FacturaDTO();
     private IList<FacturaDetalleDTO> _ListaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
     private ProductoDTO? _ProductoDTO { set; get; } = new();
     private List<ProductoDTO>? _ListProducto = null;
     private List<ClienteDTO>? _ListCliente = null;
     private ClienteDTO? _ClienteDTO { set; get; } = new();
-    private string? _FilterProductoName{ set; get; } = "";
+    private string? _FilterProductoName { set; get; } = "";
     private string _FilterClienteName { set; get; } = "";
 
     protected override void OnInitialized()
     {
         _Factura = new FacturaDTO()
             {
-                IdCliente = 1,
+                IdCliente = 0,
                 Estado = true,
-                IdFactura = 1,
+                IdFactura = 0,
                 FechaVenta = DateTime.Now
             };
     }
@@ -213,10 +213,10 @@
     private void OnFocusFilterCliente()
     {
         _FilterClienteName = "";
-        _ClienteDTO = new ClienteDTO();        
+        _ClienteDTO = new ClienteDTO();
     }
 
-    private void OnFocusFilterProducto()    
+    private void OnFocusFilterProducto()
     {
         _FilterProductoName = "";
         _ProductoDTO = new ProductoDTO();
@@ -226,7 +226,7 @@
     {
         // Console.WriteLine(_Descripcion);
     }
-    
+
     private async Task HandleInputCliente(ChangeEventArgs e)
     {
         string filter = "";
@@ -265,7 +265,7 @@
         }
     }
 
-    
+
     // https://github.com/mikebrind/Blazor-Autocomplete/blob/master/Blazor%20Autocomplete/Client/wwwroot/index.html
     // Ver video
     private async Task HandleInputProducto(ChangeEventArgs e)
@@ -409,7 +409,7 @@
             // Clear input
             _FilterProductoName = "";
 
-           
+
         }
         catch (Exception ex)
         {
@@ -424,14 +424,14 @@
     }
 
     private async Task SelectCliente(ClienteDTO cliente)
-    { 
-      
+    {
+
         try
         {
             _ClienteDTO = cliente;
             _FilterClienteName = cliente.ToString();
             _ListCliente = null;
-              
+
         }
         catch (Exception ex)
         {
@@ -472,6 +472,9 @@
     {
         try
         {
+
+            _Factura.IdCliente = _ClienteDTO!.IdCliente;
+
             var response = await ProxyVenta.AddAsync(_Factura);
 
 
@@ -507,6 +510,8 @@
             _ProductoDTO = new();
             _ListProducto = null;
             _FilterProductoName = "";
+            _FilterClienteName = "";
+            _ClienteDTO = new();
 
         }
         catch (Exception ex)

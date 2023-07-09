@@ -85,10 +85,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button class="btn btn-secondary" @onclick="OnClear">Limpiar</button>
+                    <button type="submit" class="btn btn-primary  ">Salvar</button>
+                    <button class="btn btn-secondary  " @onclick="OnClear">Limpiar</button>
+                    <button class="btn btn-warning  " @onclick="OnReturn">Salir</button>
                 </div>
-
             </EditForm>
         </div>
     </div>
@@ -97,13 +97,18 @@
 
 
 @code {
-    private ProductoDTO _ProductoDTO { get; set; } = new();
+    private ProductoDTO _ProductoDTO { get; set; } = new() { Estado = true };
     private List<CategoriaDTO> _ListCategoria { get; set; } = new();
 
 
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+    }
+
+    private void OnReturn()
+    {
+        NavigationManager.NavigateTo("/PageProducto");
     }
 
     private async Task LoadAsync()
@@ -130,14 +135,15 @@
 
     private void OnClear()
     {
-        _ProductoDTO = new();
+        _ProductoDTO = new() { Estado = true };
+
     }
 
     private async void OnSave()
     {
         try
         {
-            // Validations 
+            // Validations
             if (_ProductoDTO.IdProducto <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
@@ -195,7 +201,7 @@
                 return;
             }
 
-            if (string.IsNullOrEmpty(_ProductoDTO.Base64Image) == true )
+            if (string.IsNullOrEmpty(_ProductoDTO.Base64Image) == true)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -209,10 +215,10 @@
                 return;
             }
 
-             
-            var response =  await ProxyProducto.AddAsync(_ProductoDTO);
 
-            if (!response.Success)            
+            var response = await ProxyProducto.AddAsync(_ProductoDTO);
+
+            if (!response.Success)
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -222,7 +228,21 @@
                         ShowCloseButton = true
                     });
             }
-            
+
+
+            await Swal.FireAsync(new SweetAlertOptions()
+                {
+                    Title = "Atención",
+                    Text = "Registro salvado con éxito",
+                    Icon = SweetAlertIcon.Success,
+                    Timer = 1500,
+                    TimerProgressBar = true
+                });
+
+            _ProductoDTO = new() { Estado = true };
+
+
+
         }
         catch (Exception e)
         {
