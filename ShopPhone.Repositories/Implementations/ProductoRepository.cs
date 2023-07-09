@@ -19,7 +19,6 @@ public class ProductoRepository : IProductoRepository
         _Logger = logger;
     }
 
-
     public async Task<ICollection<Producto>> FindByDescriptionAsync(string description)
     {
         try

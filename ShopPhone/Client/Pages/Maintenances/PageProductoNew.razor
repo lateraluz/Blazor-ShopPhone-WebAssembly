@@ -210,13 +210,13 @@
             }
 
              
-            var oProductoDTO =  await ProxyProducto.AddAsync(_ProductoDTO);
+            var response =  await ProxyProducto.AddAsync(_ProductoDTO);
 
-            if (!oProductoDTO.Success)            
+            if (!response.Success)            
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
-                        Text = oProductoDTO.ErrorMessage,
+                        Text = response.ErrorMessage,
                         Title = "Error",
                         Icon = SweetAlertIcon.Error,
                         ShowCloseButton = true

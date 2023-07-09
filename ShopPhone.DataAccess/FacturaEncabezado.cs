@@ -11,6 +11,8 @@ public partial class FacturaEncabezado
 
     public int IdCliente { get; set; }
 
+    public bool Estado { get; set; }
+
     public virtual ICollection<FacturaDetalle> FacturaDetalles { get; set; } = new List<FacturaDetalle>();
 
     public virtual Cliente IdClienteNavigation { get; set; } = null!;

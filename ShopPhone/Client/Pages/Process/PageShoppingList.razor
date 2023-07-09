@@ -1,0 +1,188 @@
+﻿@page "/PageShoppingList"
+@inject ProxyVenta ProxyVenta
+@inject SweetAlertService Swal
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Lista de Compras</PageTitle>
+
+<div class="card mt-2">
+    <div class="card-body">
+        <section class="intro">
+            <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
+                <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                    <tr>
+                        <th scope="col" @onclick='(()=> Sort("IdFactura"))'>
+                            NoFactura
+                        </th>
+                        <th scope="col" class="" @onclick='(()=> Sort("FechaVenta"))'>
+                            Fecha
+                        </th>
+                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                            Cliente
+                        </th>
+                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                            Cantidad Items
+                        </th>
+                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                            Estado
+                        </th>
+                        <th scope="col" style="text-align: center;">
+                            Accion
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
+                    {
+                        <tr style="">
+                            <td>@item.IdFactura</td>
+                            <td>@item.FechaVenta</td>
+                            <td>@item._Cliente.ToString()</td>
+                            <td>@item._FacturaDetalle.Count</td>
+                            <td>@(item.Estado == true ? "Aplicada" : "Pendiente")</td>
+                            <td align="Center">
+                                <button class="btn btn-primary ">Editar</button>
+                                <button class="btn btn-danger ">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </section>
+
+        @if (_List!.Count > 0)
+        {
+            <div class="card-footer">
+                <div class="row">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
+                            </li>
+                            @{
+                                decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
+                                if (_List!.Count % RECORDS_PER_PAGE > 0)
+                                    cantidad++;
+
+                                for (int index = 1; index <= (int)cantidad; index++)
+                                {
+                                    int currentIndex = index;
+                                    <li class="page-item">
+                                        <button class="page-link btn" @onclick="()=>GoToPage(currentIndex)">@index</button>
+                                    </li>
+                                }
+                            }
+                            <li class="page-item">
+                                <button class="page-link" @onclick="()=>Next()">Next</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
+
+@code {
+    private IList<FacturaDTO>? _List { get; set; } = new List<FacturaDTO>();
+    private string _Descripcion { set; get; } = "";
+    private const int RECORDS_PER_PAGE = 3;
+    private int PaginaActual { set; get; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await ProxyVenta.ListAsync();
+
+            if (!response.Success)
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = response.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+                return;
+            }
+
+            if (response.Data != null)
+                _List = response.Data!.ToList();
+
+
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
+    }
+
+    private void OnCreate()
+    {
+
+    }
+
+    private void Sort(string tipo)
+    {
+
+        List<FacturaDTO> lista = new List<FacturaDTO>();
+
+        if (_List == null)
+            return;
+
+        if (_List.Count > 0)
+            lista = _List.ToList();
+        /*
+
+    switch (tipo)
+    {
+        case "IdCategoria":
+            _List = lista.OrderBy(x => x.IdCategoria).ToList();
+            break;
+        case "NombreCategoria":
+            _List = lista.OrderBy(x => x.NombreCategoria).ToList();
+            break;
+        case "Estado":
+            _List = lista.OrderBy(x => x.Estado).ToList();
+            break;
+
+
+    }
+    */
+        GoToPage(1);
+
+    }
+
+    private void GoToPage(int pIndex)
+    {
+        PaginaActual = pIndex;
+    }
+
+    private void Next()
+    {
+        decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
+        if (_List!.Count % RECORDS_PER_PAGE > 0)
+            cantidad++;
+
+        if (PaginaActual != cantidad)
+            PaginaActual++;
+    }
+
+    private void Previous()
+    {
+        if (!(PaginaActual - 1 <= 0))
+            PaginaActual--;
+    }
+}

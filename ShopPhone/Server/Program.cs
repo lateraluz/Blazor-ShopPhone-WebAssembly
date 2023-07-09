@@ -18,8 +18,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Dependency Injection
 builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
-builder.Services.AddTransient<IProductoService, ProductoService>();
+builder.Services.AddTransient<IVentaRepository, VentaRepository>();
+builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
+
+
 builder.Services.AddTransient<ICategoriaService, CategoriaService>();
+builder.Services.AddTransient<IProductoService, ProductoService>();
+builder.Services.AddTransient<IVentaService, VentaService>();
+builder.Services.AddTransient<IClienteService, ClienteService>();
+
+
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
 // Add services to the container.
@@ -38,7 +46,6 @@ builder.Services.AddDbContext<ShopphoneContext>(options =>
 // Solo si se inyecta
 //builder.Logging.ClearProviders();
 //builder.Logging.AddLog4Net("log4nettest.config", true);
-
 XmlConfigurator.Configure(new FileInfo("log4net.config"));
 builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
 builder.Logging.AddLog4Net();
@@ -48,6 +55,8 @@ builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<MapperCategoria>();
     config.AddProfile<MapperProducto>();
+    config.AddProfile<MapperFactura>();
+    config.AddProfile<MapperCliente>();
 });
 
 

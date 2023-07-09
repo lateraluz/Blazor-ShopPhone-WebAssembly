@@ -19,7 +19,7 @@ public partial class ShopphoneContext : DbContext
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
-    public virtual DbSet<Encabezado> Encabezados { get; set; }
+  
 
     public virtual DbSet<FacturaDetalle> FacturaDetalles { get; set; }
 
@@ -70,16 +70,7 @@ public partial class ShopphoneContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<Encabezado>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("Encabezado");
-
-            entity.Property(e => e.Id)
-                .HasMaxLength(10)
-                .IsFixedLength();
-        });
+      
 
         modelBuilder.Entity<FacturaDetalle>(entity =>
         {
