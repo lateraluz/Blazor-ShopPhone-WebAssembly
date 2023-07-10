@@ -43,16 +43,16 @@
                             <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
                                 Categoria
                             </th>
-                            <th scope="col" align="center">
+                            <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Stock"))'>
                                 Stock
                             </th>
-                            <th scope="col" style="text-align: center;" align="center">
+                            <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Precio"))'>
                                 Precio
                             </th>
-                            <th scope="col" style="text-align: center;" align="Center">
+                            <th scope="col" style="text-align: center;" @onclick='(()=> Sort("Estado"))'>
                                 Estado
                             </th>
-                            <th scope="col" align="center">
+                            <th scope="col" style="text-align: center;">
                                 Comentario
                             </th>
                             <th scope="col" style="text-align: center;">
@@ -66,8 +66,8 @@
                             <tr style="">
                                 <td>@item.IdProducto</td>
                                 <td>@item.Descripcion</td>
-                                <td>@item.IdCategoria</td>
-                                <td>@item.Inventario</td>
+                                <td>@item._Categoria!.NombreCategoria</td>
+                                <td align="right">@item.Inventario</td>
                                 <td align="right">@item.PrecioUnitario.ToString("N2")</td>
                                 <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
                                 <td>@item.Comentarios</td>
@@ -181,19 +181,19 @@
         try
         {
 
-           /* if (string.IsNullOrEmpty(_Descripcion))
-            {
-                _ = await Swal.FireAsync(new SweetAlertOptions
-                    {
-                        Title = "Atención",
-                        Text = "Ingrese la descripción del Producto",
-                        Icon = SweetAlertIcon.Warning,
-                        ShowCloseButton = true,
-                        TimerProgressBar = true,
-                        Timer = 1500
-                    });
-                return;
-            }*/
+            /* if (string.IsNullOrEmpty(_Descripcion))
+             {
+                 _ = await Swal.FireAsync(new SweetAlertOptions
+                     {
+                         Title = "Atención",
+                         Text = "Ingrese la descripción del Producto",
+                         Icon = SweetAlertIcon.Warning,
+                         ShowCloseButton = true,
+                         TimerProgressBar = true,
+                         Timer = 1500
+                     });
+                 return;
+             }*/
 
             if (string.IsNullOrEmpty(_Descripcion))
                 response = await ProxyProducto.ListAsync();
@@ -256,6 +256,13 @@
             case "Estado":
                 _List = lista.OrderBy(x => x.Estado).ToList();
                 break;
+            case "Stock":
+                _List = lista.OrderBy(x => x.Inventario).ToList();
+                break;
+            case "Precio":
+                _List = lista.OrderBy(x => x.PrecioUnitario).ToList();
+                break;
+            
 
 
         }

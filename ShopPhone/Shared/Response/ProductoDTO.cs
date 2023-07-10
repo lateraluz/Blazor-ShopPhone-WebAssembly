@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShopPhone.Shared.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,8 @@ namespace ShopPhone.Shared.Response
         public string Comentarios { set; get; } = "";
         public string? Base64Image { get; set; }
         public string? FileName { get; set; }
+
+        public CategoriaDTO _Categoria { get; set; } = new CategoriaDTO();
 
     }
 }

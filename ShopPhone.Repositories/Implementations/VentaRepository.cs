@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-
+ 
 
 
 namespace ShopPhone.Repositories.Implementations;
@@ -91,6 +91,7 @@ public class VentaRepository : IVentaRepository
         }
         catch (Exception ex)
         {
+            await _Context.Database.RollbackTransactionAsync();
             _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }

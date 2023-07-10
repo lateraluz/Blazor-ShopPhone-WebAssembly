@@ -108,9 +108,11 @@ public class ProductoRepository : IProductoRepository
     public async Task<ICollection<Producto>> ListAsync()
     {
         try
-        {
+        { 
             var response = await _Context
-                                .Set<Producto>().ToListAsync();
+                                .Set<Producto>()
+                                .Include(c=>c.IdCategoriaNavigation)
+                                .ToListAsync();
             return response;
         }
         catch (Exception ex)

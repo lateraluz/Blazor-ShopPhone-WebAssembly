@@ -18,7 +18,8 @@ public class ProxyProducto
     public async Task<BaseResponse> UpdateAsync(int id, ProductoDTO request)
     {
         string url = $"api/producto/{id}";
-        BaseResponse baseResponse = new();
+        BaseResponse baseResponse = new() { Success = false };
+
         string json = "";
 
         try
@@ -31,15 +32,32 @@ public class ProxyProducto
             {
                 PropertyNameCaseInsensitive = true
             };
+            if (response.IsSuccessStatusCode)
+            {
+                baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
+                                                      throw new InvalidOperationException();
+            }
+            else
+            {
+                if (json.Contains("type") && json.Contains("status") && json.Contains("traceId"))
+                {
+                    var customError = JsonSerializer.Deserialize<CustomeError>(json!, options) ??
+                                                  throw new InvalidOperationException();
 
-            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
-                                            throw new InvalidOperationException();
-
+                    baseResponse.ErrorMessage = customError.Title;
+                    baseResponse.Success = false;
+                }
+                else
+                {
+                    baseResponse.ErrorMessage = "Error no se logró realizar la transacción";
+                    baseResponse.Success = false;
+                }
+            }
             return baseResponse!;
-
         }
         catch (Exception e)
         {
+            Console.WriteLine(json);
             Exception ex = e;
             throw;
         }

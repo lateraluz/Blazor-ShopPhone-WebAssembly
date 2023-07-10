@@ -16,7 +16,7 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <input type="text" @bind="_Descripcion" class="form-control" placeholder="Ingrese la descripcion" />
+                    <input type="text" @bind="_Filter" class="form-control" placeholder="Ingrese la descripcion" />
                 </div>
 
                 <div class="col-md-2">
@@ -108,8 +108,8 @@
 
 @code {
     private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
-    private string _Descripcion { set; get; } = "";
-    private const int RECORDS_PER_PAGE = 3;
+    private string _Filter { set; get; } = "";
+    private const int RECORDS_PER_PAGE =4;
     private int PaginaActual { set; get; }
 
 
@@ -162,25 +162,14 @@
 
     private async Task OnSearch()
     {
+        var response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
         try
         {
 
-            if (string.IsNullOrEmpty(_Descripcion))
-            {
-                _ = await Swal.FireAsync(new SweetAlertOptions
-                    {
-                        Title = "Atención",
-                        Text = "Ingrese la descripción de la categoría",
-                        Icon = SweetAlertIcon.Warning,
-                        ShowCloseButton = true,
-                        TimerProgressBar = true,
-                        Timer = 1500
-                    });
-                return;
-            }
-
-
-            var response = await ProxyCategoria.FindByDescriptionAsync(_Descripcion);
+            if (!string.IsNullOrEmpty(_Filter))
+                response = await ProxyCategoria.FindByDescriptionAsync(_Filter);
+            else
+                response = await ProxyCategoria.ListAsync();
 
             if (response.Success == true)
             {
@@ -226,7 +215,7 @@
         if (_List.Count > 0)
             lista = _List.ToList();
 
-        
+
         switch (tipo)
         {
             case "IdCategoria":
@@ -238,7 +227,7 @@
             case "Estado":
                 _List = lista.OrderBy(x => x.Estado).ToList();
                 break;
-            
+
 
         }
         GoToPage(1);

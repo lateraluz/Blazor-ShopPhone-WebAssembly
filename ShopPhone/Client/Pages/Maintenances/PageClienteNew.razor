@@ -78,7 +78,7 @@
 
     private void OnReturn()    
     {
-            NavigationManager.NavigateTo("/PageCliente");
+        NavigationManager.NavigateTo("/PageCliente");
     }
 
     private async void OnSave()
@@ -129,7 +129,7 @@
                 return;
             }
 
-             
+
             var response = await ProxyCliente.AddAsync(_ClienteDTO);
 
             if (!response.Success)
@@ -142,14 +142,23 @@
                         ShowCloseButton = true
                     });
             }
-
+            else            
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = "Atención",
+                        Text = "Registro salvado con éxito",
+                        Icon = SweetAlertIcon.Success,
+                        Timer = 1500,
+                        TimerProgressBar = true
+                    });
+            }
 
             _ClienteDTO = new() { Estado = true };
-
+            OnClear();
         }
         catch (Exception ex)
-        {
-          
+        {          
 
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {

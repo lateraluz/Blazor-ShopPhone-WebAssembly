@@ -135,7 +135,7 @@
 
     private void OnClear()
     {
-        _ProductoDTO = new() { Estado = true };
+        _ProductoDTO = new ProductoDTO() { Estado = true };
 
     }
 
@@ -227,10 +227,11 @@
                         Icon = SweetAlertIcon.Error,
                         ShowCloseButton = true
                     });
+                    return;
             }
 
 
-            await Swal.FireAsync(new SweetAlertOptions()
+            _=  await Swal.FireAsync(new SweetAlertOptions()
                 {
                     Title = "Atención",
                     Text = "Registro salvado con éxito",
@@ -239,10 +240,9 @@
                     TimerProgressBar = true
                 });
 
-            _ProductoDTO = new() { Estado = true };
-
-
-
+            OnClear();
+            _ProductoDTO = new ProductoDTO();
+            _ProductoDTO.Estado = true;
         }
         catch (Exception e)
         {
