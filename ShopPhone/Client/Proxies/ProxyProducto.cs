@@ -32,6 +32,7 @@ public class ProxyProducto
             {
                 PropertyNameCaseInsensitive = true
             };
+
             if (response.IsSuccessStatusCode)
             {
                 baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
@@ -41,15 +42,12 @@ public class ProxyProducto
             {
                 if (json.Contains("type") && json.Contains("status") && json.Contains("traceId"))
                 {
-                    var customError = JsonSerializer.Deserialize<CustomeError>(json!, options) ??
-                                                  throw new InvalidOperationException();
-
-                    baseResponse.ErrorMessage = customError.Title;
+                    baseResponse.ErrorMessage = json;
                     baseResponse.Success = false;
                 }
                 else
                 {
-                    baseResponse.ErrorMessage = "Error no se logró realizar la transacción";
+                    baseResponse.ErrorMessage = "Error no se logró realizar la transacción " + json;
                     baseResponse.Success = false;
                 }
             }
@@ -117,8 +115,25 @@ public class ProxyProducto
                 PropertyNameCaseInsensitive = true
             };
 
-            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
-                                            throw new InvalidOperationException();
+
+            if (response.IsSuccessStatusCode)
+            {
+                baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
+                                                      throw new InvalidOperationException();
+            }
+            else
+            {
+                if (json.Contains("type") && json.Contains("status") && json.Contains("traceId"))
+                {
+                    baseResponse.ErrorMessage = json;
+                    baseResponse.Success = false;
+                }
+                else
+                {
+                    baseResponse.ErrorMessage = "Error no se logró realizar la transacción " + json;
+                    baseResponse.Success = false;
+                }
+            }
 
             return baseResponse!;
 

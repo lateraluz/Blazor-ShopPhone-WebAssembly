@@ -20,7 +20,7 @@ namespace ShopPhone.Shared.Response
         public string? Base64Image { get; set; }
         public string? FileName { get; set; }
 
-        public CategoriaDTO _Categoria { get; set; } = new CategoriaDTO();
+        public CategoriaDTO? _Categoria { get; set; } = new CategoriaDTO();
 
     }
 }

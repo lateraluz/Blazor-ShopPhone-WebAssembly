@@ -187,7 +187,7 @@
                 return;
             }
 
-            if (_ProductoDTO.PrecioUnitario < 0)
+            if (_ProductoDTO.PrecioUnitario <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {

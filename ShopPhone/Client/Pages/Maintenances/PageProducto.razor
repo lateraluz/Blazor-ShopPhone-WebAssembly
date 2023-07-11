@@ -7,6 +7,7 @@
 <PageTitle>Mantenimiento Producto</PageTitle>
 
 
+
 <div class="container">
     <div class="card ">
         <h5 class="card-header">Consulta Producto</h5>
@@ -53,6 +54,9 @@
                                 Estado
                             </th>
                             <th scope="col" style="text-align: center;">
+                                Foto
+                            </th>
+                            <th scope="col" style="text-align: center;">
                                 Comentario
                             </th>
                             <th scope="col" style="text-align: center;">
@@ -70,7 +74,13 @@
                                 <td align="right">@item.Inventario</td>
                                 <td align="right">@item.PrecioUnitario.ToString("N2")</td>
                                 <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
-                                <td>@item.Comentarios</td>
+                                <td align="Center">
+                                    <a class="thumbnail" href="#thumb">
+                                        <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" />
+                                        <span><img src="@item.URLImagen"/><br/>Imagen</span>
+                                    </a>
+                                </td>
+                                <td>@item.Comentarios.PadRight(21,'.').Substring(20).Trim()</td>
                                 <td align="Center">
                                     <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
                                     <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
@@ -262,7 +272,7 @@
             case "Precio":
                 _List = lista.OrderBy(x => x.PrecioUnitario).ToList();
                 break;
-            
+
 
 
         }

@@ -146,7 +146,7 @@
                                     <tr style="">
                                         <td>@index</td>
                                         <td>@item.IdProducto</td>
-                                        <td>@item.Descripcion.Trim().PadRight(40,'.').Substring(1,20)</td>
+                                        <td>@item.Descripcion.Trim().PadRight(40,'.').Substring(0,20)</td>
                                         <td align="right">@item.Cantidad</td>
                                         <td align="right">@item.PrecioUnitario.ToString("N2")</td>
                                         <td align="right">@impuesto.ToString("N2")</td>
@@ -166,7 +166,7 @@
                                     <td align="right"></td>
                                     <td align="right"></td>
                                     <td align="right" style="color:whitesmoke;  font-weight: bold"> Total</td>
-                                    <td align="right" style="color:whitesmoke;  font-weight: bold">@granTotal</td>
+                                    <td align="right" style="color:whitesmoke;  font-weight: bold">@granTotal.ToString("N2")</td>
                                     <td> </td>
                                 </tr>
                             }
@@ -178,10 +178,7 @@
                     <button class="btn btn-danger w-300 " @onclick="OnClear">Cancelar</button>
                 </div>
             </div>
-
         </div>
-
-
     </div>
 </div>
 
@@ -330,7 +327,7 @@
                     ImageUrl = producto.URLImagen,
                     ImageHeight = 150,
                     ImageWidth = 150,
-                    Title = producto.Descripcion.PadRight(30, '.').Substring(1, 20),
+                    Title = producto.Descripcion,
                     Input = "number",
                     InputLabel = "Cantidad disponible: " + producto.Inventario,
                     InputValue = input,

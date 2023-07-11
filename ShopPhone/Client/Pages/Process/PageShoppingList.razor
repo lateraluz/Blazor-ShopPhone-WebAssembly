@@ -16,16 +16,19 @@
                         <th scope="col" @onclick='(()=> Sort("IdFactura"))'>
                             NoFactura
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("FechaVenta"))'>
+                        <th scope="col" style="text-align: center;" class="" @onclick='(()=> Sort("FechaVenta"))'>
                             Fecha
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("Cliente"))'>
+                        <th scope="col" style="text-align: center;" class="" @onclick='(()=> Sort("Cliente"))'>
                             Cliente
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("Cantidad"))'>
+                        <th scope="col" style="text-align: center;" class="" @onclick='(()=> Sort("Cantidad"))'>
                             Cantidad Items
                         </th>
-                        <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                        <th scope="col" style="text-align: right;" class="" @onclick='(()=> Sort("Total"))'>
+                            Total
+                        </th>
+                        <th scope="col" style="text-align: center;" class="" @onclick='(()=> Sort("Estado"))'>
                             Estado
                         </th>
                         <th scope="col" style="text-align: center;">
@@ -38,11 +41,18 @@
                     @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
                     {
                         <tr style="">
+                            @{
+                                double total = @item._FacturaDetalle.Sum(x => x.Cantidad * x.PrecioUnitario);
+                                total = total + @item._FacturaDetalle.Sum(x => x.Impuesto);
+                            }
+
                             <td>@item.IdFactura</td>
                             <td>@item.FechaVenta</td>
                             <td>@item._Cliente.ToString()</td>
-                            <td>@item._FacturaDetalle.Count</td>
-                            <td>@(item.Estado == true ? "Aplicada" : "Pendiente")</td>
+                            <td align="center">@item._FacturaDetalle.Count</td>
+
+                            <td align="right">@total.ToString("N2")</td>
+                            <td align="center">@(item.Estado == true ? "Aplicada" : "Pendiente")</td>
                             <td align="Center">
                                 <button class="btn btn-primary ">Editar</button>
                                 <button class="btn btn-danger ">Delete</button>
@@ -91,7 +101,7 @@
 @code {
     private IList<FacturaDTO>? _List { get; set; } = new List<FacturaDTO>();
     private string _Descripcion { set; get; } = "";
-    private const int RECORDS_PER_PAGE = 3;
+    private const int RECORDS_PER_PAGE = 5;
     private int PaginaActual { set; get; }
 
     protected override async Task OnInitializedAsync()
@@ -162,6 +172,28 @@
                 break;
             case "Cantidad":
                 _List = lista.OrderBy(x => x._FacturaDetalle.Count()).ToList();
+                break;
+
+            case "Total":
+                // Ugly code so order by Bill s detail
+                // Ideas from: https://www.c-sharpcorner.com/UploadFile/mahesh/how-to-sort-a-dictionary-with-C-Sharp/
+                // 10-07-2023
+                double sum = 0;
+                Dictionary<int, double> dic = new Dictionary<int, double>();
+                foreach (var item in lista)
+                {
+                    sum = item._FacturaDetalle.Sum(x => x.Cantidad * x.PrecioUnitario + x.Impuesto);
+                    dic.Add(item.IdFactura, sum);
+                }
+
+                var listTemp = new List<FacturaDTO>();
+                foreach (var item in dic.OrderBy(x => x.Value))
+                {
+                    var factura = _List.ToList().FindAll(c => c.IdFactura == item.Key)[0];
+                    listTemp.Add(factura);
+                }
+
+                _List = listTemp;
                 break;
 
 

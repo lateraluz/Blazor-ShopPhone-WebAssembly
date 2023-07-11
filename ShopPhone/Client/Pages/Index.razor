@@ -1,9 +1,148 @@
 ﻿@page "/"
 
+@using ApexCharts;
+
 <PageTitle>Principal</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="container">
+    <div class="row d-flex gy-3">
+        <div class="card mx-2 " style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Articulos">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="Gross Value"
+                                 SeriesType="SeriesType.Pie"
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+            </ApexChart>
+        </div>
+
+        <div class="card mx-2" style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Ventas">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="Gross Value"
+                                 SeriesType="SeriesType.Line"
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+
+
+            </ApexChart>
+        </div>
+
+        <div class="card mx-2" style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Ventas">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="XXX "
+                                 SeriesType="SeriesType.Treemap"
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+
+
+            </ApexChart>
+        </div>
+        <div class="card mx-2" style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Ventas">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="XXX "
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+
+
+            </ApexChart>
+        </div>
+        <div class="card mx-2" style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Ventas">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="XXX "
+                                 SeriesType="SeriesType.Donut"
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+
+
+            </ApexChart>
+        </div>
+        <div class="card mx-2" style="width: 25rem;">
+            <ApexChart TItem="Order"
+                       Title="Ventas">
+
+                <ApexPointSeries TItem="Order"
+                                 Items="List"
+                                 Name="XXX "
+                                 SeriesType="SeriesType.Area"                                  
+                                 XValue="@(e => e.Descripcion)"
+                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                 OrderByDescending="e=>e.Y" />
+
+
+            </ApexChart>
+        </div>
+        
+    </div>
+</div>
+
+
+@code {
+    public class Order
+    {
+        public int Cantidad { set; get; } = 0;
+        public string Descripcion { set; get; } = "";
+    };
+
+    private List<Order> List { get; set; } = new List<Order>();
+
+    protected override void OnInitialized()
+    {
+
+        Order o1 = new Order()
+            {
+                Cantidad = 120,
+                Descripcion = "Producto A"
+            };
+
+        Order o2 = new Order()
+            {
+                Cantidad = 33,
+                Descripcion = "Producto B"
+            };
+
+        Order o3 = new Order()
+            {
+                Cantidad = 25,
+                Descripcion = "Producto C"
+            };
+
+        Order o4 = new Order()
+            {
+                Cantidad = 88,
+                Descripcion = "Producto D"
+            };
+        List.Add(o1);
+        List.Add(o2);
+        List.Add(o3);
+        List.Add(o4);
+
+    }
+
+}
