@@ -49,7 +49,6 @@ public class ProxyVenta
 
     }
 
-
     public async Task<BaseResponseGeneric<ICollection<FacturaDTO>>> ListAsync()
     {
         try
@@ -65,4 +64,21 @@ public class ProxyVenta
         }
 
     }
+
+
+    public async void GetFactura() {
+        try
+        {
+            string url = $"api/venta/myfactura";
+            var response = await _HttpClient.GetAsync(url);
+            //return response!;
+        }
+        catch (Exception e)
+        {
+            Exception ex = e;
+            throw;
+        }
+
+    }
+
 }

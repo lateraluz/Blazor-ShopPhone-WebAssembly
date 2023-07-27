@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
- 
+
 
 
 namespace ShopPhone.Repositories.Implementations;
@@ -84,7 +84,7 @@ public class VentaRepository : IVentaRepository
             // Rebajar inventario
             foreach (var item in entity.FacturaDetalles)
             {
-               await _Context.Database.ExecuteSqlAsync($"Update Producto set Inventario = Inventario - {item.Cantidad} where IdProducto = {item.IdProducto}");
+                await _Context.Database.ExecuteSqlAsync($"Update Producto set Inventario = Inventario - {item.Cantidad} where IdProducto = {item.IdProducto}");
             }
             await _Context.Database.CommitTransactionAsync();
             return new BaseResponse() { Success = true };
@@ -104,7 +104,13 @@ public class VentaRepository : IVentaRepository
 
     public async Task<FacturaEncabezado?> FindAsync(int id)
     {
-        throw new NotImplementedException();
+        var response = await _Context
+                                .Set<FacturaEncabezado>()                                
+                                .Include(c => c.IdClienteNavigation)
+                                .Include(g => g.FacturaDetalles)
+                                .Include("FacturaDetalles.IdProductoNavigation")
+                                .FirstOrDefaultAsync(p => p.IdFactura == id);
+        return response;
     }
 
     public Task<BaseResponse> UpdateAsync()
@@ -121,6 +127,8 @@ public class VentaRepository : IVentaRepository
                                 .Include(c => c.IdClienteNavigation)
                                 .Include(g => g.FacturaDetalles)
                                 .ToListAsync();
+
+
             return response;
 
         }

@@ -488,16 +488,11 @@
             }
 
             await Swal.FireAsync(new SweetAlertOptions
-                {
-
-                    Text = $"La factura ha sido procesada correctamente # Factura: {response.Data}",
-                    Title = "Atención",
+                {   
+                    Title = "Factura Procesada",
+                    Html = "<a href='http://localhost:8081/pdf/archivo.pdf' target='_blank'>Descargar factura</a> ",
                     Icon = SweetAlertIcon.Success,
-                    ShowConfirmButton = true,
-                    Timer = 3000,
-                    TimerProgressBar = true,
-                    AllowEscapeKey = true
-
+                    ShowConfirmButton = true
                 });
 
 
