@@ -17,9 +17,9 @@ namespace ShopPhone.Repositories.Implementations;
 public class VentaRepository : IVentaRepository
 {
     private ILog _Logger;
-    private readonly ShopphoneContext _Context;
+    private readonly ShopPhoneContext _Context;
 
-    public VentaRepository(ShopphoneContext context, ILog logger)
+    public VentaRepository(ShopPhoneContext context, ILog logger)
     {
         _Context = context;
         _Logger = logger;
@@ -97,7 +97,7 @@ public class VentaRepository : IVentaRepository
         }
     }
 
-    public async Task DeleteAsync(int id)
+    public Task DeleteAsync(int id)
     {
         throw new NotImplementedException();
     }

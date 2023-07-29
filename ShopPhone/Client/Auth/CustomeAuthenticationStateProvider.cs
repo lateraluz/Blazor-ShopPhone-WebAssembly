@@ -1,30 +1,26 @@
 ﻿using Blazored.SessionStorage;
+
 using Microsoft.AspNetCore.Components.Authorization;
-using ShopPhone.Shared.Response;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Principal;
+using System.IdentityModel.Tokens.Jwt;
+using ShopPhone.Client.Auth;
+using ShopPhone.Shared.Response;
 
 namespace ShopPhone.Client.Auth;
 
-
-public class AuthenticationService : AuthenticationStateProvider
+public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
 {
+    private readonly ClaimsPrincipal _Anonymous = new ClaimsPrincipal(new ClaimsIdentity());
     private readonly ISessionStorageService _SessionStorageService;
     private readonly HttpClient _HttpClient;
-    private readonly ClaimsPrincipal _Anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
-    public AuthenticationService(ISessionStorageService sessionStorageService, HttpClient httpClient)
+    public CustomeAuthenticationStateProvider(ISessionStorageService sessionStorageService, HttpClient httpClient)
     {
         _SessionStorageService = sessionStorageService;
         _HttpClient = httpClient;
-    }
-
-    public static JwtSecurityToken ParseToken(LoginResponseDTO sesionUsuario)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var token = handler.ReadJwtToken(sesionUsuario.Token);
-        return token;
     }
 
     public async Task Authenticate(LoginResponseDTO? response)
@@ -62,5 +58,22 @@ public class AuthenticationService : AuthenticationStateProvider
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(ParseToken(sesionUsuario).Claims, "JWT"));
 
         return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+    }
+     
+
+    public async Task Logout()
+    {
+        ClaimsPrincipal claimsPrincipal;
+        claimsPrincipal = _Anonymous;
+        await Task.FromResult(claimsPrincipal);
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+    }
+
+
+    public static JwtSecurityToken ParseToken(LoginResponseDTO sesionUsuario)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(sesionUsuario.Token);
+        return token;
     }
 }

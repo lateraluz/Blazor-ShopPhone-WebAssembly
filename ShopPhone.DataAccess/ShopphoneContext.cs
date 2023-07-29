@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ShopPhone.DataAccess;
 
-public partial class ShopphoneContext : DbContext
+public partial class ShopPhoneContext : DbContext
 {
-    public ShopphoneContext()
+    public ShopPhoneContext()
     {
     }
 
-    public ShopphoneContext(DbContextOptions<ShopphoneContext> options)
+    public ShopPhoneContext(DbContextOptions<ShopPhoneContext> options)
         : base(options)
     {
     }
@@ -19,20 +21,23 @@ public partial class ShopphoneContext : DbContext
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
-  
-
     public virtual DbSet<FacturaDetalle> FacturaDetalles { get; set; }
 
     public virtual DbSet<FacturaEncabezado> FacturaEncabezados { get; set; }
 
     public virtual DbSet<Producto> Productos { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+    /*
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=shopphone;Integrated Security=false;user id=sa;password=123456;Encrypt=false;");
-
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=ShopPhone;Integrated Security=false;user id=sa;password=123456;Encrypt=false;");
+    */
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<Categorium>(entity =>
         {
             entity.HasKey(e => e.IdCategoria);
@@ -69,8 +74,6 @@ public partial class ShopphoneContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
         });
-
-      
 
         modelBuilder.Entity<FacturaDetalle>(entity =>
         {
@@ -138,7 +141,42 @@ public partial class ShopphoneContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Producto_Categoria1");
         });
-        modelBuilder.HasSequence<int>("NumeroFactura");
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("Role");
+
+            entity.Property(e => e.Name).HasMaxLength(256);
+            entity.Property(e => e.NormalizedName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("User");
+
+            entity.Property(e => e.DocumentNumber).HasMaxLength(20);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.FirstName).HasMaxLength(100);
+            entity.Property(e => e.LastName).HasMaxLength(100);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+            entity.Property(e => e.UserName).HasMaxLength(256);
+
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserRole",
+                    r => r.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
+                    l => l.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId");
+                        j.ToTable("UserRoles");
+                    });
+        });
+        modelBuilder.HasSequence<int>("NumeroFactura").HasMin(1L);
+
 
         OnModelCreatingPartial(modelBuilder);
     }

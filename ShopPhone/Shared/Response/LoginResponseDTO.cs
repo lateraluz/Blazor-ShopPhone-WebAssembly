@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Shared.Response;
 
-public class LoginResponseDTO
+public class LoginResponseDTO :BaseResponse
 {
     public string Token { get; set; } = default!;
 

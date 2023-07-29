@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Identity.Client;
 using ShopPhone.DataAccess;
 using ShopPhone.Shared.Entities;
@@ -9,9 +12,10 @@ using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ShopPhone.Services.Implementations;
-using ShopPhone.Client.Proxies;
 using ShopPhone.Repositories.Implementations;
 using ShopPhone.Services.Mappers;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,27 +24,44 @@ builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
 builder.Services.AddTransient<IVentaRepository, VentaRepository>();
 builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
-
-
 builder.Services.AddTransient<ICategoriaService, CategoriaService>();
 builder.Services.AddTransient<IProductoService, ProductoService>();
 builder.Services.AddTransient<IVentaService, VentaService>();
 builder.Services.AddTransient<IClienteService, ClienteService>();
-
-
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
 // Add services to the container.
 // Aqui mapeo el archivo de configuracion en una clase fuertemente tipada
 builder.Services.Configure<AppConfig>(builder.Configuration);
 
-builder.Services.AddDbContext<ShopphoneContext>(options =>
+builder.Services.AddDbContext<ShopPhoneContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
 
     if (builder.Environment.IsDevelopment())
         options.EnableSensitiveDataLogging();
 });
+/*
+builder.Services.AddDefaultIdentity<IdentityUser>
+    (options => options.SignIn.RequireConfirmedAccount = true).
+    AddEntityFrameworkStores<ShopPhoneContext>();
+*/
+// Config ASP.Net Identity 
+builder.Services.AddIdentity<ShopPhoneUserIdentity, IdentityRole>(policies =>
+{
+    policies.Password.RequireDigit = false;
+    policies.Password.RequireLowercase = false;
+    policies.Password.RequireUppercase = false;
+    policies.Password.RequireNonAlphanumeric = false;
+    policies.Password.RequiredLength = 1;
+    policies.User.RequireUniqueEmail = false;
+    // Politicas de bloqueo de cuentas
+    policies.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    policies.Lockout.MaxFailedAccessAttempts = 90;
+    policies.Lockout.AllowedForNewUsers = true;
+}).AddEntityFrameworkStores<ShopPhoneContext>()
+    .AddDefaultTokenProviders();
 
 // Config log4Net
 // Solo si se inyecta
@@ -59,6 +80,28 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<MapperCliente>();
 });
 
+
+ 
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!);
+
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+ 
 
 
 builder.Services.AddControllersWithViews();
@@ -95,4 +138,11 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
+// Config UserDataSeeder
+/*
+using (var scope = app.Services.CreateScope())
+{
+    await UserDataSeeder.Seed(scope.ServiceProvider);
+}
+*/
 app.Run();

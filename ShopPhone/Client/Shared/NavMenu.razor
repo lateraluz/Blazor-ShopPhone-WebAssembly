@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">ShopPhone</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -10,8 +12,8 @@
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="main" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Inicio
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -44,6 +46,11 @@
                 <span class="oi oi-list" aria-hidden="true"></span> Lista Ventas
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link " @onclick="CloseSession" style="cursor:pointer">
+                <span class="oi oi-share-boxed " aria-hidden="true"></span>Cerrar Sesion
+            </NavLink>
+        </div>
        
     </nav>
 </div>
@@ -57,4 +64,13 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    public async Task CloseSession()
+    {
+
+        var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+        await auth.Logout();
+        NavigationManager.NavigateTo("/", false);
+    }
+
 }

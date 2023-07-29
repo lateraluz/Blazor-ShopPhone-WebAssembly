@@ -1,17 +1,34 @@
 ﻿@using Blazored.Toast
+@inject NavigationManager NavigationManager
+
 <BlazoredToasts />
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-       
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
-<BlazoredToasts />
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @{
+                        if (!context.User.Identity!.IsAuthenticated)
+                        {
+                            NavigationManager.NavigateTo("/login");
+                        }
+                        else
+                        {
+                            <p class="alert alert-danger">No esta autorizado para ver esta pagina</p>
+                        }
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>No encontrado</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p class="alert alert-warning">Lo siento, no encontré lo que buscabas</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+
 

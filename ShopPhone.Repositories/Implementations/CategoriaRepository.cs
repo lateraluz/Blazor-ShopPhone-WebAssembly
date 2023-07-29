@@ -10,8 +10,8 @@ public class CategoriaRepository : ICategoriaRepository
 {
 
     private ILog _Logger;
-    private readonly ShopphoneContext _Context;
-    public CategoriaRepository(ShopphoneContext context, ILog logger)
+    private readonly ShopPhoneContext _Context;                     
+    public CategoriaRepository(ShopPhoneContext context, ILog logger)
     {
         _Context = context;
         _Logger = logger;

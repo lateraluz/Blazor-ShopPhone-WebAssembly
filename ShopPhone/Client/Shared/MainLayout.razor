@@ -1,5 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿@using ShopPhone.Client.Auth
+@inject SweetAlertService Swal
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+ 
 
+<BlazoredToasts />
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -7,11 +13,51 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    <i class="fa fa-user-circle-o mx-2" aria-hidden="true"></i>
+                    @context.User.Identity!.Name
+                    <NavLink class="btn btn-outline-danger" @onclick="CloseSesion">
+                        <i class="fa fa-sign-out"></i>
+                        Cerrar Sesion
+                    </NavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="btn btn-outline-primary" href="login">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i>
+                        Iniciar Sesion
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
             @Body
         </article>
     </main>
+    
+    
 </div>
+
+ 
+@code
+{
+    public async Task CloseSesion()
+    {
+        var result = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Desea salir?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Si",
+                CancelButtonText = "No"
+            });
+
+        if (result.IsConfirmed)
+        {
+            var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+            await auth.Authenticate(null);
+            NavigationManager.NavigateTo("/", true);
+        }
+    }
+}

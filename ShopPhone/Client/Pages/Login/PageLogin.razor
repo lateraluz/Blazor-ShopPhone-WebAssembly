@@ -1,0 +1,104 @@
+﻿@page "/"
+@layout LoginLayout
+@inject IToastService ToastService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ProxyUser ProxyUser
+@inject SweetAlertService Swal
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+            <div class="card mt-5">
+                <img class="card-img-top" src="logo.jpg" width="250" height="250" />
+                <div class="card-header">
+                    <h3 class="text-center">Inicio de Sesión</h3>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="LoginRequest" OnValidSubmit="OnValidLogin">
+                        <DataAnnotationsValidator />
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="inputUserId" type="text" placeholder="90009999" @bind-value="LoginRequest.UserName" autocomplete="off" />
+                            <label for="inputEmail">Usuario</label>
+                            <ValidationMessage For="@(() => LoginRequest.UserName)" />
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="inputPassword" type="password" placeholder="adfsadf154ty7" @bind-value="LoginRequest.Password" autocomplete="off" />
+                            <label for="inputPassword">Contraseña</label>
+                            <ValidationMessage For="@(() => LoginRequest.Password)" />
+                        </div>
+
+                        <div class="d-grid gap-1 mt-4 mb-0">
+                            <button class="btn btn-primary" type="submit">Ingresar</button>
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small">
+                        <NavLink href="register">Olvidó su contraseña?</NavLink>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public LoginRequestDTO LoginRequest { get; set; } = new LoginRequestDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoginRequest.UserName = "admin";
+        LoginRequest.Password = "123456*";
+
+        await CloseSession();
+        await Task.FromResult(LoginRequest);
+    }
+
+    public async Task OnValidLogin()
+    {
+        try
+        {
+            
+            var response = await ProxyUser.LoginAsync(LoginRequest);
+
+            if (response.Success)
+            {
+                await ((CustomeAuthenticationStateProvider)AuthenticationStateProvider).Authenticate(response);
+                NavigationManager.NavigateTo("/main");
+            }
+            else
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = response.ErrorMessage!,
+                        Title = "Atención",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true
+                    });
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _ = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Atención",
+                    Icon = SweetAlertIcon.Warning,
+                    ShowCloseButton = true
+                });
+
+            return;
+        }
+    }
+
+    public async Task CloseSession()
+    {
+        var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+        await auth.Logout();
+        // NavigationManager.NavigateTo("/", false);
+    }
+
+}
