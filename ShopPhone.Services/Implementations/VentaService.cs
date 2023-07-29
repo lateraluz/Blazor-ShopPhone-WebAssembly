@@ -40,7 +40,6 @@ namespace ShopPhone.Services.Implementations
             var response = new BaseResponseGeneric<int>();
             try
             {
-
                 // Map
                 var factura = _Mapper.Map<FacturaEncabezado>(identity);
 
@@ -59,7 +58,6 @@ namespace ShopPhone.Services.Implementations
 
                 // Crear Factura
                 GeneratePdf(facturaProcesada!);
-
 
                 _Logger.Info($"Venta realizada con exito");
                 return response;

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ShopPhone.DataAccess;
@@ -27,7 +25,7 @@ public partial class ShopPhoneContext : DbContext
 
     public virtual DbSet<Producto> Productos { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Rol> Rols { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
     /*
@@ -37,7 +35,6 @@ public partial class ShopPhoneContext : DbContext
     */
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
         modelBuilder.Entity<Categorium>(entity =>
         {
             entity.HasKey(e => e.IdCategoria);
@@ -142,41 +139,52 @@ public partial class ShopPhoneContext : DbContext
                 .HasConstraintName("FK_Producto_Categoria1");
         });
 
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<Rol>(entity =>
         {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("Role");
+            entity.HasKey(e => e.IdRol);
 
-            entity.Property(e => e.Name).HasMaxLength(256);
-            entity.Property(e => e.NormalizedName).HasMaxLength(256);
+            entity.ToTable("Rol");
+
+            entity.Property(e => e.IdRol)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(30)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id);
+            entity.HasKey(e => e.Login);
+
             entity.ToTable("User");
 
-            entity.Property(e => e.DocumentNumber).HasMaxLength(20);
-            entity.Property(e => e.Email).HasMaxLength(256);
-            entity.Property(e => e.FirstName).HasMaxLength(100);
-            entity.Property(e => e.LastName).HasMaxLength(100);
-            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
-            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-            entity.Property(e => e.UserName).HasMaxLength(256);
+            entity.Property(e => e.Login)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Apellidos)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Contrasena)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.IdRol)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(20)
+                .IsUnicode(false);
 
-            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
-                .UsingEntity<Dictionary<string, object>>(
-                    "UserRole",
-                    r => r.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
-                    l => l.HasOne<User>().WithMany().HasForeignKey("UserId"),
-                    j =>
-                    {
-                        j.HasKey("UserId", "RoleId");
-                        j.ToTable("UserRoles");
-                    });
+            entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.Users)
+                .HasForeignKey(d => d.IdRol)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Rol");
         });
         modelBuilder.HasSequence<int>("NumeroFactura").HasMin(1L);
-
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -1,51 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace ShopPhone.DataAccess;
 
 public partial class User
 {
-     
-    public string Id { get; set; } = null!;
+    public string Login { get; set; } = null!;
 
-    public string FirstName { get; set; } = null!;
+    public string Nombre { get; set; } = null!;
 
-    public string LastName { get; set; } = null!;
+    public string Apellidos { get; set; } = null!;
 
-    public string DocumentNumber { get; set; } = null!;
+    public string Contrasena { get; set; } = null!;
 
-    public int Age { get; set; }
+    public string Email { get; set; } = null!;
 
-    public int DocumentType { get; set; }
+    public bool Estado { get; set; } =false;
+    public string IdRol { get; set; } = null!;
 
-    public string? UserName { get; set; }
-
-    public string? NormalizedUserName { get; set; }
-
-    public string? Email { get; set; }
-
-    public string? NormalizedEmail { get; set; }
-
-    public bool EmailConfirmed { get; set; }
-
-    public string? PasswordHash { get; set; }
-
-    public string? SecurityStamp { get; set; }
-
-    public string? ConcurrencyStamp { get; set; }
-
-    public string? PhoneNumber { get; set; }
-
-    public bool PhoneNumberConfirmed { get; set; }
-
-    public bool TwoFactorEnabled { get; set; }
-
-    public DateTimeOffset? LockoutEnd { get; set; }
-
-    public bool LockoutEnabled { get; set; }
-
-    public int AccessFailedCount { get; set; }
-
-    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+    public virtual Rol IdRolNavigation { get; set; } = null!;
 }

@@ -12,6 +12,7 @@ namespace ShopPhone.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoriaController : ControllerBase
     {
 

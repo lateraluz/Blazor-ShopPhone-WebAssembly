@@ -12,57 +12,74 @@ using System.Security.Claims;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using ShopPhone.Repositories.Implementations;
+using System.Reflection;
+using System.Security.Cryptography;
+using ShopPhone.Shared.Util;
 
 namespace ShopPhone.Services.Implementations;
 
 public class UserService : IUserService
 {
-   
-    enum ELogs { Events = 0, Trace = 1 }
 
     private readonly IOptions<AppConfig> _Options;
-   
+    private IUserRepository _UserRepository;
+    private ILog _Logger;
 
-    public UserService(IOptions<AppConfig> options)
+    public UserService(IOptions<AppConfig> options, IUserRepository repository, ILog logger)
     {
         _Options = options;
+        _UserRepository = repository;
+        _Logger = logger;
 
     }
 
     public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO request)
     {
         var response = new LoginResponseDTO();
-        string name = "Anthony Morera";
-        string email = "anthony.morera@gmail.com";
+        string passwordCrypted = "";
         DateTime expiredDate;
-        List<string> opciones = new List<string>();
+        List<string> roles = new List<string>();
         try
-        {        
+        {
+            var user = await _UserRepository.FindAsync(request.UserName.Trim());
 
-            // Validate User
-            if (!(request.UserName == "admin" && request.Password == "123456*"))
-            {               
+            // Encriptar para comparar
+            passwordCrypted = Cryptography.EncryptAes(request.Password.Trim());
+
+
+            if (user == null)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario no existe {request.UserName}");
                 throw new SecurityException("Usuario no existe");
             }
 
-            // Get Menu Options
-            opciones.Add("Opcion1");
-            opciones.Add("Opcion2");
+            if (!user.Estado)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario está deshabilitado {request.UserName}");
+                throw new SecurityException("Usuario deshabilitado, contacte al administrador");
+            }
 
+            if (user.Contrasena.Trim().Equals(passwordCrypted.Trim()) == false)
+            {
+                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario con contraseña no valida: {request.UserName}");
+                throw new SecurityException("Verfique su usuario / contraseña");
+            }
+
+            roles.Add(user.IdRol.Trim());
+
+            
             expiredDate = DateTime.Now.AddHours(2);
 
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Sid, request.UserName));
             claims.Add(new Claim(ClaimTypes.WindowsAccountName, request.UserName));
-            claims.Add(new Claim(ClaimTypes.Name, name));
-            claims.Add(new Claim(ClaimTypes.Email, email));
+            claims.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
+            claims.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
             claims.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
 
-            claims.AddRange(opciones.Select(c => new Claim(ClaimTypes.Role, c)));
-            /*
-            response.MenuOptions = new List<string>();
-            response.MenuOptions.AddRange(opciones);
-            */
+            claims.AddRange(roles.Select(c => new Claim(ClaimTypes.Role, c)));
+           
             // Creacion del JWT
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Options.Value.Jwt.SecretKey));
 
@@ -78,25 +95,26 @@ public class UserService : IUserService
 
             var token = new JwtSecurityToken(header, payload);
             response.Token = new JwtSecurityTokenHandler().WriteToken(token);
-            response.FullName = $"{name}";
+            response.FullName = $"{user.Nombre.Trim()} {user.Apellidos.Trim()}";
             response.Success = true;
             response.Roles = new List<string>();
-            response.Roles.Add("Opcion1");
+            response.Roles.Add(user.IdRol);
+
+            return response;
         }
-        catch (SecurityException ex)
+        catch (SecurityException ex1)
         {
-            response.ErrorMessage = ex.Message;
-           
+            response.ErrorMessage = ex1.Message;
+            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
+            return response;
+
         }
-        catch (Exception e)
+        catch (Exception ex2)
         {
             response.ErrorMessage = "Error al momento de hacer la autenticacion";
-           
+            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
+            return response; 
         }
 
-
-        return await Task.FromResult(response);
     }
-
-     
 }

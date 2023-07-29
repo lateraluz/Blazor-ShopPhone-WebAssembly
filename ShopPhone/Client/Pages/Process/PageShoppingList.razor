@@ -3,6 +3,7 @@
 @inject SweetAlertService Swal
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Roles ="admin_rol")]
 
 
 <PageTitle>Lista de Compras</PageTitle>

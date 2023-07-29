@@ -1,5 +1,9 @@
 ﻿@page "/PageDashboard"
 @using ApexCharts;
+@inject ProxyProducto ProxyProducto
+@inject SweetAlertService Swal
+@inject IToastService ToastService
+@attribute [Authorize(Roles = "admin_rol")]
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -8,11 +12,11 @@
 <div class="container">
     <div class="row d-flex gy-3">
         <div class="card mx-2 " style="width: 25rem;">
-            <ApexChart TItem="Order"
+            <ApexChart TItem="ModelGraph"
                        Title="Articulos">
 
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
+                <ApexPointSeries TItem="ModelGraph"
+                                 Items="ListProducts"
                                  Name="Gross Value"
                                  SeriesType="SeriesType.Pie"
                                  XValue="@(e => e.Descripcion)"
@@ -109,39 +113,113 @@
         public string Descripcion { set; get; } = "";
     };
 
+    public class ModelGraph
+    {
+        public int Cantidad { set; get; } = 0;
+        public string Descripcion { set; get; } = "";
+    };
+
+
     private List<Order> List { get; set; } = new List<Order>();
+    private List<ModelGraph> ListProducts { get; set; } = new List<ModelGraph>();
+    /*
+    protected override async Task OnInitializedAsync()
+    {
+    try
+    {
+    var response = await ProxyProducto.ListAsync();
+
+        if (!response.Success)
+        {
+        throw new Exception(response.ErrorMessage);
+        }
+
+        foreach (var item in response.Data!)
+        {
+        ListProducts.Add(new ModelGraph() { Cantidad = item.Inventario, Descripcion = item.Descripcion });
+
+                Order o = new Order()
+    {
+            Cantidad = item.Inventario,
+        Descripcion = item.Descripcion
+    };
+    List.Add(o);
+
+    }
+
+
+    }
+    catch (Exception ex)
+    {
+    _ = await Swal.FireAsync(new SweetAlertOptions
+            {
+            Text = ex.Message,
+    Title = "Error",
+    Icon = SweetAlertIcon.Error,
+    ShowCloseButton = true
+    });
+    }
+    }
+    */
+
+    private BaseResponseGeneric<ICollection<ProductoDTO>> GetTask()
+    {
+        var task = ProxyProducto.ListAsync();
+                
+        return task.Result;
+    }
 
     protected override void OnInitialized()
     {
+        // await Task.Delay(5000);
+        //var response = await ProxyProducto.ListAsync();
+        try
+        {
+            //var task = ProxyProducto.ListAsync();
 
-        Order o1 = new Order()
-            {
-                Cantidad = 120,
-                Descripcion = "Producto A"
-            };
+            var x = GetTask();
 
-        Order o2 = new Order()
-            {
-                Cantidad = 33,
-                Descripcion = "Producto B"
-            };
+            #region
+            Order o1 = new Order()
+                {
+                    Cantidad = 120,
+                    Descripcion = "Producto A"
+                };
 
-        Order o3 = new Order()
-            {
-                Cantidad = 25,
-                Descripcion = "Producto C"
-            };
+            Order o2 = new Order()
+                {
+                    Cantidad = 33,
+                    Descripcion = "Producto B"
+                };
 
-        Order o4 = new Order()
-            {
-                Cantidad = 88,
-                Descripcion = "Producto D"
-            };
-        List.Add(o1);
-        List.Add(o2);
-        List.Add(o3);
-        List.Add(o4);
+            Order o3 = new Order()
+                {
+                    Cantidad = 25,
+                    Descripcion = "Producto C"
+                };
 
+            Order o4 = new Order()
+                {
+                    Cantidad = 88,
+                    Descripcion = "Producto D"
+                };
+            List.Add(o1);
+            List.Add(o2);
+            List.Add(o3);
+            List.Add(o4);
+            #endregion
+        }
+        catch (Exception ex)
+        {
+            _ = Swal.FireAsync(new SweetAlertOptions
+                {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                });
+        }
     }
+
 
 }

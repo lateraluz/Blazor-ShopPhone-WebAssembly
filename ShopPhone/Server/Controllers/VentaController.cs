@@ -8,13 +8,12 @@ using ShopPhone.Shared.Response;
 using System.Reflection;
 using System.Reflection.Metadata;
 using static iTextSharp.text.pdf.AcroFields;
-
-
+using Microsoft.AspNetCore.Authorization;
 namespace ShopPhone.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
+[Authorize]
 public class VentaController : ControllerBase
 {
     private IVentaService _VentaService;
