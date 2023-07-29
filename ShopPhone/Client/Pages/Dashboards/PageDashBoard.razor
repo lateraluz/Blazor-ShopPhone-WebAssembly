@@ -1,5 +1,6 @@
 ﻿@page "/PageDashboard"
 @using ApexCharts;
+@inject ProxyVenta ProxyVenta
 @inject ProxyProducto ProxyProducto
 @inject SweetAlertService Swal
 @inject IToastService ToastService
@@ -9,109 +10,109 @@
 
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row d-flex gy-3">
-        <div class="card mx-2 " style="width: 25rem;">
-            <ApexChart TItem="ModelGraph"
-                       Title="Articulos">
+        @if (ListProducts.Any())
+        {
+            <div class="card mx-2 " style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Inventario">
 
-                <ApexPointSeries TItem="ModelGraph"
-                                 Items="ListProducts"
-                                 Name="Gross Value"
-                                 SeriesType="SeriesType.Pie"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
-            </ApexChart>
-        </div>
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListProducts"
+                                     Name="Valor"
+                                     SeriesType="SeriesType.Pie"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
+                </ApexChart>
+            </div>
 
-        <div class="card mx-2" style="width: 25rem;">
-            <ApexChart TItem="Order"
-                       Title="Ventas">
+            <div class="card mx-2" style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Inventario">
 
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
-                                 Name="Gross Value"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
-
-
-            </ApexChart>
-        </div>
-
-        <div class="card mx-2" style="width: 25rem;">
-            <ApexChart TItem="Order"
-                       Title="Ventas">
-
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
-                                 Name="XXX "
-                                 SeriesType="SeriesType.Treemap"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListProducts"
+                                     Name="Valor"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
 
 
-            </ApexChart>
-        </div>
-        <div class="card mx-2" style="width: 25rem;">
-            <ApexChart TItem="Order"
-                       Title="Ventas">
+                </ApexChart>
+            </div>
 
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
-                                 Name="XXX "
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
+            <div class="card mx-2" style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Inventario">
 
-
-            </ApexChart>
-        </div>
-        <div class="card mx-2" style="width: 25rem;">
-            <ApexChart TItem="Order"
-                       Title="Ventas">
-
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
-                                 Name="XXX "
-                                 SeriesType="SeriesType.Donut"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListProducts"
+                                     Name="Valor"
+                                     SeriesType="SeriesType.Treemap"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
 
 
-            </ApexChart>
-        </div>
-        <div class="card mx-2" style="width: 25rem;">
-            <ApexChart TItem="Order"
-                       Title="Ventas">
+                </ApexChart>
+            </div>
+            <div class="card mx-2" style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Ventas">
 
-                <ApexPointSeries TItem="Order"
-                                 Items="List"
-                                 Name="XXX "
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(e => e.Descripcion)"
-                                 YAggregate="@(e => e.Sum(e => e.Cantidad))"
-                                 OrderByDescending="e=>e.Y" />
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListVentas"
+                                     Name="Ventas"
+                                     SeriesType="SeriesType.Bar"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
 
 
-            </ApexChart>
-        </div>
+                </ApexChart>
+            </div>
+            <div class="card mx-2" style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Ventas">
+
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListVentas"
+                                     Name="Ventas"
+                                     SeriesType="SeriesType.Donut"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
+
+
+                </ApexChart>
+            </div>
+            <div class="card mx-2" style="width: 25rem;">
+                <ApexChart TItem="ModelGraph"
+                           Title="Ventas">
+
+                    <ApexPointSeries TItem="ModelGraph"
+                                     Items="ListVentas"
+                                     Name="Ventas"
+                                     SeriesType="SeriesType.Area"
+                                     XValue="@(e => e.Descripcion)"
+                                     YAggregate="@(e => e.Sum(e => e.Cantidad))"
+                                     OrderByDescending="e=>e.Y" />
+
+
+                </ApexChart>
+            </div>
+        }
 
     </div>
 </div>
-
+<ComponentLoading IsLoading="IsLoading">
+</ComponentLoading>
 
 @code {
-    public class Order
-    {
-        public int Cantidad { set; get; } = 0;
-        public string Descripcion { set; get; } = "";
-    };
+
 
     public class ModelGraph
     {
@@ -119,99 +120,66 @@
         public string Descripcion { set; get; } = "";
     };
 
-
-    private List<Order> List { get; set; } = new List<Order>();
+    private bool IsLoading { get; set; } = true;
     private List<ModelGraph> ListProducts { get; set; } = new List<ModelGraph>();
-    /*
+    private List<ModelGraph> ListVentas { get; set; } = new List<ModelGraph>();
+
     protected override async Task OnInitializedAsync()
     {
-    try
-    {
-    var response = await ProxyProducto.ListAsync();
-
-        if (!response.Success)
-        {
-        throw new Exception(response.ErrorMessage);
-        }
-
-        foreach (var item in response.Data!)
-        {
-        ListProducts.Add(new ModelGraph() { Cantidad = item.Inventario, Descripcion = item.Descripcion });
-
-                Order o = new Order()
-    {
-            Cantidad = item.Inventario,
-        Descripcion = item.Descripcion
-    };
-    List.Add(o);
-
-    }
-
-
-    }
-    catch (Exception ex)
-    {
-    _ = await Swal.FireAsync(new SweetAlertOptions
-            {
-            Text = ex.Message,
-    Title = "Error",
-    Icon = SweetAlertIcon.Error,
-    ShowCloseButton = true
-    });
-    }
-    }
-    */
-
-    private BaseResponseGeneric<ICollection<ProductoDTO>> GetTask()
-    {
-        var task = ProxyProducto.ListAsync();
-                
-        return task.Result;
-    }
-
-    protected override void OnInitialized()
-    {
-        // await Task.Delay(5000);
-        //var response = await ProxyProducto.ListAsync();
         try
         {
-            //var task = ProxyProducto.ListAsync();
+            IsLoading = true;
+            // Productos
+            var responseProductos = await ProxyProducto.ListAsync();
 
-            var x = GetTask();
+            if (!responseProductos.Success)
+            {
+                IsLoading = false;
+                throw new Exception(responseProductos.ErrorMessage);
+            }
 
-            #region
-            Order o1 = new Order()
+            if (responseProductos.Data != null)
+            {
+                foreach (var item in responseProductos.Data!)
                 {
-                    Cantidad = 120,
-                    Descripcion = "Producto A"
-                };
+                    ListProducts.Add(new ModelGraph() { Cantidad = item.Inventario, Descripcion = item.Descripcion });
 
-            Order o2 = new Order()
-                {
-                    Cantidad = 33,
-                    Descripcion = "Producto B"
-                };
+                }
+            }
 
-            Order o3 = new Order()
-                {
-                    Cantidad = 25,
-                    Descripcion = "Producto C"
-                };
+            // Ventas
+            var responseVenta = await ProxyVenta.ListAsync();
 
-            Order o4 = new Order()
+            if (!responseVenta.Success)
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = responseVenta.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+                return;
+            }
+
+            if (responseVenta.Data != null)
+            {
+
+                foreach (var item in responseVenta.Data!)
                 {
-                    Cantidad = 88,
-                    Descripcion = "Producto D"
-                };
-            List.Add(o1);
-            List.Add(o2);
-            List.Add(o3);
-            List.Add(o4);
-            #endregion
+                    double total = @item._FacturaDetalle.Sum(x => x.Cantidad * x.PrecioUnitario);
+                    total = total + @item._FacturaDetalle.Sum(x => x.Impuesto);
+                    var model = new ModelGraph() { Cantidad = (int)total, Descripcion = item._Cliente.Nombre.Trim() + " " + item._Cliente.Apellidos.Trim() };
+
+                    ListVentas.Add(model);
+                }
+            }
+
         }
         catch (Exception ex)
         {
-            _ = Swal.FireAsync(new SweetAlertOptions
+            IsLoading = false;
+            _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
                     Title = "Error",
@@ -219,7 +187,76 @@
                     ShowCloseButton = true
                 });
         }
+        finally
+        {
+            
+            IsLoading = false;
+        }
     }
 
+    /*
+    private BaseResponseGeneric<ICollection<ProductoDTO>> GetTask()
+        {
+        var task = ProxyProducto.ListAsync();
+
+        return task.Result;
+    }
+
+    protected override void OnInitialized()
+        {
+
+
+        // await Task.Delay(5000);
+        //var response = await ProxyProducto.ListAsync();
+            try
+            {
+            //var task = ProxyProducto.ListAsync();
+
+            var x = GetTask();
+
+            #region
+            Order o1 = new Order()
+                    {
+                    Cantidad = 120,
+                    Descripcion = "Producto A"
+            };
+
+            Order o2 = new Order()
+                    {
+                    Cantidad = 33,
+                    Descripcion = "Producto B"
+            };
+
+            Order o3 = new Order()
+                    {
+                    Cantidad = 25,
+                    Descripcion = "Producto C"
+            };
+
+            Order o4 = new Order()
+                    {
+                    Cantidad = 88,
+                    Descripcion = "Producto D"
+        };
+        List.Add(o1);
+        List.Add(o2);
+        List.Add(o3);
+        List.Add(o4);
+        #endregion
+        }
+        catch (Exception ex)
+            {
+            _ = Swal.FireAsync(new SweetAlertOptions
+                    {
+                    Text = ex.Message,
+                    Title = "Error",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCloseButton = true
+                    });
+                        }
+
+
+                            }
+    */
 
 }

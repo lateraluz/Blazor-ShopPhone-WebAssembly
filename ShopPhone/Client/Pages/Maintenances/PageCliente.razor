@@ -115,7 +115,8 @@
 </div>
 
 
-
+<ComponentLoading IsLoading="IsLoading">
+</ComponentLoading>
 
 
 @code {
@@ -123,7 +124,7 @@
     private string _Filtro { set; get; } = "";
     private const int RECORDS_PER_PAGE = 4;
     private int PaginaActual { set; get; }
-
+    private bool IsLoading = false;
 
     private void OnCreate()
     {
@@ -178,21 +179,21 @@
         try
         {
             /*
-            if (string.IsNullOrEmpty(_Filtro))
-            {
-                _ = await Swal.FireAsync(new SweetAlertOptions
-                    {
+                if (string.IsNullOrEmpty(_Filtro))
+                {
+                    _ = await Swal.FireAsync(new SweetAlertOptions
+                        {
                         Title = "Atención",
                         Text = "Ingrese la nombre del cliente",
                         Icon = SweetAlertIcon.Warning,
                         ShowCloseButton = true,
                         TimerProgressBar = true,
-                        Timer = 1500
-                    });
-                return;
+                    Timer = 1500
+                });
+            return;
             }
             */
-
+            IsLoading = true;
             if (!string.IsNullOrEmpty(_Filtro))
                 response = await ProxyCliente.FindByDescriptionAsync(_Filtro);
             else
@@ -204,6 +205,7 @@
 
                 if (_List.Count == 0)
                 {
+                    IsLoading = false;
                     ToastService.ShowWarning("No existen registro ", settings =>
                     {
                         settings.ShowProgressBar = true;
@@ -223,6 +225,10 @@
                     ShowCloseButton = true
                 });
         }
+        finally
+        {            
+            IsLoading = false;
+        }
     }
 
     private async Task OnClear()
@@ -241,7 +247,7 @@
 
         if (_List.Count > 0)
             lista = _List.ToList();
-
+        IsLoading = true;
 
         switch (tipo)
         {
@@ -261,6 +267,8 @@
                 _List = lista.OrderBy(x => x.CorreoElectronico).ToList();
                 break;
         }
+
+        IsLoading = false;
         GoToPage(1);
 
     }

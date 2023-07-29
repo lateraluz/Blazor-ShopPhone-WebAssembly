@@ -18,6 +18,10 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 using Microsoft.VisualBasic;
 using System.Collections.ObjectModel;
+using System.Net.Mail;
+using System.Net;
+using Microsoft.Extensions.Options;
+using ShopPhone.Shared.Entities;
 
 namespace ShopPhone.Services.Implementations
 {
@@ -26,13 +30,15 @@ namespace ShopPhone.Services.Implementations
         private IVentaRepository _VentaRepository;
         private readonly IMapper _Mapper;
         private ILog _Logger;
+        private readonly IOptions<AppConfig> _Options;
 
 
-        public VentaService(IVentaRepository repository, IMapper mapper, ILog logger)
+        public VentaService(IVentaRepository repository, IMapper mapper, ILog logger, IOptions<AppConfig> options)
         {
             _VentaRepository = repository;
             _Mapper = mapper;
             _Logger = logger;
+            _Options = options;
         }
 
         public async Task<BaseResponseGeneric<int>> AddAsync(FacturaDTO identity)
@@ -58,6 +64,9 @@ namespace ShopPhone.Services.Implementations
 
                 // Crear Factura
                 GeneratePdf(facturaProcesada!);
+                SendEmail(identity._Cliente.CorreoElectronico);
+
+
 
                 _Logger.Info($"Venta realizada con exito");
                 return response;
@@ -71,18 +80,57 @@ namespace ShopPhone.Services.Implementations
             }
         }
 
+        private async void SendEmail(string email)
+        {
+            try
+            {
 
-        public async Task<BaseResponseGeneric<ICollection<FacturaDTO>>>  FindByIdAsync(int id)
-        {            
+                if (_Options.Value.SmtpConfiguration == null)
+                {
+                    _Logger.Error($"No se encuentra configurado ningun valor para SMPT en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}");
+                    return;
+                }
+
+                email = _Options.Value.SmtpConfiguration.DummyReceptor ;
+                var mailMessage = new MailMessage(
+                    new MailAddress(_Options.Value.SmtpConfiguration.UserName, _Options.Value.SmtpConfiguration.FromName),
+                    new MailAddress(email))
+                {
+                    Subject = "Factura Electrónica para " + email,
+                    Body = "Adjunto Factura Electronica de ShopPhone",
+                    IsBodyHtml = true
+                };
+
+                Attachment attachment = new Attachment(@"c:\\temp\\images\\pdf\\archivo.pdf");
+                mailMessage.Attachments.Add(attachment);
+
+                using var smtpClient = new SmtpClient(_Options.Value.SmtpConfiguration.Server, _Options.Value.SmtpConfiguration.PortNumber)
+                {
+                    Credentials = new NetworkCredential(
+                        _Options.Value.SmtpConfiguration.UserName, _Options.Value.SmtpConfiguration.Password),
+                    EnableSsl = _Options.Value.SmtpConfiguration.EnableSsl,
+                };
+
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+            catch (Exception ex)
+            {
+                // Silent Error 
+                _Logger.Error($"Error al enviar el correo  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            }
+        }
+
+        public async Task<BaseResponseGeneric<ICollection<FacturaDTO>>> FindByIdAsync(int id)
+        {
             BaseResponseGeneric<ICollection<FacturaDTO>> response = new BaseResponseGeneric<ICollection<FacturaDTO>>();
             try
             {
-                var facturaProcesada = await _VentaRepository.FindAsync(id);                                
+                var facturaProcesada = await _VentaRepository.FindAsync(id);
                 var @object = _Mapper.Map<FacturaDTO>(facturaProcesada);
                 List<FacturaDTO> lista = new List<FacturaDTO>();
                 lista.Add(@object);
                 response.Success = true;
-                response.Data = lista ;
+                response.Data = lista;
                 return response;
             }
             catch (Exception ex)
@@ -90,7 +138,6 @@ namespace ShopPhone.Services.Implementations
                 _Logger.Error(ex.Message);
                 throw;
             }
-
         }
 
         public Task<BaseResponse> UpdateAsync(int id, FacturaDTO request)

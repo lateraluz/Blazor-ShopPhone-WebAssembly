@@ -116,7 +116,7 @@ public class ProxyCliente
     public async Task DeleteAsync(int id)
     {
 
-        string url = $"api/producto/cliente?id={id}";
+        string url = $"api/cliente/delete?id={id}";
 
         try
         {

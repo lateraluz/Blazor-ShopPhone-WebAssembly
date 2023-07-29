@@ -25,13 +25,14 @@ public class ProductoRepository : IProductoRepository
         {
             var response = await _Context
                                 .Set<Producto>()
+                                .Include(c => c.IdCategoriaNavigation)
                                 .Where(p => p.Descripcion.Contains(description))
                                 .ToListAsync();
             return response;
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -69,7 +70,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -85,7 +86,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -99,7 +100,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -117,7 +118,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

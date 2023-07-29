@@ -103,14 +103,15 @@
     <button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
 </div>
 
-
+<ComponentLoading IsLoading="IsLoading">
+</ComponentLoading>
 
 @code {
     private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
     private string _Filter { set; get; } = "";
-    private const int RECORDS_PER_PAGE =4;
+    private const int RECORDS_PER_PAGE = 4;
     private int PaginaActual { set; get; }
-
+    private bool IsLoading = false;
 
     private void OnCreate()
     {
@@ -164,11 +165,12 @@
         var response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
         try
         {
-
+            IsLoading = true;
             if (!string.IsNullOrEmpty(_Filter))
                 response = await ProxyCategoria.FindByDescriptionAsync(_Filter);
             else
                 response = await ProxyCategoria.ListAsync();
+
 
             if (response.Success == true)
             {
@@ -176,6 +178,7 @@
 
                 if (_List.Count == 0)
                 {
+                    IsLoading = false;
                     ToastService.ShowWarning("No existen registro ", settings =>
                     {
                         settings.ShowProgressBar = true;
@@ -184,6 +187,7 @@
                     });
                 }
             }
+
         }
         catch (Exception ex)
         {
@@ -194,6 +198,10 @@
                     Icon = SweetAlertIcon.Error,
                     ShowCloseButton = true
                 });
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -208,12 +216,14 @@
 
         List<CategoriaDTO> lista = new List<CategoriaDTO>();
 
+
         if (_List == null)
             return;
 
         if (_List.Count > 0)
             lista = _List.ToList();
 
+        IsLoading = true;
 
         switch (tipo)
         {
@@ -229,6 +239,7 @@
 
 
         }
+        IsLoading = false;
         GoToPage(1);
 
     }

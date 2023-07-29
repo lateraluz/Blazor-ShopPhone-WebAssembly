@@ -10,7 +10,7 @@
                     @{
                         if (!context.User.Identity!.IsAuthenticated)
                         {
-                            NavigationManager.NavigateTo("/login");
+                            NavigationManager.NavigateTo("/");
                         }
                         else
                         {
@@ -24,7 +24,10 @@
         <NotFound>
             <PageTitle>No encontrado</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p class="alert alert-warning">Lo siento, no encontré lo que buscabas</p>
+                @{
+                    NavigationManager.NavigateTo("/");
+                }
+                <p class="alert alert-warning">Error</p>
             </LayoutView>
         </NotFound>
     </Router>

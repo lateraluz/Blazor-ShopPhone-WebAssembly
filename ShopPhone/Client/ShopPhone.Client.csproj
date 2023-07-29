@@ -23,8 +23,4 @@
     <ProjectReference Include="..\Shared\ShopPhone.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pages\Reports\" />
-  </ItemGroup>
-
 </Project>

@@ -78,10 +78,10 @@
                                 <td align="Center">
                                     <a class="thumbnail" href="#thumb">
                                         <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" />
-                                        <span><img src="@item.URLImagen"/><br/>Imagen</span>
+                                        <span><img src="@item.URLImagen" /><br />Imagen</span>
                                     </a>
                                 </td>
-                                <td>@item.Comentarios.PadRight(21,'.').Substring(20).Trim()</td>
+                                <td>@item.Comentarios.PadRight(21,'.').Substring(0,19).Trim()</td>
                                 <td align="Center">
                                     <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
                                     <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
@@ -129,14 +129,15 @@
 </div>
 
 
-
+<ComponentLoading IsLoading="IsLoading">
+</ComponentLoading>
 
 @code {
     private IList<ProductoDTO>? _List { get; set; } = new List<ProductoDTO>();
     private string _Descripcion { set; get; } = "";
     private const int RECORDS_PER_PAGE = 3;
     private int PaginaActual { set; get; }
-
+    private bool IsLoading = false;
 
     private void OnCreate()
     {
@@ -193,18 +194,19 @@
         {
 
             /* if (string.IsNullOrEmpty(_Descripcion))
-             {
-                 _ = await Swal.FireAsync(new SweetAlertOptions
-                     {
-                         Title = "Atención",
-                         Text = "Ingrese la descripción del Producto",
-                         Icon = SweetAlertIcon.Warning,
-                         ShowCloseButton = true,
-                         TimerProgressBar = true,
-                         Timer = 1500
-                     });
-                 return;
-             }*/
+                {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                        {
+                        Title = "Atención",
+                        Text = "Ingrese la descripción del Producto",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                    Timer = 1500
+                });
+                return;
+            }*/
+            IsLoading = true;
 
             if (string.IsNullOrEmpty(_Descripcion))
                 response = await ProxyProducto.ListAsync();
@@ -217,6 +219,7 @@
 
                 if (_List.Count == 0)
                 {
+                    IsLoading = false;
                     ToastService.ShowWarning("No existen registro ", settings =>
                     {
                         settings.ShowProgressBar = true;
@@ -236,6 +239,10 @@
                     ShowCloseButton = true
                 });
         }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     private async Task OnClear()
@@ -247,11 +254,13 @@
     private void Sort(string tipo)
     {
 
+
         List<ProductoDTO> lista = new List<ProductoDTO>();
 
         if (_List == null)
             return;
 
+        IsLoading = true;
         if (_List.Count > 0)
             lista = _List.ToList();
 
@@ -274,9 +283,9 @@
                 _List = lista.OrderBy(x => x.PrecioUnitario).ToList();
                 break;
 
-
-
         }
+
+        IsLoading = false;
         GoToPage(1);
 
     }

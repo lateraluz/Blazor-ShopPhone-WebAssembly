@@ -3,7 +3,7 @@
 @inject SweetAlertService Swal
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
-@attribute [Authorize(Roles ="admin_rol")]
+@attribute [Authorize(Roles = "admin_rol")]
 
 
 <PageTitle>Lista de Compras</PageTitle>
@@ -32,9 +32,10 @@
                         <th scope="col" style="text-align: center;" class="" @onclick='(()=> Sort("Estado"))'>
                             Estado
                         </th>
+                        <!--
                         <th scope="col" style="text-align: center;">
                             Accion
-                        </th>
+                        </th>-->
 
                     </tr>
                 </thead>
@@ -54,10 +55,11 @@
 
                             <td align="right">@total.ToString("N2")</td>
                             <td align="center">@(item.Estado == true ? "Aplicada" : "Pendiente")</td>
-                            <td align="Center">
-                                <button class="btn btn-primary ">Editar</button>
-                                <button class="btn btn-danger ">Delete</button>
-                            </td>
+                            <!--
+                             <td align="Center">
+                                 <button class="btn btn-primary ">Editar</button>
+                                 <button class="btn btn-danger ">Delete</button>
+                              </td>-->
                         </tr>
                     }
                 </tbody>
@@ -97,22 +99,29 @@
         }
     </div>
 </div>
+<!--
 <button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
+-->
+<ComponentLoading IsLoading="IsLoading">
+</ComponentLoading>
 
 @code {
     private IList<FacturaDTO>? _List { get; set; } = new List<FacturaDTO>();
     private string _Descripcion { set; get; } = "";
     private const int RECORDS_PER_PAGE = 5;
     private int PaginaActual { set; get; }
+    private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            IsLoading = true;
             var response = await ProxyVenta.ListAsync();
 
             if (!response.Success)
             {
+                IsLoading = false;
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Text = response.ErrorMessage,
@@ -130,6 +139,7 @@
         }
         catch (Exception ex)
         {
+            IsLoading = false;
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -137,6 +147,11 @@
                     Icon = SweetAlertIcon.Error,
                     ShowCloseButton = true
                 });
+        }
+        finally
+        {
+            
+            IsLoading = false;
         }
     }
 

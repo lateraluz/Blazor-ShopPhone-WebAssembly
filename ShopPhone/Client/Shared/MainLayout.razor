@@ -15,16 +15,15 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <i class="fa fa-user-circle-o mx-2" aria-hidden="true"></i>
-                    @context.User.Identity!.Name
-                    <NavLink class="btn btn-outline-danger" @onclick="CloseSesion">
-                        <i class="fa fa-sign-out"></i>
+                    <span class="oi oi-people" aria-hidden="true"></span>
+                    &nbsp;&nbsp;@context.User.Identity!.Name
+                    <NavLink class="btn btn-danger" @onclick="CloseSesion">
+                       
                         Cerrar Sesion
                     </NavLink>
                 </Authorized>
                 <NotAuthorized>
-                    <NavLink class="btn btn-outline-primary" href="login">
-                        <i class="fa fa-sign-in" aria-hidden="true"></i>
+                    <NavLink class="btn btn-outline-primary" href="login">                       
                         Iniciar Sesion
                     </NavLink>
                 </NotAuthorized>

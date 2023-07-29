@@ -196,6 +196,7 @@
     private ClienteDTO? _ClienteDTO { set; get; } = new();
     private string? _FilterProductoName { set; get; } = "";
     private string _FilterClienteName { set; get; } = "";
+    private bool IsLoading = false;
 
     protected override void OnInitialized()
     {
@@ -470,7 +471,7 @@
     {
         try
         {
-
+            IsLoading = true;
             _Factura.IdCliente = _ClienteDTO!.IdCliente;
 
             var response = await ProxyVenta.AddAsync(_Factura);
@@ -478,6 +479,7 @@
 
             if (!response.Success)
             {
+                IsLoading = false;
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Text = response.ErrorMessage,
@@ -488,8 +490,9 @@
                 return;
             }
 
+            IsLoading = false;
             await Swal.FireAsync(new SweetAlertOptions
-                {   
+                {
                     Title = "Factura Procesada",
                     Html = "<a href='http://localhost:8081/pdf/archivo.pdf' target='_blank'>Descargar factura</a> ",
                     Icon = SweetAlertIcon.Success,
@@ -509,6 +512,7 @@
         }
         catch (Exception ex)
         {
+            IsLoading = false;
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -516,6 +520,10 @@
                     Icon = SweetAlertIcon.Error,
                     ShowCloseButton = true
                 });
+        }
+        finally
+        {
+            IsLoading = false;
         }
 
     }
