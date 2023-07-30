@@ -3,7 +3,7 @@
 ShopPhone Project with Blazor for Mitocode Course
 
 # Video Demostration
-<video width="630" height="300" src="https://raw.githubusercontent.com/lateraluz/ShopPhone/master/Video/BlazorProject.mp4"></video>
+https://raw.githubusercontent.com/lateraluz/ShopPhone/master/Video/BlazorProject.mp4
 
 
 # Config
