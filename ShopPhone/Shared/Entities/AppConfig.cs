@@ -33,7 +33,7 @@ public class Jwt
 
 public class SmtpConfiguration
 {
-    public string DummyReceptor { get; set; } = default!;
+    public string DummyRecipient { get; set; } = default!;
     public string UserName { get; set; } = default!;
     public string Password { get; set; } = default!;
     public string Server { get; set; } = default!;

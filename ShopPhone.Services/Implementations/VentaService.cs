@@ -66,8 +66,6 @@ namespace ShopPhone.Services.Implementations
                 GeneratePdf(facturaProcesada!);
                 SendEmail(identity._Cliente.CorreoElectronico);
 
-
-
                 _Logger.Info($"Venta realizada con exito");
                 return response;
             }
@@ -91,7 +89,11 @@ namespace ShopPhone.Services.Implementations
                     return;
                 }
 
-                email = _Options.Value.SmtpConfiguration.DummyReceptor ;
+                // force sending email to a specific account
+                if (string.IsNullOrEmpty(_Options.Value.SmtpConfiguration.DummyRecipient) == false)
+                {
+                    email = _Options.Value.SmtpConfiguration.DummyRecipient;
+                }
                 var mailMessage = new MailMessage(
                     new MailAddress(_Options.Value.SmtpConfiguration.UserName, _Options.Value.SmtpConfiguration.FromName),
                     new MailAddress(email))
@@ -104,10 +106,12 @@ namespace ShopPhone.Services.Implementations
                 Attachment attachment = new Attachment(@"c:\\temp\\images\\pdf\\archivo.pdf");
                 mailMessage.Attachments.Add(attachment);
 
-                using var smtpClient = new SmtpClient(_Options.Value.SmtpConfiguration.Server, _Options.Value.SmtpConfiguration.PortNumber)
+                using var smtpClient = new SmtpClient(_Options.Value.SmtpConfiguration.Server,
+                                                       _Options.Value.SmtpConfiguration.PortNumber)
                 {
                     Credentials = new NetworkCredential(
-                        _Options.Value.SmtpConfiguration.UserName, _Options.Value.SmtpConfiguration.Password),
+                                                                _Options.Value.SmtpConfiguration.UserName,
+                                                                _Options.Value.SmtpConfiguration.Password),
                     EnableSsl = _Options.Value.SmtpConfiguration.EnableSsl,
                 };
 
