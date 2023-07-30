@@ -15,39 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.DataAccess", "Sho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Repositories", "ShopPhone.Repositories\ShopPhone.Repositories.csproj", "{E9F911E0-98A4-497B-8001-0C03E7118480}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataBase", "DataBase", "{5E6B932B-B39C-483B-BC33-B9CF12A6FB93}"
-	ProjectSection(SolutionItems) = preProject
-		C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Backup\ShopPhone.bak = C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Backup\ShopPhone.bak
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{5332EBF2-5B0F-45F1-A53F-E03F40083380}"
-	ProjectSection(SolutionItems) = preProject
-		C:\Temp\images\Appleiphone14.png = C:\Temp\images\Appleiphone14.png
-		C:\Temp\images\AsusZenphone10.png = C:\Temp\images\AsusZenphone10.png
-		C:\Temp\images\Blackberrykey2LE.png = C:\Temp\images\Blackberrykey2LE.png
-		C:\Temp\images\Galaxy A24 4g.png = C:\Temp\images\Galaxy A24 4g.png
-		C:\Temp\images\googlepixel.jpg = C:\Temp\images\googlepixel.jpg
-		C:\Temp\images\Honor90lite.png = C:\Temp\images\Honor90lite.png
-		C:\Temp\images\huaweinovay91.png = C:\Temp\images\huaweinovay91.png
-		C:\Temp\images\motorolarazr40ultra.png = C:\Temp\images\motorolarazr40ultra.png
-		C:\Temp\images\Nokiac300.png = C:\Temp\images\Nokiac300.png
-		C:\Temp\images\redmi11pro.png = C:\Temp\images\redmi11pro.png
-		C:\Temp\images\SonyXperia1v.png = C:\Temp\images\SonyXperia1v.png
-		C:\Temp\images\SonyXperia5IV.png = C:\Temp\images\SonyXperia5IV.png
-		C:\Temp\images\TabLenovoExtreme.png = C:\Temp\images\TabLenovoExtreme.png
-		C:\Temp\images\TabXiaomiPad6pro.png = C:\Temp\images\TabXiaomiPad6pro.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Video Demostracion", "Video Demostracion", "{721A907F-7E85-4BC8-B49F-721E91D7AF2A}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Documents\Camtasia\publicacionblazor\BlazorProject\BlazorProject.mp4 = ..\..\..\Documents\Camtasia\publicacionblazor\BlazorProject\BlazorProject.mp4
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4018FB2B-50EF-4310-B631-349C1D0AEB06}"
-	ProjectSection(SolutionItems) = preProject
-		LEAME.txt = LEAME.txt
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
