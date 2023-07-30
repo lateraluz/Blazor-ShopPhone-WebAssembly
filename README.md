@@ -3,8 +3,8 @@
 ShopPhone Project with Blazor for Mitocode Course
 
 # Video Demostration
-[<img src="https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg" 
-width="50%">]([https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55](https://raw.githubusercontent.com/lateraluz/ShopPhone/master/Video/BlazorProject.mp4)")
+<video src="[LINK](https://raw.githubusercontent.com/lateraluz/ShopPhone/master/Video/BlazorProject.mp4)" controls="controls" style="max-width: 730px;">
+</video> 
 
 
 # Config
