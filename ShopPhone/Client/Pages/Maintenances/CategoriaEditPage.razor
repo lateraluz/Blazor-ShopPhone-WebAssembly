@@ -1,4 +1,4 @@
-﻿@page "/PageCategoriaEdit/edit/{Id:int}"
+﻿@page "/CategoriaEditPage/edit/{Id:int}"
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
 @inject SweetAlertService Swal
@@ -112,7 +112,7 @@
 
     private void OnClose()
     {
-        NavigationManager.NavigateTo("/PageCategoria");
+        NavigationManager.NavigateTo("/CategoriaListPage");
     }
 
     private async void OnSave()
@@ -130,7 +130,7 @@
                     TimerProgressBar = true
                 });
 
-             NavigationManager.NavigateTo("PageCategoria");
+            NavigationManager.NavigateTo("CategoriaListPage");
         }
         catch (Exception ex)
         {

@@ -1,4 +1,4 @@
-﻿@page "/PageProductoEdit/edit/{Id:int}"
+﻿@page "/ProductoEditPage/edit/{Id:int}"
 @inject ProxyProducto ProxyProducto
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
@@ -272,7 +272,7 @@
 
     private void OnClose()
     {        
-        NavigationManager.NavigateTo("/PageProducto");
+        NavigationManager.NavigateTo("/ProductoPage");
     }
 
 
@@ -300,7 +300,4 @@
                 });
         }
     }
-
-
-
 }

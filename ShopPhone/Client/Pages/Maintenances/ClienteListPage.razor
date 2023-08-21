@@ -1,21 +1,22 @@
-﻿@page "/PageCategoria"
+﻿@page "/ClienteListPage"
 
-@inject ProxyCategoria ProxyCategoria
+@inject ProxyCliente ProxyCliente
 @inject SweetAlertService Swal
 @inject IToastService ToastService
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-<PageTitle>Mantenimiento Categoria</PageTitle>
+<PageTitle>Mantenimiento Cliente</PageTitle>
+
 
 <div class="container">
     <div class="card ">
-        <h5 class="card-header">Consulta Categoría</h5>
+        <h5 class="card-header">Consulta Cliente</h5>
         <div class="card-body border-radius: .5rem">
             <div class="row">
 
                 <div class="col-md-3">
-                    <input type="text" @bind="_Filter" class="form-control" placeholder="Ingrese la descripcion" />
+                    <input type="text" @bind="_Filtro" class="form-control" placeholder="Ingrese el nombre" />
                 </div>
 
                 <div class="col-md-2">
@@ -38,12 +39,19 @@
                             <th scope="col" @onclick='(()=> Sort("IdCategoria"))'>
                                 Código
                             </th>
-                            <th scope="col" class="" @onclick='(()=> Sort("NombreCategoria"))'>
-                                Categoria
+                            <th scope="col" class="" @onclick='(()=> Sort("Nombre"))'>
+                                Nombre
                             </th>
                             <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
                                 Estado
                             </th>
+                            <th scope="col" class="" @onclick='(()=> Sort("Telefono"))'>
+                                Telefono
+                            </th>
+                            <th scope="col" class="" @onclick='(()=> Sort("Correo"))'>
+                                Correo
+                            </th>
+
                             <th scope="col" style="text-align: center;">
                                 Accion
                             </th>
@@ -53,13 +61,16 @@
                     <tbody>
                         @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
                         {
+                            string nombre = $"{item.Nombre} {item.Apellidos}";
                             <tr style="">
-                                <td>@item.IdCategoria</td>
-                                <td>@item.NombreCategoria</td>
+                                <td>@item.IdCliente</td>
+                                <td>@nombre</td>
                                 <td>@(item.Estado == true ? "Activo" : "Inactivo")</td>
+                                <td>@item.Telefono</td>
+                                <td>@item.CorreoElectronico</td>
                                 <td align="Center">
-                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdCategoria)">Editar</button>
-                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdCategoria )">Delete</button>
+                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdCliente)">Editar</button>
+                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdCliente )">Delete</button>
                                 </td>
                             </tr>
                         }
@@ -103,24 +114,26 @@
     <button class="btn btn-primary mt-2 col-3" @onclick="OnCreate">Nuevo</button>
 </div>
 
+
 <ComponentLoading IsLoading="IsLoading">
 </ComponentLoading>
 
+
 @code {
-    private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
-    private string _Filter { set; get; } = "";
+    private IList<ClienteDTO>? _List { get; set; } = new List<ClienteDTO>();
+    private string _Filtro { set; get; } = "";
     private const int RECORDS_PER_PAGE = 4;
     private int PaginaActual { set; get; }
     private bool IsLoading = false;
 
     private void OnCreate()
     {
-        NavigationManager.NavigateTo("/PageCategoriaNew");
+        NavigationManager.NavigateTo("/ClienteNewPage");
     }
 
     private void OnEdit(int id)
     {
-        NavigationManager.NavigateTo($"/PageCategoriaEdit/edit/{id}");
+        NavigationManager.NavigateTo($"/ClienteEditPage/edit/{id}");
     }
 
     private async Task OnDelete(int id)
@@ -138,7 +151,7 @@
 
             if (response.IsConfirmed)
             {
-                await ProxyCategoria.DeleteAsync(id);
+                await ProxyCliente.DeleteAsync(id);
                 await OnSearch();
                 /* No se borra se actualiza
                 var categoria = _List!.ToList().Find(p => p.IdCategoria == id);
@@ -162,15 +175,29 @@
 
     private async Task OnSearch()
     {
-        var response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
+        var response = new BaseResponseGeneric<ICollection<ClienteDTO>>();
         try
         {
+            /*
+                if (string.IsNullOrEmpty(_Filtro))
+                {
+                    _ = await Swal.FireAsync(new SweetAlertOptions
+                        {
+                        Title = "Atención",
+                        Text = "Ingrese la nombre del cliente",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                    Timer = 1500
+                });
+            return;
+            }
+            */
             IsLoading = true;
-            if (!string.IsNullOrEmpty(_Filter))
-                response = await ProxyCategoria.FindByDescriptionAsync(_Filter);
+            if (!string.IsNullOrEmpty(_Filtro))
+                response = await ProxyCliente.FindByDescriptionAsync(_Filtro);
             else
-                response = await ProxyCategoria.ListAsync();
-
+                response = await ProxyCliente.ListAsync();
 
             if (response.Success == true)
             {
@@ -187,7 +214,6 @@
                     });
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -200,45 +226,48 @@
                 });
         }
         finally
-        {
+        {            
             IsLoading = false;
         }
     }
 
     private async Task OnClear()
     {
-        _List = new List<CategoriaDTO>();
+        _List = new List<ClienteDTO>();
         await Task.FromResult(_List);
     }
 
     private void Sort(string tipo)
     {
 
-        List<CategoriaDTO> lista = new List<CategoriaDTO>();
-
+        List<ClienteDTO> lista = new List<ClienteDTO>();
 
         if (_List == null)
             return;
 
         if (_List.Count > 0)
             lista = _List.ToList();
-
         IsLoading = true;
 
         switch (tipo)
         {
-            case "IdCategoria":
-                _List = lista.OrderBy(x => x.IdCategoria).ToList();
+            case "IdCliente":
+                _List = lista.OrderBy(x => x.IdCliente).ToList();
                 break;
-            case "NombreCategoria":
-                _List = lista.OrderBy(x => x.NombreCategoria).ToList();
+            case "Nombre":
+                _List = lista.OrderBy(x => x.Nombre).ToList();
                 break;
             case "Estado":
                 _List = lista.OrderBy(x => x.Estado).ToList();
                 break;
-
-
+            case "Telefono":
+                _List = lista.OrderBy(x => x.Telefono).ToList();
+                break;
+            case "Correo":
+                _List = lista.OrderBy(x => x.CorreoElectronico).ToList();
+                break;
         }
+
         IsLoading = false;
         GoToPage(1);
 
@@ -264,6 +293,5 @@
         if (!(PaginaActual - 1 <= 0))
             PaginaActual--;
     }
-
 
 }

@@ -1,4 +1,4 @@
-﻿@page "/PageProducto"
+﻿@page "/ProductoListPage"
 @inject ProxyProducto ProxyProducto
 @inject SweetAlertService Swal
 @inject IToastService ToastService
@@ -77,8 +77,7 @@
                                 <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
                                 <td align="Center">
                                     <a class="thumbnail" href="#thumb">
-                                        <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" />
-                                        <span><img src="@item.URLImagen" /><br />Imagen</span>
+                                        <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" class="zoom" />
                                     </a>
                                 </td>
                                 <td>@item.Comentarios.PadRight(21,'.').Substring(0,19).Trim()</td>
@@ -141,12 +140,12 @@
 
     private void OnCreate()
     {
-        NavigationManager.NavigateTo("/PageProductoNew");
+        NavigationManager.NavigateTo("/ProductoNewPage");
     }
 
     private void OnEdit(int id)
     {
-        NavigationManager.NavigateTo($"/PageProductoEdit/edit/{id}");
+        NavigationManager.NavigateTo($"/ProductoEditPage/edit/{id}");
     }
 
     private async Task OnDelete(int id)

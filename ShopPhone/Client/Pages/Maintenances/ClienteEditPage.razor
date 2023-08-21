@@ -1,4 +1,4 @@
-﻿@page "/PageClienteEdit/edit/{Id:int}"
+﻿@page "/ClienteEditPage/edit/{Id:int}"
 @inject ProxyCliente ProxyCliente
 @inject NavigationManager NavigationManager
 @inject SweetAlertService Swal
@@ -115,7 +115,7 @@
 
     private void OnReturn()
     {
-        NavigationManager.NavigateTo("/PageCliente");
+        NavigationManager.NavigateTo("/ClienteListPage");
     }
 
     private async void OnSave()

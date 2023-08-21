@@ -1,4 +1,4 @@
-﻿@page "/PageCategoriaNew"
+﻿@page "/CategoriaNewPage"
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
 @inject SweetAlertService Swal
@@ -59,7 +59,7 @@
 
     private void OnReturn()
     {
-        NavigationManager.NavigateTo("/PageCategoria");
+        NavigationManager.NavigateTo("/CategoriaListPage");
     }
 
     private async void OnSave()
@@ -90,7 +90,7 @@
                     TimerProgressBar = true
                 });
 
-            NavigationManager.NavigateTo("PageCategoria");
+            NavigationManager.NavigateTo("CategoriaListPage");
 
         }
         catch (Exception ex)

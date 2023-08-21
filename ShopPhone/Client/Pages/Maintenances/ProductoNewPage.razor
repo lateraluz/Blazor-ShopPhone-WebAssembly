@@ -1,4 +1,4 @@
-﻿@page "/PageProductoNew"
+﻿@page "/ProductoNewPage"
 @inject ProxyProducto ProxyProducto
 @inject ProxyCategoria ProxyCategoria
 @inject NavigationManager NavigationManager
@@ -108,7 +108,7 @@
 
     private void OnReturn()
     {
-        NavigationManager.NavigateTo("/PageProducto");
+        NavigationManager.NavigateTo("/ProductoListPage");
     }
 
     private async Task LoadAsync()
@@ -281,7 +281,4 @@
                 });
         }
     }
-
-
-
 }

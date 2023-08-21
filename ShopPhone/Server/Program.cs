@@ -48,6 +48,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>
     (options => options.SignIn.RequireConfirmedAccount = true).
     AddEntityFrameworkStores<ShopPhoneContext>();
 */
+
 // Config ASP.Net Identity 
 builder.Services.AddIdentity<ShopPhoneUserIdentity, IdentityRole>(policies =>
 {
@@ -99,11 +100,11 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.FromSeconds(30)
     };
 });
  
-
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
