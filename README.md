@@ -1,6 +1,6 @@
 # ShopPhone
 
-ShopPhone Project with Blazor for Mitocode Course
+ShopPhone Developed with Blazor for Mitocode Course
 
 # Video Demostration
 Click on image below to see the video
