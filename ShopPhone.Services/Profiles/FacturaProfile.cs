@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Services.Mappers
 {
-    public class MapperFactura : Profile
+    public class FacturaProfile : Profile
     {
-        public MapperFactura()
+        public FacturaProfile()
         {
             CreateMap<FacturaDTO, FacturaEncabezado>();
             CreateMap<FacturaDetalleDTO, FacturaDetalle>();

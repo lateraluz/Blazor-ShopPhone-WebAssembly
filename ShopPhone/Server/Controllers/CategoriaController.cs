@@ -10,9 +10,10 @@ using ShopPhone.DataAccess;
 
 namespace ShopPhone.Server.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize] 
     public class CategoriaController : ControllerBase
     {
 

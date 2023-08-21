@@ -10,9 +10,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopPhone.Services.Mappers;
 
-public class MapperCliente : Profile
+public class ClienteProfile : Profile
 {
-    public MapperCliente()
+    public ClienteProfile()
     {
         CreateMap<Cliente, ClienteDTO>();
         CreateMap<ClienteDTO, Cliente>();

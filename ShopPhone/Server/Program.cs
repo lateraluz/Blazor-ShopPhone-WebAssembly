@@ -75,10 +75,10 @@ builder.Logging.AddLog4Net();
 // Mapppers
 builder.Services.AddAutoMapper(config =>
 {
-    config.AddProfile<MapperCategoria>();
-    config.AddProfile<MapperProducto>();
-    config.AddProfile<MapperFactura>();
-    config.AddProfile<MapperCliente>();
+    config.AddProfile<CategoriaProfile>();
+    config.AddProfile<ProductoProfile>();
+    config.AddProfile<FacturaProfile>();
+    config.AddProfile<ClienteProfile>();
 });
 
 

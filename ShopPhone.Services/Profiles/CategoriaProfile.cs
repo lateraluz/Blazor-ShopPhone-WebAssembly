@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Services.Mappers;
 
-public class MapperCategoria : Profile
+public class CategoriaProfile : Profile
 {
-    public MapperCategoria()
+    public CategoriaProfile()
     {
         CreateMap<Categorium, CategoriaDTO>();
 

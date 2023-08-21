@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Services.Mappers
 {
-    public class MapperProducto : Profile
+    public class ProductoProfile : Profile
     {
-        public MapperProducto()
+        public ProductoProfile()
         {
             CreateMap<Producto, ProductoDTO>();
             CreateMap<ProductoDTO, Producto>();
