@@ -10,12 +10,14 @@ using System.Reflection.Metadata;
 using static iTextSharp.text.pdf.AcroFields;
 using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Services.Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ShopPhone.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+[EnableRateLimiting("concurrency")]
 public class VentaController : ControllerBase
 {
     private IVentaService _VentaService;

@@ -1,22 +1,21 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Identity.Client;
 using ShopPhone.DataAccess;
 using ShopPhone.Shared.Entities;
 using log4net;
 using log4net.Config;
-using log4net.Repository.Hierarchy;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Repositories.Implementations;
 using ShopPhone.Services.Mappers;
 using System.Text;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Antiforgery;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,10 +35,10 @@ builder.Services.AddTransient<IFileUploader, FileUploader>();
 // Add Memory Cache
 builder.Services.AddMemoryCache();
 
-// Add services to the container.
-// Aqui mapeo el archivo de configuracion en una clase fuertemente tipada
+// Mapping AppConfig Class to read  appsettings.json
 builder.Services.Configure<AppConfig>(builder.Configuration);
 
+// Config Contect DataBase
 builder.Services.AddDbContext<ShopPhoneContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
@@ -48,6 +47,7 @@ builder.Services.AddDbContext<ShopPhoneContext>(options =>
         options.EnableSensitiveDataLogging();
 });
 /*
+ No necesary because I dont use Entity Framework for store users
 builder.Services.AddDefaultIdentity<IdentityUser>
     (options => options.SignIn.RequireConfirmedAccount = true).
     AddEntityFrameworkStores<ShopPhoneContext>();
@@ -78,7 +78,7 @@ builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
 builder.Logging.AddLog4Net();
  
 
-// Mapppers
+// Automap config
 builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<CategoriaProfile>();
@@ -87,8 +87,7 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<ClienteProfile>();
 });
 
-
- 
+//Authentication 
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -109,7 +108,23 @@ builder.Services.AddAuthentication(x =>
         ClockSkew = TimeSpan.FromSeconds(30)
     };
 });
- 
+
+// Avoid Denied of Services 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddConcurrencyLimiter("concurrency", options =>
+    {
+        options.PermitLimit = 10;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 5;         
+    });
+    options.OnRejected = async (context, token) =>
+    {   
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync("DoS Protection. Too many requests. Please try later again... ", cancellationToken: token);
+    };
+});
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -132,20 +147,20 @@ else
     app.UseHsts();
 }
 
+// Force https
 app.UseHttpsRedirection();
-
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
-app.UseAuthorization();
-
+app.UseAuthorization(); 
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-// Config UserDataSeeder
+
+// Config UserDataSeeder, no used
 /*
 using (var scope = app.Services.CreateScope())
 {

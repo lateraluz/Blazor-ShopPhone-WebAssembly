@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Request;
@@ -8,6 +9,7 @@ namespace ShopPhone.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("concurrency")]
 public class SecurityController : ControllerBase
 {
     private IUserService _UserService;
@@ -17,11 +19,11 @@ public class SecurityController : ControllerBase
         _UserService = pUserService;
     }
 
-
+   
     [HttpPost("login")]
+    [EnableRateLimiting("concurrency")]
     public async Task<IActionResult> LoginAsync(LoginRequestDTO request)
     {
-
 
         if (request == null)         
             return BadRequest("Error sin recibir parámetros");

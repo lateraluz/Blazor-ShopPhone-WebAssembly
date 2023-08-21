@@ -4,7 +4,7 @@
 }
 
     .zoom:hover {
-        position: absolute;
+        position: relative;
         transform: scale(1.5);
         -ms-transform: scale(1.5); /* IE 9 */
         -moz-transform: scale(1.5); /* Firefox */

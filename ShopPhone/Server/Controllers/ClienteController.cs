@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
@@ -12,6 +13,7 @@ namespace ShopPhone.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [EnableRateLimiting("concurrency")]
     public class ClienteController : ControllerBase
     {
 
