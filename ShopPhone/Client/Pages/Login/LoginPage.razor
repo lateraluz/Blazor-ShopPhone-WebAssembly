@@ -6,12 +6,13 @@
 @inject ProxyUser ProxyUser
 @inject SweetAlertService Swal
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Login Versión @typeof(Program).Assembly.GetName().Version</PageTitle>
 
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-4">
             <div class="card mt-5">
+
                 <img class="card-img-top" src="css/images/logo2.jpg" width="250" height="250" />
                 <div class="card-body">
                     <EditForm Model="LoginRequest" OnValidSubmit="OnValidLogin">
@@ -31,6 +32,9 @@
                             <button class="btn btn-primary" type="submit">Ingresar</button>
                         </div>
                     </EditForm>
+                    <div class="d-flex justify-content-end mt-2">                        
+                            Version @typeof(Program).Assembly.GetName().Version                       
+                    </div>
                 </div>
                 <!--
                 <div class="card-footer text-center py-3">
@@ -96,7 +100,7 @@
 
             return;
         }
-        finally        
+        finally
         {
             IsLoading = false;
         }

@@ -2,7 +2,7 @@
 using ShopPhone.Shared.Entities;
 using ShopPhone.Shared.Response;
 
-namespace ShopPhone.Repositories.Implementations;
+namespace ShopPhone.Repositories.Interfaces;
 
 public interface ICategoriaRepository
 {

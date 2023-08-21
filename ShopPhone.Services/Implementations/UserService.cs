@@ -12,10 +12,11 @@ using System.Security.Claims;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using ShopPhone.Repositories.Implementations;
 using System.Reflection;
 using System.Security.Cryptography;
 using ShopPhone.Shared.Util;
+using ShopPhone.Repositories.Interfaces;
+using ShopPhone.Services.Interfaces;
 
 namespace ShopPhone.Services.Implementations;
 

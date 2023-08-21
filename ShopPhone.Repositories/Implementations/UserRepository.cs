@@ -1,5 +1,6 @@
 ﻿using log4net;
 using ShopPhone.DataAccess;
+using ShopPhone.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

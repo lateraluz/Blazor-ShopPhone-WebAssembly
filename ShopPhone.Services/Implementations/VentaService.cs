@@ -2,7 +2,6 @@
 using Azure;
 using log4net;
 using ShopPhone.DataAccess;
-using ShopPhone.Repositories.Implementations;
 using ShopPhone.Shared.Response;
 using System;
 using System.Collections.Generic;
@@ -22,6 +21,8 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Options;
 using ShopPhone.Shared.Entities;
+using ShopPhone.Repositories.Interfaces;
+using ShopPhone.Services.Interfaces;
 
 namespace ShopPhone.Services.Implementations
 {

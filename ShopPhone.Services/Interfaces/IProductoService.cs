@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopPhone.Services.Implementations
+namespace ShopPhone.Services.Interfaces
 {
-    public  interface IProductoService
+    public interface IProductoService
     {
 
         Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByDescriptionAsync(string description);

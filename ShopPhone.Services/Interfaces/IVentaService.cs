@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopPhone.Services.Implementations
+namespace ShopPhone.Services.Interfaces
 {
     public interface IVentaService
     {
- 
+
         Task<BaseResponseGeneric<ICollection<FacturaDTO>>> FindByIdAsync(int id);
 
         Task<BaseResponseGeneric<ICollection<FacturaDTO>>> ListAsync();

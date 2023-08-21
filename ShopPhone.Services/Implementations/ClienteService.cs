@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using log4net;
 using ShopPhone.DataAccess;
-using ShopPhone.Repositories.Implementations;
+using ShopPhone.Repositories.Interfaces;
+using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
 using System;
 using System.Collections.Generic;

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopPhone.Services.Implementations;
+namespace ShopPhone.Services.Interfaces;
 
 public interface IUserService
 {

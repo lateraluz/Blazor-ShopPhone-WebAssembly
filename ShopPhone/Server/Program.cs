@@ -15,7 +15,8 @@ using ShopPhone.Services.Implementations;
 using ShopPhone.Repositories.Implementations;
 using ShopPhone.Services.Mappers;
 using System.Text;
-
+using ShopPhone.Repositories.Interfaces;
+using ShopPhone.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

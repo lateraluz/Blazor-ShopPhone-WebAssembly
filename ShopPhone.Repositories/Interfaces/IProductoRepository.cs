@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopPhone.Repositories.Implementations;
+namespace ShopPhone.Repositories.Interfaces;
 
 public interface IProductoRepository
 {

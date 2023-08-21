@@ -2,6 +2,7 @@
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.DataAccess;
+using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Shared.Response;
 using System.Reflection;
 using System.Security.Principal;
