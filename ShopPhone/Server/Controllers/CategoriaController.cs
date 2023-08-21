@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Shared.Response;
 using ShopPhone.DataAccess;
 using ShopPhone.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ShopPhone.Server.Controllers
 {
@@ -17,13 +20,14 @@ namespace ShopPhone.Server.Controllers
     [Authorize] 
     public class CategoriaController : ControllerBase
     {
-
+        private IMemoryCache _Cache;
         private ICategoriaService _CategoriaService;
         private ILog _Logger;
-        public CategoriaController(ICategoriaService categoriaService, ILog logger)
+        public CategoriaController(ICategoriaService categoriaService, ILog logger, IMemoryCache cache)
         {
             _CategoriaService = categoriaService;
             _Logger = logger;
+            _Cache = cache;
         }
 
         [HttpGet("FindByDescription")]
@@ -46,11 +50,33 @@ namespace ShopPhone.Server.Controllers
         [HttpGet("List")]
         public async Task<IActionResult> ListAsync()
         {
+
+            BaseResponseGeneric<ICollection<CategoriaDTO>> response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
             try
             {
-                var response = await _CategoriaService.ListAsync();
-
-                return response.Success ? Ok(response) : NotFound(response);
+                //Automatly Cache is clean once time is running out.
+                if (_Cache.TryGetValue("ListCategory", out IEnumerable<CategoriaDTO> listaCategorias))
+                {
+                    _Logger.Info("Read cache Lista Categorias");
+                    response.Success = true;
+                    response.Data = listaCategorias!.ToList();
+                    return Ok(response);
+                }
+                else
+                {
+                    _Logger.Info("Create cache Lista Categorias. Fetching from database.");
+                    // Getting from Database
+                    response = await _CategoriaService.ListAsync();
+                    // Setting cache 
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                            .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(120))
+                            .SetPriority(CacheItemPriority.Normal)
+                            .SetSize(1024);
+                    _Cache.Set("ListCategory", response.Data!.AsEnumerable(), cacheEntryOptions);
+                }
+  
+                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {

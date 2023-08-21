@@ -33,6 +33,9 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
+// Add Memory Cache
+builder.Services.AddMemoryCache();
+
 // Add services to the container.
 // Aqui mapeo el archivo de configuracion en una clase fuertemente tipada
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -73,6 +76,7 @@ builder.Services.AddIdentity<ShopPhoneUserIdentity, IdentityRole>(policies =>
 XmlConfigurator.Configure(new FileInfo("log4net.config"));
 builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
 builder.Logging.AddLog4Net();
+ 
 
 // Mapppers
 builder.Services.AddAutoMapper(config =>

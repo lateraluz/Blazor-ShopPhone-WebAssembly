@@ -24,6 +24,7 @@ public class CategoriaRepository : ICategoriaRepository
         {
             var response = await _Context
                                 .Set<Categorium>()
+                                .AsNoTracking()
                                 .Where(p => p.NombreCategoria.Contains(description))
                                 .ToListAsync();
             return response;
@@ -42,7 +43,8 @@ public class CategoriaRepository : ICategoriaRepository
         try
         {
             var response = await _Context
-                                .Set<Categorium>()                               
+                                .Set<Categorium>()
+                                 .AsNoTracking()
                                 .ToListAsync();
             return response;
 
