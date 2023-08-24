@@ -17,6 +17,8 @@ using System.Threading.RateLimiting;
 using ShopPhone.Server.Health;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using static System.Net.WebRequestMethods;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,15 @@ builder.Services.AddTransient<IFileUploader, FileUploader>();
 builder.Services.AddHealthChecks()
                  .AddCheck<DatabaseHealthCheck>("Database")
                  .AddCheck<DirectoryHealthCheck>("VirtualDirectory");
+builder.Services.AddHealthChecksUI(option =>
+                                    {
+                                        option.SetMinimumSecondsBetweenFailureNotifications(55);
+                                        option.SetEvaluationTimeInSeconds(5); // Time in seconds between check
+                                        option.MaximumHistoryEntriesPerEndpoint(60); //maximum history of checks
+                                        option.SetApiMaxActiveRequests(1); //api requests concurrency
+                                        option.AddHealthCheckEndpoint("My Services", "/health"); // End Point get data
+                                        option.AddWebhookNotification("webhook1", uri: "https://webhook.site/456d587c-7bb1-4fe6-bbd3-9e3cd6e06826", payload: "{\"error:\":\"Error in PhoneShop\"}"); // Tested https://webhook.site works!
+                                    }).AddInMemoryStorage();
 
 // Add Memory Cache
 builder.Services.AddMemoryCache();
@@ -82,7 +93,7 @@ builder.Services.AddIdentity<ShopPhoneUserIdentity, IdentityRole>(policies =>
 XmlConfigurator.Configure(new FileInfo("log4net.config"));
 builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
 builder.Logging.AddLog4Net();
- 
+
 
 // Automap config
 builder.Services.AddAutoMapper(config =>
@@ -122,10 +133,10 @@ builder.Services.AddRateLimiter(options =>
     {
         options.PermitLimit = 10;
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        options.QueueLimit = 5;         
+        options.QueueLimit = 5;
     });
     options.OnRejected = async (context, token) =>
-    {   
+    {
         context.HttpContext.Response.StatusCode = 429;
         await context.HttpContext.Response.WriteAsync("DoS Protection. Too many requests. Please try later again... ", cancellationToken: token);
     };
@@ -158,19 +169,26 @@ else
 // Force https
 app.UseHttpsRedirection();
 // Health ! 
-app.MapHealthChecks("_Health", new HealthCheckOptions { 
- ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-
+app.UseHealthChecksUI(config =>
+{
+    config.UIPath = "/health-ui";
+});
 
 // Config UserDataSeeder, no used
 /*
