@@ -73,11 +73,11 @@ public class UserService : IUserService
             expiredDate = DateTime.Now.AddHours(2);
 
             List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Sid, request.UserName));
-            claims.Add(new Claim(ClaimTypes.WindowsAccountName, request.UserName));
-            claims.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
-            claims.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
+            claims!.Add(new Claim(ClaimTypes.Sid, request.UserName));
+            claims!.Add(new Claim(ClaimTypes.WindowsAccountName, request.UserName));
+            claims!.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
+            claims!.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
+            claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
 
             claims.AddRange(roles.Select(c => new Claim(ClaimTypes.Role, c)));
            
@@ -99,7 +99,7 @@ public class UserService : IUserService
             response.FullName = $"{user.Nombre.Trim()} {user.Apellidos.Trim()}";
             response.Success = true;
             response.Roles = new List<string>();
-            response.Roles.Add(user.IdRol);
+            response!.Roles.Add(user.IdRol);
 
             return response;
         }

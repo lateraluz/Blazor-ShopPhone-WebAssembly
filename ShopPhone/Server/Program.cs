@@ -14,8 +14,9 @@ using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Antiforgery;
+using ShopPhone.Server.Health;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,11 @@ builder.Services.AddTransient<IVentaRepository, VentaRepository>();
 builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
+
+// Add Health checks
+builder.Services.AddHealthChecks()
+                 .AddCheck<DatabaseHealthCheck>("Database")
+                 .AddCheck<DirectoryHealthCheck>("VirtualDirectory");
 
 // Add Memory Cache
 builder.Services.AddMemoryCache();
@@ -147,8 +153,14 @@ else
     app.UseHsts();
 }
 
+
+
 // Force https
 app.UseHttpsRedirection();
+// Health ! 
+app.MapHealthChecks("_Health", new HealthCheckOptions { 
+ ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
