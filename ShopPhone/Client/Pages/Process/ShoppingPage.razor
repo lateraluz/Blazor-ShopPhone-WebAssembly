@@ -19,13 +19,13 @@
                     <div class="col-md-6">
                         <label for="Nombre" class="form-label">Nombre</label>
                         <div class="autocomplete">
-                            <input @bind="@_FilterClienteName" @oninput="HandleInputCliente" @onclick="OnFocusFilterCliente" class="form-control filter" placeholder="Nombre del Cliente" />
-                            @if (_ListCliente is not null)
+                            <input @bind="@_filterClienteName" @oninput="HandleInputCliente" @onclick="OnFocusFilterCliente" class="form-control filter" placeholder="Nombre del Cliente" />
+                            @if (_listCliente is not null)
                             {
                                 <ul class="options">
-                                    @if (_ListCliente.Any())
+                                    @if (_listCliente.Any())
                                     {
-                                        @foreach (var item in _ListCliente)
+                                        @foreach (var item in _listCliente)
                                         {
                                             <li class="option" @onclick=@(_ => SelectCliente(item))>
                                                 <span class="option-text">@item.ToString()</span>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-md-1 ">
                         <label for="" class="form-label" style="visibility:hidden">dummy</label>
-                        @if (_ListCliente != null)
+                        @if (_listCliente != null)
                         {
                             <div class="spinner-grow text-success" role="status">
                             </div>
@@ -55,13 +55,13 @@
                     <div class="col-md-6">
                         <label for="Nombre" class="form-label">Producto</label>
                         <div class="autocomplete">
-                            <input @bind="@_FilterProductoName" @oninput="HandleInputProducto" @onclick="OnFocusFilterProducto" class="form-control filter" placeholder="Nombre del Producto" />
-                            @if (_ListProducto is not null)
+                            <input @bind="@_filterProductoName" @oninput="HandleInputProducto" @onclick="OnFocusFilterProducto" class="form-control filter" placeholder="Nombre del Producto" />
+                            @if (_listProducto is not null)
                             {
                                 <ul class="options">
-                                    @if (_ListProducto.Any())
+                                    @if (_listProducto.Any())
                                     {
-                                        @foreach (var item in _ListProducto)
+                                        @foreach (var item in _listProducto)
                                         {
                                             <li class="option" @onclick=@(_ => SelectProducto(item))>
                                                 <span class="option-text">@item.Descripcion</span>
@@ -78,7 +78,7 @@
                     </div>
                     <div class="col-md-1 ">
                         <label for="" class="form-label" style="visibility:hidden">dummy</label>
-                        @if (_ListProducto != null)
+                        @if (_listProducto != null)
                         {
                             <div class="spinner-grow text-success" role="status">
                             </div>
@@ -134,8 +134,8 @@
                             double totalImpuesto = 0d;
                             double granTotal = 0d;
 
-                            if (_ListaFacturaDetalleDTO.Any())
-                                foreach (var item in _ListaFacturaDetalleDTO)
+                            if (_listaFacturaDetalleDTO.Any())
+                                foreach (var item in _listaFacturaDetalleDTO)
                                 {
 
                                     index = index + 1;
@@ -157,7 +157,7 @@
                                     </tr>
 
                                 }
-                            if (_ListaFacturaDetalleDTO.Any())
+                            if (_listaFacturaDetalleDTO.Any())
                             {
                                 <tr style="background-color:black">
                                     <td> </td>
@@ -186,20 +186,20 @@
 
 
 @code {
-    private string _Descripcion { set; get; } = "";
-    private FacturaDTO _Factura = new FacturaDTO();
-    private IList<FacturaDetalleDTO> _ListaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
-    private ProductoDTO? _ProductoDTO { set; get; } = new();
-    private List<ProductoDTO>? _ListProducto = null;
-    private List<ClienteDTO>? _ListCliente = null;
-    private ClienteDTO? _ClienteDTO { set; get; } = new();
-    private string? _FilterProductoName { set; get; } = "";
-    private string _FilterClienteName { set; get; } = "";
+    private string _descripcion { set; get; } = "";
+    private FacturaDTO _factura = new FacturaDTO();
+    private IList<FacturaDetalleDTO> _listaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
+    private ProductoDTO? _productoDTO { set; get; } = new();
+    private List<ProductoDTO>? _listProducto = null;
+    private List<ClienteDTO>? _listCliente = null;
+    private ClienteDTO? _clienteDTO { set; get; } = new();
+    private string? _filterProductoName { set; get; } = "";
+    private string _filterClienteName { set; get; } = "";
     private bool IsLoading = false;
 
     protected override void OnInitialized()
     {
-        _Factura = new FacturaDTO()
+        _factura = new FacturaDTO()
             {
                 IdCliente = 0,
                 Estado = true,
@@ -210,19 +210,19 @@
 
     private void OnFocusFilterCliente()
     {
-        _FilterClienteName = "";
-        _ClienteDTO = new ClienteDTO();
+        _filterClienteName = "";
+        _clienteDTO = new ClienteDTO();
     }
 
     private void OnFocusFilterProducto()
     {
-        _FilterProductoName = "";
-        _ProductoDTO = new ProductoDTO();
+        _filterProductoName = "";
+        _productoDTO = new ProductoDTO();
     }
 
     private void OnkeyPress(KeyboardEventArgs e)
     {
-        // Console.WriteLine(_Descripcion);
+        // Console.WriteLine(_descripcion);
     }
 
     private async Task HandleInputCliente(ChangeEventArgs e)
@@ -241,14 +241,14 @@
             {
                 var response = await ProxyCliente.FindByDescriptionAsync(filter);
                 if (response.Success && response.Data!.Count > 0)
-                    _ListCliente = response.Data.ToList();
+                    _listCliente = response.Data.ToList();
                 else
-                    _ListCliente = null;
+                    _listCliente = null;
             }
             else
             {
-                _ClienteDTO = null;
-                _FilterClienteName = "";
+                _clienteDTO = null;
+                _filterClienteName = "";
             }
         }
         catch (Exception ex)
@@ -282,14 +282,14 @@
             {
                 var response = await ProxyProducto.FindByDescriptionAsync(filter);
                 if (response.Success && response.Data!.Count > 0)
-                    _ListProducto = response.Data.ToList();
+                    _listProducto = response.Data.ToList();
                 else
-                    _ListProducto = null;
+                    _listProducto = null;
             }
             else
             {
-                _ProductoDTO = null;
-                _FilterProductoName = "";
+                _productoDTO = null;
+                _filterProductoName = "";
             }
         }
         catch (Exception ex)
@@ -313,9 +313,9 @@
         double impuesto = 0, total = 0;
         try
         {
-            _ProductoDTO = producto;
-            _FilterProductoName = $"{_ProductoDTO.IdProducto} - {_ProductoDTO.Descripcion} ";
-            _ListProducto = null;
+            _productoDTO = producto;
+            _filterProductoName = $"{_productoDTO.IdProducto} - {_productoDTO.Descripcion} ";
+            _listProducto = null;
 
             Console.WriteLine("Producto Seleccionado " + producto.IdProducto);
             // Config inpunt validator
@@ -345,13 +345,13 @@
 
             if (result.Value is null)
             {
-                _FilterProductoName = "";
+                _filterProductoName = "";
                 return;
             }
 
             if (string.IsNullOrEmpty(result.Value.Trim()))
             {
-                _FilterProductoName = "";
+                _filterProductoName = "";
                 return;
             }
 
@@ -391,21 +391,21 @@
                     Descripcion = producto.Descripcion
                 };
 
-            _ListaFacturaDetalleDTO.Add(detalle);
+            _listaFacturaDetalleDTO.Add(detalle);
 
             // Reenumerate secuence.
             int index = 0;
-            _ListaFacturaDetalleDTO.ToList().ForEach(
+            _listaFacturaDetalleDTO.ToList().ForEach(
                x => x.Secuencia = ++index
             );
 
             // Clear detail after enumerate
-            _Factura!._FacturaDetalle = new List<FacturaDetalleDTO>();
+            _factura!._FacturaDetalle = new List<FacturaDetalleDTO>();
             // Add to list componsed
-            _Factura!._FacturaDetalle.AddRange(_ListaFacturaDetalleDTO);
-            _Factura.FechaVenta = DateTime.Now;
+            _factura!._FacturaDetalle.AddRange(_listaFacturaDetalleDTO);
+            _factura.FechaVenta = DateTime.Now;
             // Clear input
-            _FilterProductoName = "";
+            _filterProductoName = "";
 
 
         }
@@ -426,9 +426,9 @@
 
         try
         {
-            _ClienteDTO = cliente;
-            _FilterClienteName = cliente.ToString();
-            _ListCliente = null;
+            _clienteDTO = cliente;
+            _filterClienteName = cliente.ToString();
+            _listCliente = null;
 
         }
         catch (Exception ex)
@@ -447,12 +447,12 @@
     {
         try
         {
-            //int index = _ListaFacturaDetalleDTO.ToList().FindIndex(p => p.IdProducto == id);
-            int index = _Factura._FacturaDetalle.FindIndex(p => p.IdProducto == id);
-            _Factura._FacturaDetalle.RemoveAt(index);
+            //int index = _listaFacturaDetalleDTO.ToList().FindIndex(p => p.IdProducto == id);
+            int index = _factura._FacturaDetalle.FindIndex(p => p.IdProducto == id);
+            _factura._FacturaDetalle.RemoveAt(index);
 
             // List attached Page
-            _ListaFacturaDetalleDTO.RemoveAt(index);
+            _listaFacturaDetalleDTO.RemoveAt(index);
         }
         catch (Exception ex)
         {
@@ -471,11 +471,12 @@
         try
         {
             IsLoading = true;
-            _Factura.IdCliente = _ClienteDTO!.IdCliente;
+            _factura.IdCliente = _clienteDTO!.IdCliente;
 
-            var response = await ProxyVenta.AddAsync(_Factura);
+            var response = await ProxyVenta.AddAsync(_factura);
 
-
+            IsLoading = false;
+            StateHasChanged();
             if (!response.Success)
             {
                 IsLoading = false;
@@ -489,7 +490,7 @@
                 return;
             }
 
-            IsLoading = false;
+            
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Title = "Factura Procesada",
@@ -499,19 +500,20 @@
                 });
 
 
-            _Descripcion = "";
-            _Factura = new FacturaDTO();
-            _ListaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
-            _ProductoDTO = new();
-            _ListProducto = null;
-            _FilterProductoName = "";
-            _FilterClienteName = "";
-            _ClienteDTO = new();
+            _descripcion = "";
+            _factura = new FacturaDTO();
+            _listaFacturaDetalleDTO = new List<FacturaDetalleDTO>();
+            _productoDTO = new();
+            _listProducto = null;
+            _filterProductoName = "";
+            _filterClienteName = "";
+            _clienteDTO = new();
 
         }
         catch (Exception ex)
         {
             IsLoading = false;
+            StateHasChanged();
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -523,6 +525,7 @@
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
 
     }
@@ -538,9 +541,7 @@
         Console.WriteLine("Key");
         await Task.FromResult(1);
     }
-
-
-
+     
     private async Task OnClear()
     {
 

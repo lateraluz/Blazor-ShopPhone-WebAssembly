@@ -40,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
+                    @foreach (var item in _list!.Skip(RECORDS_PER_PAGE * (_paginaActual - 1)).Take(RECORDS_PER_PAGE))
                     {
                         <tr style="">
                             @{
@@ -67,7 +67,7 @@
 
         </section>
 
-        @if (_List!.Count > 0)
+        @if (_list!.Count > 0)
         {
             <div class="card-footer">
                 <div class="row">
@@ -77,8 +77,8 @@
                                 <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
                             </li>
                             @{
-                                decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
-                                if (_List!.Count % RECORDS_PER_PAGE > 0)
+                                decimal cantidad = _list!.Count / RECORDS_PER_PAGE;
+                                if (_list!.Count % RECORDS_PER_PAGE > 0)
                                     cantidad++;
 
                                 for (int index = 1; index <= (int)cantidad; index++)
@@ -106,10 +106,10 @@
 </ComponentLoading>
 
 @code {
-    private IList<FacturaDTO>? _List { get; set; } = new List<FacturaDTO>();
-    private string _Descripcion { set; get; } = "";
+    private IList<FacturaDTO>? _list { get; set; } = new List<FacturaDTO>();
+    private string _descripcion { set; get; } = "";
     private const int RECORDS_PER_PAGE = 5;
-    private int PaginaActual { set; get; }
+    private int _paginaActual { set; get; }
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
@@ -122,6 +122,7 @@
             if (!response.Success)
             {
                 IsLoading = false;
+                StateHasChanged();
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Text = response.ErrorMessage,
@@ -133,13 +134,14 @@
             }
 
             if (response.Data != null)
-                _List = response.Data!.ToList();
+                _list = response.Data!.ToList();
 
 
         }
         catch (Exception ex)
         {
             IsLoading = false;
+            StateHasChanged();
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -152,6 +154,7 @@
         {
             
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -165,29 +168,29 @@
 
         List<FacturaDTO> lista = new List<FacturaDTO>();
 
-        if (_List == null)
+        if (_list == null)
             return;
 
-        if (_List.Count > 0)
-            lista = _List.ToList();
+        if (_list.Count > 0)
+            lista = _list.ToList();
 
 
         switch (tipo)
         {
             case "IdFactura":
-                _List = lista.OrderBy(x => x.IdFactura).ToList();
+                _list = lista.OrderBy(x => x.IdFactura).ToList();
                 break;
             case "Cliente":
-                _List = lista.OrderBy(x => x._Cliente.Nombre).ToList();
+                _list = lista.OrderBy(x => x._Cliente.Nombre).ToList();
                 break;
             case "Estado":
-                _List = lista.OrderBy(x => x.Estado).ToList();
+                _list = lista.OrderBy(x => x.Estado).ToList();
                 break;
             case "FechaVenta":
-                _List = lista.OrderBy(x => x.FechaVenta).ToList();
+                _list = lista.OrderBy(x => x.FechaVenta).ToList();
                 break;
             case "Cantidad":
-                _List = lista.OrderBy(x => x._FacturaDetalle.Count()).ToList();
+                _list = lista.OrderBy(x => x._FacturaDetalle.Count()).ToList();
                 break;
 
             case "Total":
@@ -205,13 +208,12 @@
                 var listTemp = new List<FacturaDTO>();
                 foreach (var item in dic.OrderBy(x => x.Value))
                 {
-                    var factura = _List.ToList().FindAll(c => c.IdFactura == item.Key)[0];
+                    var factura = _list.ToList().FindAll(c => c.IdFactura == item.Key)[0];
                     listTemp.Add(factura);
                 }
 
-                _List = listTemp;
-                break;
-
+                _list = listTemp;
+                break; 
 
         }
 
@@ -221,22 +223,22 @@
 
     private void GoToPage(int pIndex)
     {
-        PaginaActual = pIndex;
+        _paginaActual = pIndex;
     }
 
     private void Next()
     {
-        decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
-        if (_List!.Count % RECORDS_PER_PAGE > 0)
+        decimal cantidad = _list!.Count / RECORDS_PER_PAGE;
+        if (_list!.Count % RECORDS_PER_PAGE > 0)
             cantidad++;
 
-        if (PaginaActual != cantidad)
-            PaginaActual++;
+        if (_paginaActual != cantidad)
+            _paginaActual++;
     }
 
     private void Previous()
     {
-        if (!(PaginaActual - 1 <= 0))
-            PaginaActual--;
+        if (!(_paginaActual - 1 <= 0))
+            _paginaActual--;
     }
 }

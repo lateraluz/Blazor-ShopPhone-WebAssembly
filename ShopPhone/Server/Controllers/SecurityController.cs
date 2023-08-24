@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.RateLimiting;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Request;
+using ShopPhone.Shared.Response;
+using System.Net;
+using System.Reflection;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -12,33 +15,64 @@ namespace ShopPhone.Server.Controllers;
 [EnableRateLimiting("concurrency")]
 public class SecurityController : ControllerBase
 {
-    private IUserService _UserService;
+    private IUserService _userService;
+    private ILog _logger;
 
-    public SecurityController(IUserService pUserService)
+    public SecurityController(IUserService pUserService, ILog logger)
     {
-        _UserService = pUserService;
+        _userService = pUserService;
+        _logger = logger;
     }
 
-   
+
     [HttpPost("login")]
     [EnableRateLimiting("concurrency")]
     public async Task<IActionResult> LoginAsync(LoginRequestDTO request)
     {
-
-        if (request == null)         
-            return BadRequest("Error sin recibir parámetros");
-         
-
-        if (string.IsNullOrEmpty(request.UserName))        
-            return BadRequest("Login es requerido");
+        var response = new LoginResponseDTO();
         
+        try
+        {
 
-        if (string.IsNullOrEmpty(request.Password))
-            return BadRequest("Password es requerido");
-        
-        var response = await _UserService.LoginAsync(request);
+            // Tested responses 
+            // return BadRequest("Dummy: BadRequest");
+            // return Ok("Dummy: Everthing is Ok ");
+            // return NotFound("Dumy: It doesn't exist!");
+            // throw new Exception("My dummy exception!");
+            if (request == null)
+            {
+                response.Success = false;
+                response.ErrorMessage = "Error en parámetros";
+                return Ok(response);
+            }
 
-        return response.Success ? Ok(response) : NotFound(response);
+            if (string.IsNullOrEmpty(request.UserName))
+            {
+                response.Success = false;
+                response.ErrorMessage = "Usuario requerido";
+                _logger.Warn(response.ErrorMessage);
+                return Ok(response);
+            }
+
+            if (string.IsNullOrEmpty(request.Password))
+            {
+                response.Success = false;
+                response.ErrorMessage = "Password requerido";
+                _logger.Warn(response.ErrorMessage);
+                return Ok(response);
+            }
+
+
+            response = await _userService.LoginAsync(request);
+
+            return response.Success ? Ok(response) : NotFound(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            throw;
+        }
+
     }
 
 

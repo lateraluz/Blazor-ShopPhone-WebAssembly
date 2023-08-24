@@ -28,18 +28,18 @@ namespace ShopPhone.Services.Implementations
 {
     public class VentaService : IVentaService
     {
-        private IVentaRepository _VentaRepository;
-        private readonly IMapper _Mapper;
-        private ILog _Logger;
-        private readonly IOptions<AppConfig> _Options;
+        private IVentaRepository _ventaRepository;
+        private readonly IMapper _mapper;
+        private ILog _logger;
+        private readonly IOptions<AppConfig> _options;
 
 
         public VentaService(IVentaRepository repository, IMapper mapper, ILog logger, IOptions<AppConfig> options)
         {
-            _VentaRepository = repository;
-            _Mapper = mapper;
-            _Logger = logger;
-            _Options = options;
+            _ventaRepository = repository;
+            _mapper = mapper;
+            _logger = logger;
+            _options = options;
         }
 
         public async Task<BaseResponseGeneric<int>> AddAsync(FacturaDTO identity)
@@ -48,33 +48,33 @@ namespace ShopPhone.Services.Implementations
             try
             {
                 // Map
-                var factura = _Mapper.Map<FacturaEncabezado>(identity);
+                var factura = _mapper.Map<FacturaEncabezado>(identity);
 
                 // Get No Receipt and assign Receipt Number
-                factura.IdFactura = _VentaRepository.GetNoReceipt();
+                factura.IdFactura = _ventaRepository.GetNoReceipt();
 
                 identity._FacturaDetalle.ForEach(
                     x => x.IdFactura = identity.IdFactura
                     );
 
-                var baseResponse = await _VentaRepository.AddAsync(factura);
+                var baseResponse = await _ventaRepository.AddAsync(factura);
                 response.Success = true;
                 response.Data = factura.IdFactura;//identity.IdFactura;
 
-                var facturaProcesada = await _VentaRepository.FindAsync(factura.IdFactura);
+                var facturaProcesada = await _ventaRepository.FindAsync(factura.IdFactura);
 
                 // Crear Factura
                 GeneratePdf(facturaProcesada!);
                 SendEmail(identity._Cliente.CorreoElectronico);
 
-                _Logger.Info($"Venta realizada con exito");
+                _logger.Info($"Venta realizada con exito");
                 return response;
             }
             catch (Exception ex)
             {
                 response.Success = false;
                 response.ErrorMessage = $"Error al salvar el factura ";
-                _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 return response;
             }
         }
@@ -84,19 +84,19 @@ namespace ShopPhone.Services.Implementations
             try
             {
 
-                if (_Options.Value.SmtpConfiguration == null)
+                if (_options.Value.SmtpConfiguration == null)
                 {
-                    _Logger.Error($"No se encuentra configurado ningun valor para SMPT en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}");
+                    _logger.Error($"No se encuentra configurado ningun valor para SMPT en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}");
                     return;
                 }
 
                 // force sending email to a specific account
-                if (string.IsNullOrEmpty(_Options.Value.SmtpConfiguration.DummyRecipient) == false)
+                if (string.IsNullOrEmpty(_options.Value.SmtpConfiguration.DummyRecipient) == false)
                 {
-                    email = _Options.Value.SmtpConfiguration.DummyRecipient;
+                    email = _options.Value.SmtpConfiguration.DummyRecipient;
                 }
                 var mailMessage = new MailMessage(
-                    new MailAddress(_Options.Value.SmtpConfiguration.UserName, _Options.Value.SmtpConfiguration.FromName),
+                    new MailAddress(_options.Value.SmtpConfiguration.UserName, _options.Value.SmtpConfiguration.FromName),
                     new MailAddress(email))
                 {
                     Subject = "Factura Electrónica para " + email,
@@ -107,13 +107,13 @@ namespace ShopPhone.Services.Implementations
                 Attachment attachment = new Attachment(@"c:\\temp\\images\\pdf\\archivo.pdf");
                 mailMessage.Attachments.Add(attachment);
 
-                using var smtpClient = new SmtpClient(_Options.Value.SmtpConfiguration.Server,
-                                                       _Options.Value.SmtpConfiguration.PortNumber)
+                using var smtpClient = new SmtpClient(_options.Value.SmtpConfiguration.Server,
+                                                       _options.Value.SmtpConfiguration.PortNumber)
                 {
                     Credentials = new NetworkCredential(
-                                                                _Options.Value.SmtpConfiguration.UserName,
-                                                                _Options.Value.SmtpConfiguration.Password),
-                    EnableSsl = _Options.Value.SmtpConfiguration.EnableSsl,
+                                                                _options.Value.SmtpConfiguration.UserName,
+                                                                _options.Value.SmtpConfiguration.Password),
+                    EnableSsl = _options.Value.SmtpConfiguration.EnableSsl,
                 };
 
                 await smtpClient.SendMailAsync(mailMessage);
@@ -121,7 +121,7 @@ namespace ShopPhone.Services.Implementations
             catch (Exception ex)
             {
                 // Silent Error 
-                _Logger.Error($"Error al enviar el correo  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"Error al enviar el correo  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             }
         }
 
@@ -130,8 +130,8 @@ namespace ShopPhone.Services.Implementations
             BaseResponseGeneric<ICollection<FacturaDTO>> response = new BaseResponseGeneric<ICollection<FacturaDTO>>();
             try
             {
-                var facturaProcesada = await _VentaRepository.FindAsync(id);
-                var @object = _Mapper.Map<FacturaDTO>(facturaProcesada);
+                var facturaProcesada = await _ventaRepository.FindAsync(id);
+                var @object = _mapper.Map<FacturaDTO>(facturaProcesada);
                 List<FacturaDTO> lista = new List<FacturaDTO>();
                 lista.Add(@object);
                 response.Success = true;
@@ -140,7 +140,7 @@ namespace ShopPhone.Services.Implementations
             }
             catch (Exception ex)
             {
-                _Logger.Error(ex.Message);
+                _logger.Error(ex.Message);
                 throw;
             }
         }
@@ -157,16 +157,16 @@ namespace ShopPhone.Services.Implementations
             try
             {
 
-                var collection = await _VentaRepository.ListAsync();
+                var collection = await _ventaRepository.ListAsync();
                 response.Success = true;
-                response.Data = _Mapper.Map<ICollection<FacturaDTO>>(collection);
+                response.Data = _mapper.Map<ICollection<FacturaDTO>>(collection);
                 return response;
             }
             catch (Exception ex)
             {
                 response.Success = false;
                 response.ErrorMessage = $"Error al consultar las facturas ";
-                _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 return response;
             }
         }

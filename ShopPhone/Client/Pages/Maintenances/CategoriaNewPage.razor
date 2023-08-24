@@ -9,18 +9,18 @@
         <h5 class="card-header">Agregar de Categoría</h5>
         <div class="card-body border-radius: .5rem">
 
-            <EditForm Model="@_CategoriaDTO" OnSubmit="OnSave">
+            <EditForm Model="@_categoriaDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label for="name" class="col-form-label">Código:</label>
-                        <input type="number" class="form-control" id="IdCategoria" @bind-value="@_CategoriaDTO.IdCategoria" />
+                        <input type="number" class="form-control" id="IdCategoria" @bind-value="@_categoriaDTO.IdCategoria" />
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label for="name" class="col-form-label">Categoria:</label>
-                        <input type="text" class="form-control" @bind-value="@_CategoriaDTO.NombreCategoria" />
+                        <input type="text" class="form-control" @bind-value="@_categoriaDTO.NombreCategoria" />
                     </div>
                 </div>
 
@@ -29,7 +29,7 @@
                         <label class="form-check-label">Habilitado</label>
                     </div>
                     <div class=" form-switch  col-md-11  mx-3">
-                        <input class="form-check-input" type="checkbox" @bind-value="_CategoriaDTO.Estado" checked="@(_CategoriaDTO.Estado? "checked":null)">
+                        <input class="form-check-input" type="checkbox" @bind-value="_categoriaDTO.Estado" checked="@(_categoriaDTO.Estado? "checked":null)">
                     </div>
                 </div>
 
@@ -50,11 +50,12 @@
 
 @code {
 
-    private CategoriaDTO _CategoriaDTO { get; set; } = new();
+    private CategoriaDTO _categoriaDTO { get; set; } = new();
 
     private void OnClear()
     {
-        _CategoriaDTO = new() {  Estado = true};
+        _categoriaDTO = new() {  Estado = true};
+        StateHasChanged();
     }
 
     private void OnReturn()
@@ -66,31 +67,48 @@
     {
         try
         {
-            await ProxyCategoria.AddAsync(_CategoriaDTO);
-            /*
-             * var  response = await ProxyCategoria.AddAsync(_CategoriaDTO);
+
+            if (string.IsNullOrEmpty(_categoriaDTO.NombreCategoria))
+            {
+                await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = $"La descripción de la categoría es requerido ",
+                        Title = "Atención",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                        Timer = 1500
+                    });
+                return;
+            }
+
+
+            var response = await ProxyCategoria.AddAsync(_categoriaDTO);
+            
             if (!response.Success)
             {
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Text = response.ErrorMessage,
-                        Title = "Error",
+                        Title = "Error al Salvar Cliente",
                         Icon = SweetAlertIcon.Error,
                         ShowCloseButton = true
                     });
             }
-            */
-
-            await Swal.FireAsync(new SweetAlertOptions()
-                {
-                    Title = "Atención",
-                    Text = "Registro salvado con éxito",
-                    Icon = SweetAlertIcon.Success,
-                    Timer = 1500,
-                    TimerProgressBar = true
-                });
-
-            NavigationManager.NavigateTo("CategoriaListPage");
+            else
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = "Atención",
+                        Text = "Registro salvado con éxito",
+                        Icon = SweetAlertIcon.Success,
+                        Timer = 1500,
+                        TimerProgressBar = true
+                    });
+            }
+             
+            
+            OnClear();           
 
         }
         catch (Exception ex)
@@ -103,7 +121,5 @@
                     ShowCloseButton = true
                 });
         }
-
-
     }
 }

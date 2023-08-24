@@ -20,14 +20,14 @@ namespace ShopPhone.Server.Controllers
     [Authorize] 
     public class CategoriaController : ControllerBase
     {
-        private IMemoryCache _Cache;
-        private ICategoriaService _CategoriaService;
-        private ILog _Logger;
+        private IMemoryCache _cache;
+        private ICategoriaService _categoriaService;
+        private ILog _logger;
         public CategoriaController(ICategoriaService categoriaService, ILog logger, IMemoryCache cache)
         {
-            _CategoriaService = categoriaService;
-            _Logger = logger;
-            _Cache = cache;
+            _categoriaService = categoriaService;
+            _logger = logger;
+            _cache = cache;
         }
 
         [HttpGet("FindByDescription")]
@@ -35,18 +35,18 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.FindByDescriptionAsync(description);
+                var response = await _categoriaService.FindByDescriptionAsync(description);
 
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
-
-
+         
+      
         [HttpGet("List")]
         public async Task<IActionResult> ListAsync()
         {
@@ -55,51 +55,48 @@ namespace ShopPhone.Server.Controllers
             try
             {
                 //Automatly Cache is clean once time is running out.
-                if (_Cache.TryGetValue("ListCategory", out IEnumerable<CategoriaDTO> listaCategorias))
+                if (_cache.TryGetValue("ListCategory", out IEnumerable<CategoriaDTO> listaCategorias))
                 {
-                    _Logger.Info("Read cache Lista Categorias");
+                    _logger.Info("Read cache Lista Categorias");
                     response.Success = true;
                     response.Data = listaCategorias!.ToList();
-                    return Ok(response);
+                    
                 }
                 else
                 {
-                    _Logger.Info("Create cache Lista Categorias. Fetching from database.");
+                    _logger.Info("Cache created Lista Categorias. Fetching from database.");
                     // Getting from Database
-                    response = await _CategoriaService.ListAsync();
+                    response = await _categoriaService.ListAsync();
                     // Setting cache 
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
-                            .SetSlidingExpiration(TimeSpan.FromSeconds(60))
-                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(120))
+                            .SetSlidingExpiration(TimeSpan.FromSeconds(10))
+                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(10))
                             .SetPriority(CacheItemPriority.Normal)
                             .SetSize(1024);
-                    _Cache.Set("ListCategory", response.Data!.AsEnumerable(), cacheEntryOptions);
+                    _cache.Set("ListCategory", response.Data!.AsEnumerable(), cacheEntryOptions);
                 }
   
                  return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
 
 
         [HttpPut("{id:int}")]
-
         public async Task<IActionResult> Put(int id, CategoriaDTO request)
         {
             try
-            {
-                
-                var response = await _CategoriaService.UpdateAsync(id, request);
-                return Ok(response);
-
+            {                
+                var response = await _categoriaService.UpdateAsync(id, request);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -109,12 +106,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.FindByIdAsync(id);
+                var response = await _categoriaService.FindByIdAsync(id);
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -124,12 +121,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.AddAsync(request);
-                return Ok(response);
+                var response = await _categoriaService.AddAsync(request);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -141,17 +138,14 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _CategoriaService.DeleteAsync(id);
-                return Ok(response);
+                var response = await _categoriaService.DeleteAsync(id);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
-
-
-
     }
 }

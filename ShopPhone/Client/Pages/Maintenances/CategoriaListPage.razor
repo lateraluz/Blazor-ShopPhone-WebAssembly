@@ -15,7 +15,7 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <input type="text" @bind="_Filter" class="form-control" placeholder="Ingrese la descripcion" />
+                    <input type="text" @bind="_filter" class="form-control" placeholder="Ingrese la descripcion" />
                 </div>
 
                 <div class="col-md-2">
@@ -51,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in _List!.Skip(RECORDS_PER_PAGE * (PaginaActual - 1)).Take(RECORDS_PER_PAGE))
+                        @foreach (var item in _list!.Skip(RECORDS_PER_PAGE * (_paginaActual - 1)).Take(RECORDS_PER_PAGE))
                         {
                             <tr style="">
                                 <td>@item.IdCategoria</td>
@@ -68,7 +68,7 @@
 
             </section>
 
-            @if (_List!.Count > 0)
+            @if (_list!.Count > 0)
             {
                 <div class="card-footer">
                     <div class="row">
@@ -78,8 +78,8 @@
                                     <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
                                 </li>
                                 @{
-                                    decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
-                                    if (_List!.Count % RECORDS_PER_PAGE > 0)
+                                    decimal cantidad = _list!.Count / RECORDS_PER_PAGE;
+                                    if (_list!.Count % RECORDS_PER_PAGE > 0)
                                         cantidad++;
 
                                     for (int index = 1; index <= (int)cantidad; index++)
@@ -107,10 +107,10 @@
 </ComponentLoading>
 
 @code {
-    private IList<CategoriaDTO>? _List { get; set; } = new List<CategoriaDTO>();
-    private string _Filter { set; get; } = "";
+    private IList<CategoriaDTO>? _list { get; set; } = new List<CategoriaDTO>();
+    private string _filter { set; get; } = "";
     private const int RECORDS_PER_PAGE = 4;
-    private int PaginaActual { set; get; }
+    private int _paginaActual { set; get; }
     private bool IsLoading = false;
 
     private void OnCreate()
@@ -141,9 +141,9 @@
                 await ProxyCategoria.DeleteAsync(id);
                 await OnSearch();
                 /* No se borra se actualiza
-                var categoria = _List!.ToList().Find(p => p.IdCategoria == id);
+                var categoria = _list!.ToList().Find(p => p.IdCategoria == id);
                 if (categoria != null)
-                    _List!.Remove(categoria);
+                    _list!.Remove(categoria);
             */
             }
 
@@ -166,19 +166,20 @@
         try
         {
             IsLoading = true;
-            if (!string.IsNullOrEmpty(_Filter))
-                response = await ProxyCategoria.FindByDescriptionAsync(_Filter);
+            if (!string.IsNullOrEmpty(_filter))
+                response = await ProxyCategoria.FindByDescriptionAsync(_filter);
             else
                 response = await ProxyCategoria.ListAsync();
 
 
             if (response.Success == true)
             {
-                _List = response.Data!.ToList();
+                _list = response.Data!.ToList();
 
-                if (_List.Count == 0)
+                if (_list.Count == 0)
                 {
                     IsLoading = false;
+                    StateHasChanged();
                     ToastService.ShowWarning("No existen registro ", settings =>
                     {
                         settings.ShowProgressBar = true;
@@ -191,6 +192,8 @@
         }
         catch (Exception ex)
         {
+            IsLoading = false;
+            StateHasChanged();
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -202,13 +205,14 @@
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
     private async Task OnClear()
     {
-        _List = new List<CategoriaDTO>();
-        await Task.FromResult(_List);
+        _list = new List<CategoriaDTO>();
+        await Task.FromResult(_list);
     }
 
     private void Sort(string tipo)
@@ -217,27 +221,25 @@
         List<CategoriaDTO> lista = new List<CategoriaDTO>();
 
 
-        if (_List == null)
+        if (_list == null)
             return;
 
-        if (_List.Count > 0)
-            lista = _List.ToList();
+        if (_list.Count > 0)
+            lista = _list.ToList();
 
         IsLoading = true;
 
         switch (tipo)
         {
             case "IdCategoria":
-                _List = lista.OrderBy(x => x.IdCategoria).ToList();
+                _list = lista.OrderBy(x => x.IdCategoria).ToList();
                 break;
             case "NombreCategoria":
-                _List = lista.OrderBy(x => x.NombreCategoria).ToList();
+                _list = lista.OrderBy(x => x.NombreCategoria).ToList();
                 break;
             case "Estado":
-                _List = lista.OrderBy(x => x.Estado).ToList();
-                break;
-
-
+                _list = lista.OrderBy(x => x.Estado).ToList();
+                break; 
         }
         IsLoading = false;
         GoToPage(1);
@@ -246,23 +248,23 @@
 
     private void GoToPage(int pIndex)
     {
-        PaginaActual = pIndex;
+        _paginaActual = pIndex;
     }
 
     private void Next()
     {
-        decimal cantidad = _List!.Count / RECORDS_PER_PAGE;
-        if (_List!.Count % RECORDS_PER_PAGE > 0)
+        decimal cantidad = _list!.Count / RECORDS_PER_PAGE;
+        if (_list!.Count % RECORDS_PER_PAGE > 0)
             cantidad++;
 
-        if (PaginaActual != cantidad)
-            PaginaActual++;
+        if (_paginaActual != cantidad)
+            _paginaActual++;
     }
 
     private void Previous()
     {
-        if (!(PaginaActual - 1 <= 0))
-            PaginaActual--;
+        if (!(_paginaActual - 1 <= 0))
+            _paginaActual--;
     }
 
 

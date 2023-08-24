@@ -8,11 +8,11 @@ namespace ShopPhone.Client.Proxies;
 
 public class ProxyCliente
 {
-    private readonly HttpClient _HttpClient;
+    private readonly HttpClient _httpClient;
 
-    public ProxyCliente(HttpClient pHttpClient)
+    public ProxyCliente(HttpClient httpClient)
     {
-        _HttpClient = pHttpClient;
+        _httpClient =httpClient;
     }
 
     public async Task<BaseResponse> UpdateAsync(int id, ClienteDTO request)
@@ -23,27 +23,21 @@ public class ProxyCliente
 
         try
         {
-            var response = await _HttpClient.PutAsJsonAsync(url, request);
+            var response = await _httpClient.PutAsJsonAsync(url, request);
 
             json = response.Content.ReadAsStringAsync().Result;
 
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
-                                            throw new InvalidOperationException();
+            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, 
+                                                  new JsonSerializerOptions{PropertyNameCaseInsensitive = true}
+                                                  ) ??  throw new InvalidOperationException();
 
             return baseResponse!;
-
         }
         catch (Exception e)
         {
             Exception ex = e;
             throw;
         }
-
     }
 
     public async Task<BaseResponseGeneric<ICollection<ClienteDTO>>> FindByIdAsync(int id)
@@ -51,7 +45,7 @@ public class ProxyCliente
         try
         {
             string url = $"api/Cliente/FindById?id={id}";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
             return response!;
         }
         catch (Exception e)
@@ -68,7 +62,7 @@ public class ProxyCliente
         try
         {
             string url = $"api/Cliente/FindByDescription?description={description}";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
 
             return response!;
         }
@@ -90,17 +84,9 @@ public class ProxyCliente
         {
 
             //ShopPhone.Shared.Response.BaseResponse<ProductoDTO> d = new ShopPhone.Shared.Response.BaseResponse<ProductoDTO>();
-            var response = await _HttpClient.PostAsJsonAsync(url, request);
+            var response = await _httpClient.PostAsJsonAsync(url, request);
 
             json = response.Content.ReadAsStringAsync().Result;
-
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            baseResponse = JsonSerializer.Deserialize<BaseResponse>(json!, options) ??
-                                            throw new InvalidOperationException();
 
             return baseResponse!;
 
@@ -120,7 +106,7 @@ public class ProxyCliente
 
         try
         {
-            var response = await _HttpClient.DeleteAsync(url);
+            var response = await _httpClient.DeleteAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -140,7 +126,7 @@ public class ProxyCliente
         try
         {
             string url = $"api/Cliente/List";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
 
             return response!;
         }

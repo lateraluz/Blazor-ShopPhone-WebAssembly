@@ -10,37 +10,37 @@
         <h5 class="card-header">Editar Cliente</h5>
         <div class="card-body border-radius: .5rem ">
 
-            <EditForm Model="@_ClienteDTO" OnSubmit="OnSave">
+            <EditForm Model="@_clienteDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Código Cliente</label>
-                        <input type="number" class="form-control" disabled placeholder="Código del Cliente" @bind-value="@_ClienteDTO.IdCliente">
+                        <input type="number" class="form-control" disabled placeholder="Código del Cliente" @bind-value="@_clienteDTO.IdCliente">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" placeholder="Nombre" @bind-value="@_ClienteDTO.Nombre">
+                        <input type="text" class="form-control" placeholder="Nombre" @bind-value="@_clienteDTO.Nombre">
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" placeholder="Apellidos" @bind-value="@_ClienteDTO.Apellidos">
+                        <input type="text" class="form-control" placeholder="Apellidos" @bind-value="@_clienteDTO.Apellidos">
                     </div>
                     <div class="col-md-6 ">
                         <label class="form-label">Fecha Nac.</label>
-                        <input type="date" class="form-control" placeholder="Fecha Nac" @bind-value="@_ClienteDTO.FechaNacimiento">
+                        <input type="date" class="form-control" placeholder="Fecha Nac" @bind-value="@_clienteDTO.FechaNacimiento">
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Correo</label>
-                        <input type="email" class="form-control" placeholder="Correo Electrónico" @bind-value="@_ClienteDTO.CorreoElectronico">
+                        <input type="email" class="form-control" placeholder="Correo Electrónico" @bind-value="@_clienteDTO.CorreoElectronico">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Telefono</label>
-                        <input type="text" class="form-control" placeholder="Telefono" @bind-value="@_ClienteDTO.Telefono">
+                        <input type="text" class="form-control" placeholder="Telefono" @bind-value="@_clienteDTO.Telefono">
                     </div>
                 </div>
 
@@ -49,13 +49,13 @@
                         <label class="form-check-label">Estado</label>
                     </div>
                     <div class=" form-switch  col-md-11  mx-3">
-                        <input class="form-check-input" type="checkbox" @bind-value="@_ClienteDTO.Estado" checked="@(_ClienteDTO.Estado? "checked":null)">
+                        <input class="form-check-input" type="checkbox" @bind-value="@_clienteDTO.Estado" checked="@(_clienteDTO.Estado? "checked":null)">
                     </div>
                 </div>
 
 
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary  ">Salvar</button>                  
+                    <button type="submit" class="btn btn-primary  ">Salvar</button>
                     <button class="btn btn-warning  " @onclick="OnReturn">Salir</button>
                 </div>
 
@@ -67,7 +67,8 @@
 
 @code {
 
-    private ClienteDTO _ClienteDTO { get; set; } = new() { Estado = true };
+    private ClienteDTO _clienteDTO { get; set; } = new() { Estado = true };
+
     [Parameter]
     public int Id { get; set; }
 
@@ -89,14 +90,10 @@
                 return;
             }
 
-            _ClienteDTO = response!.Data!.ToList()[0];
-
-
+            _clienteDTO = response!.Data!.ToList()[0];
         }
         catch (Exception ex)
         {
-
-
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -110,7 +107,7 @@
 
     private void OnClear()
     {
-        _ClienteDTO = new() { Estado = true };
+        _clienteDTO = new() { Estado = true };
     }
 
     private void OnReturn()
@@ -123,11 +120,11 @@
         try
         {
             // Validations
-            if (_ClienteDTO.IdCliente <= 0)
+            if (_clienteDTO.IdCliente <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
-                        Text = $"El código del cliente no puede ser {_ClienteDTO.IdCliente} ",
+                        Text = $"El código del cliente no puede ser {_clienteDTO.IdCliente} ",
                         Title = "Atención",
                         Icon = SweetAlertIcon.Warning,
                         ShowCloseButton = true,
@@ -137,7 +134,7 @@
                 return;
             }
 
-            if (string.IsNullOrEmpty(_ClienteDTO.Nombre) || string.IsNullOrEmpty(_ClienteDTO.Apellidos))
+            if (string.IsNullOrEmpty(_clienteDTO.Nombre) || string.IsNullOrEmpty(_clienteDTO.Apellidos))
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -152,7 +149,7 @@
             }
 
 
-            if (string.IsNullOrEmpty(_ClienteDTO.CorreoElectronico))
+            if (string.IsNullOrEmpty(_clienteDTO.CorreoElectronico))
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -167,7 +164,7 @@
             }
 
 
-            var response = await ProxyCliente.UpdateAsync(Id, _ClienteDTO);
+            var response = await ProxyCliente.UpdateAsync(Id, _clienteDTO);
 
             if (response.Success)
             {
@@ -193,13 +190,11 @@
             }
 
 
-            _ClienteDTO = new() { Estado = true };
+            _clienteDTO = new() { Estado = true };
 
         }
         catch (Exception ex)
-        {
-
-
+        { 
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,

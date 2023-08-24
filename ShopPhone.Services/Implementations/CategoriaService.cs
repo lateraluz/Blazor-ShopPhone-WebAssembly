@@ -19,15 +19,15 @@ namespace ShopPhone.Services.Implementations;
 public class CategoriaService : ICategoriaService
 {
 
-    private ICategoriaRepository _CategoriaRepository;
-    private readonly IMapper _Mapper;
-    private ILog _Logger;
+    private ICategoriaRepository _categoriaRepository;
+    private readonly IMapper _mapper;
+    private ILog _logger;
 
     public CategoriaService(ICategoriaRepository repository, IMapper mapper, ILog logger)
     {
-        _CategoriaRepository = repository;
-        _Mapper = mapper;
-        _Logger = logger;
+        _categoriaRepository = repository;
+        _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> FindByDescriptionAsync(string description)
@@ -36,17 +36,17 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var collection = await _CategoriaRepository.FindByDescriptionAsync(description);
+            var collection = await _categoriaRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<CategoriaDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
 
             return response;
         }
         catch (Exception e)
         {
             Exception ex = e;
-            _Logger.Error(ex);
+            _logger.Error(ex);
             throw;
         }
     }
@@ -58,17 +58,17 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var collection = await _CategoriaRepository.ListAsync();
+            var collection = await _categoriaRepository.ListAsync();
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<CategoriaDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
 
             return response;
         }
         catch (Exception e)
         {
             Exception ex = e;
-            _Logger.Error(ex);
+            _logger.Error(ex);
             throw;
         }
     }
@@ -79,11 +79,11 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var @object = _Mapper.Map<Categorium>(identitiy);
-            response.Data = await _CategoriaRepository.AddAsync(@object);
+            var @object = _mapper.Map<Categorium>(identitiy);
+            response.Data = await _categoriaRepository.AddAsync(@object);
             response.Success = true;
 
-            _Logger.Info("Categoria agregado con exito");
+            _logger.Info("Categoria agregado con exito");
 
             return response;
         }
@@ -91,7 +91,7 @@ public class CategoriaService : ICategoriaService
         {
             response.Success = false;
             response.ErrorMessage = "Error al Agregar el Categoria";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 
@@ -104,14 +104,14 @@ public class CategoriaService : ICategoriaService
         var response = new BaseResponse();
         try
         {
-            await _CategoriaRepository.DeleteAsync(id);
+            await _categoriaRepository.DeleteAsync(id);
             response.Success = true;
             return response;
         }
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Eliminar";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 
@@ -123,10 +123,10 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var entity = await _CategoriaRepository.FindAsync(id);
+            var entity = await _categoriaRepository.FindAsync(id);
 
             response.Success = true;
-            var @object = _Mapper.Map<CategoriaDTO>(entity);
+            var @object = _mapper.Map<CategoriaDTO>(entity);
             List<CategoriaDTO> lista = new List<CategoriaDTO>();
             lista.Add(@object);
             response.Data = lista;
@@ -135,7 +135,7 @@ public class CategoriaService : ICategoriaService
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             throw;
         }
     }
@@ -146,7 +146,7 @@ public class CategoriaService : ICategoriaService
 
         try
         {
-            var entity = await _CategoriaRepository.FindAsync(id);
+            var entity = await _categoriaRepository.FindAsync(id);
             if (entity == null)
             {
                 response.Success = false;
@@ -156,9 +156,9 @@ public class CategoriaService : ICategoriaService
 
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
-            _Mapper.Map(request, entity);
+            _mapper.Map(request, entity);
 
-            await _CategoriaRepository.UpdateAsync();
+            await _categoriaRepository.UpdateAsync();
             response.Success = true;
             return response;
 
@@ -166,7 +166,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Actualizar el Genero";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 

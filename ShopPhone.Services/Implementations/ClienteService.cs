@@ -12,18 +12,17 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Services.Implementations;
 
-
 public class ClienteService : IClienteService
 {
-    private IClienteRepository _ClienteRepository;
-    private readonly IMapper _Mapper;
-    private ILog _Logger;
+    private IClienteRepository _clienteRepository;
+    private readonly IMapper _mapper;
+    private ILog _logger;
 
     public ClienteService(IClienteRepository repository, IMapper mapper, ILog logger)
     {
-        _ClienteRepository = repository;
-        _Mapper = mapper;
-        _Logger = logger;
+        _clienteRepository = repository;
+        _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<BaseResponseGeneric<ICollection<ClienteDTO>>> FindByDescriptionAsync(string description)
@@ -32,17 +31,17 @@ public class ClienteService : IClienteService
 
         try
         {
-            var collection = await _ClienteRepository.FindByDescriptionAsync(description);
+            var collection = await _clienteRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<ClienteDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
 
             return response;
         }
         catch (Exception e)
         {
             Exception ex = e;
-            _Logger.Error(ex);
+            _logger.Error(ex);
             throw;
         }
     }
@@ -54,17 +53,17 @@ public class ClienteService : IClienteService
 
         try
         {
-            var collection = await _ClienteRepository.ListAsync();
+            var collection = await _clienteRepository.ListAsync();
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<ClienteDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
 
             return response;
         }
         catch (Exception e)
         {
             Exception ex = e;
-            _Logger.Error(ex);
+            _logger.Error(ex);
             throw;
         }
     }
@@ -75,11 +74,11 @@ public class ClienteService : IClienteService
 
         try
         {
-            var @object = _Mapper.Map<Cliente>(identitiy);
-            response.Data = await _ClienteRepository.AddAsync(@object);
+            var @object = _mapper.Map<Cliente>(identitiy);
+            response.Data = await _clienteRepository.AddAsync(@object);
             response.Success = true;
 
-            _Logger.Info("Cliente agregado con exito");
+            _logger.Info("Cliente agregado con exito");
 
             return response;
         }
@@ -87,7 +86,7 @@ public class ClienteService : IClienteService
         {
             response.Success = false;
             response.ErrorMessage = "Error al Agregar el Cliente";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 
@@ -100,14 +99,14 @@ public class ClienteService : IClienteService
         var response = new BaseResponse();
         try
         {
-            await _ClienteRepository.DeleteAsync(id);
+            await _clienteRepository.DeleteAsync(id);
             response.Success = true;
             return response;
         }
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Eliminar";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 
@@ -119,10 +118,10 @@ public class ClienteService : IClienteService
 
         try
         {
-            var entity = await _ClienteRepository.FindAsync(id);
+            var entity = await _clienteRepository.FindAsync(id);
 
             response.Success = true;
-            var @object = _Mapper.Map<ClienteDTO>(entity);
+            var @object = _mapper.Map<ClienteDTO>(entity);
             List<ClienteDTO> lista = new List<ClienteDTO>();
             lista.Add(@object);
             response.Data = lista;
@@ -131,7 +130,7 @@ public class ClienteService : IClienteService
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             throw;
         }
     }
@@ -142,7 +141,7 @@ public class ClienteService : IClienteService
 
         try
         {
-            var entity = await _ClienteRepository.FindAsync(id);
+            var entity = await _clienteRepository.FindAsync(id);
             if (entity == null)
             {
                 response.Success = false;
@@ -152,9 +151,9 @@ public class ClienteService : IClienteService
 
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
-            _Mapper.Map(request, entity);
+            _mapper.Map(request, entity);
 
-            await _ClienteRepository.UpdateAsync();
+            await _clienteRepository.UpdateAsync();
             response.Success = true;
             return response;
 
@@ -162,7 +161,7 @@ public class ClienteService : IClienteService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Actualizar el Cliente";
-            _Logger.Error(ex.Message);
+            _logger.Error(ex.Message);
             return response;
         }
 

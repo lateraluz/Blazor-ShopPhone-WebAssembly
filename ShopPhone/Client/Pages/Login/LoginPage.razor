@@ -5,8 +5,11 @@
 @inject NavigationManager NavigationManager
 @inject ProxyUser ProxyUser
 @inject SweetAlertService Swal
+@inject IJSRuntime JS
 
 <PageTitle>Login Versión @typeof(Program).Assembly.GetName().Version</PageTitle>
+
+ 
 
 <div class="container">
     <div class="row justify-content-center">
@@ -32,8 +35,8 @@
                             <button class="btn btn-primary" type="submit">Ingresar</button>
                         </div>
                     </EditForm>
-                    <div class="d-flex justify-content-end mt-2">                        
-                            Version @typeof(Program).Assembly.GetName().Version                       
+                    <div class="d-flex justify-content-end mt-2">
+                        Version @typeof(Program).Assembly.GetName().Version
                     </div>
                 </div>
                 <!--
@@ -49,6 +52,9 @@
 
 <ComponentLoading IsLoading="IsLoading">
 </ComponentLoading>
+
+
+
 
 @code {
 
@@ -67,7 +73,7 @@
     {
         try
         {
-            IsLoading = true; ;
+            IsLoading = true;
             var response = await ProxyUser.LoginAsync(LoginRequest);
 
             if (response.Success)
@@ -76,7 +82,10 @@
                 NavigationManager.NavigateTo("/main");
             }
             else
-            {
+            { 
+                IsLoading = false;
+                // https://learn.microsoft.com/en-us/aspnet/core/blazor/components/lifecycle?view=aspnetcore-7.0
+                StateHasChanged();
                 _ = await Swal.FireAsync(new SweetAlertOptions
                     {
                         Text = response.ErrorMessage!,
@@ -88,8 +97,9 @@
 
         }
         catch (Exception ex)
-        {
+        {            
             IsLoading = false;
+            StateHasChanged();
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -103,6 +113,7 @@
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 

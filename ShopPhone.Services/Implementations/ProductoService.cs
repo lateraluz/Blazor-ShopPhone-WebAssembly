@@ -18,17 +18,17 @@ namespace ShopPhone.Services.Implementations;
 public class ProductoService : IProductoService
 {
 
-    private IProductoRepository _ProductoRepository;
-    private readonly IMapper _Mapper;
-    private ILog _Logger;
-    private IFileUploader _FileUploader;
+    private IProductoRepository _productoRepository;
+    private readonly IMapper _mapper;
+    private ILog _logger;
+    private IFileUploader _fileUploader;
 
     public ProductoService(IProductoRepository repository, IMapper mapper, ILog logger, IFileUploader fileUploader)
     {
-        _ProductoRepository = repository;
-        _Mapper = mapper;
-        _Logger = logger;
-        _FileUploader = fileUploader;
+        _productoRepository = repository;
+        _mapper = mapper;
+        _logger = logger;
+        _fileUploader = fileUploader;
     }
 
     public async Task<BaseResponseGeneric<ICollection<ProductoDTO>>> FindByDescriptionAsync(string description)
@@ -37,10 +37,10 @@ public class ProductoService : IProductoService
 
         try
         {
-            var collection = await _ProductoRepository.FindByDescriptionAsync(description);
+            var collection = await _productoRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<ProductoDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<ProductoDTO>>(collection);
 
             return response;
         }
@@ -48,7 +48,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage = $"Error al buscar el Producto con al descripción {description}";
-            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
             throw;
         }
@@ -59,21 +59,21 @@ public class ProductoService : IProductoService
         BaseResponse response = new BaseResponse();
         try
         {
-            identity.URLImagen = await _FileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
+            identity.URLImagen = await _fileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
 
-            var @object = _Mapper.Map<Producto>(identity);
+            var @object = _mapper.Map<Producto>(identity);
 
-            var baseResponse = await _ProductoRepository.AddAsync(@object);
+            var baseResponse = await _productoRepository.AddAsync(@object);
             response.Success = true;
             response.ErrorMessage = baseResponse.ErrorMessage;
-            _Logger.Info($"Producto agregado con exito");
+            _logger.Info($"Producto agregado con exito");
             return response;
         }
         catch (Exception ex)
         {
             response.Success = false;
             response.ErrorMessage = $"Error al Agregar el Producto {identity.IdProducto}- {identity.Descripcion}";
-            _Logger.Error($"{response.ErrorMessage} {identity.IdProducto} {identity.Descripcion} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage} {identity.IdProducto} {identity.Descripcion} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
     }
@@ -83,7 +83,7 @@ public class ProductoService : IProductoService
         var response = new BaseResponse();
         try
         {
-            await _ProductoRepository.DeleteAsync(id);
+            await _productoRepository.DeleteAsync(id);
             response.Success = true;
             return response;
         }
@@ -91,7 +91,7 @@ public class ProductoService : IProductoService
         {            
             response.Success = false;
             response.ErrorMessage = $"Error al eliminar el Producto {id}";
-            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -103,10 +103,10 @@ public class ProductoService : IProductoService
 
         try
         {
-            var entity = await _ProductoRepository.FindAsync(id);
+            var entity = await _productoRepository.FindAsync(id);
 
             response.Success = true;
-            var @object = _Mapper.Map<ProductoDTO>(entity);
+            var @object = _mapper.Map<ProductoDTO>(entity);
             List<ProductoDTO> lista = new List<ProductoDTO>();
             lista.Add(@object);
             response.Data = lista;
@@ -117,7 +117,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage =$"Error al Buscar  el Producto {id}";
-            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -128,7 +128,7 @@ public class ProductoService : IProductoService
 
         try
         {
-            var entity = await _ProductoRepository.FindAsync(id);
+            var entity = await _productoRepository.FindAsync(id);
             if (entity == null)
             {
                 response.Success = false;
@@ -137,13 +137,13 @@ public class ProductoService : IProductoService
             }
              
             if (!string.IsNullOrEmpty(identity.Base64Image) == true)
-                identity.URLImagen = await _FileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
+                identity.URLImagen = await _fileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
 
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
-            _Mapper.Map(identity, entity);
+            _mapper.Map(identity, entity);
 
-            await _ProductoRepository.UpdateAsync();
+            await _productoRepository.UpdateAsync();
             response.Success = true;
             return response;
 
@@ -152,7 +152,7 @@ public class ProductoService : IProductoService
         {             
             response.Success = false;
             response.ErrorMessage = $"Error al Actualizar el Producto {id}";
-            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -164,10 +164,10 @@ public class ProductoService : IProductoService
 
         try
         {
-            var collection = await _ProductoRepository.ListAsync();
+            var collection = await _productoRepository.ListAsync();
 
             response.Success = true;
-            response.Data = _Mapper.Map<ICollection<ProductoDTO>>(collection);
+            response.Data = _mapper.Map<ICollection<ProductoDTO>>(collection);
 
             return response;
         }
@@ -175,7 +175,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage = $"Error al listar producto";
-            _Logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

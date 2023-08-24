@@ -12,14 +12,14 @@
             <div class="row mb-2">
                 <div class="col-md-6">
                     <label for="name" class="col-form-label">Código:</label>
-                    <input type="number" class="form-control" id="IdCategoria" disabled @bind-value="@_CategoriaDTO.IdCategoria" />
+                    <input type="number" class="form-control" id="IdCategoria" disabled @bind-value="@_categoriaDTO.IdCategoria" />
                 </div>
             </div>
 
             <div class="row mb-2">
                 <div class="col-md-6">
                     <label class="col-form-label">Categoria:</label>
-                    <input type="text" class="form-control" @bind-value="@_CategoriaDTO.NombreCategoria" />
+                    <input type="text" class="form-control" @bind-value="@_categoriaDTO.NombreCategoria" />
                 </div>
             </div>
 
@@ -29,7 +29,7 @@
                 </div>
                 <div class="custom-control custom-switch">
                     <div class="form-switch  col-md-11 ">
-                        <input class="form-check-input" type="checkbox" @bind-value="@_CategoriaDTO.Estado" checked="@(_CategoriaDTO.Estado? "checked":null)">
+                        <input class="form-check-input" type="checkbox" @bind-value="@_categoriaDTO.Estado" checked="@(_categoriaDTO.Estado? "checked":null)">
                     </div>
                 </div>
             </div>
@@ -38,17 +38,14 @@
                 <button class="btn btn-primary w-25" @onclick="()=> OnSave()">Salvar</button>
                 <button class="btn btn-warning  w-25" @onclick="OnClose">Salir</button>
             </div>
-           @* <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>*@
         </div>
     </div>
 </div>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public int Id { get; set; }
-
-    public bool _FormPostedSuccessfully { get; set; }
-    private CategoriaDTO _CategoriaDTO { get; set; } = new();
+    private CategoriaDTO _categoriaDTO { get; set; } = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -58,7 +55,7 @@
             var response = await ProxyCategoria.FindByIdAsync(Id);
             if (response.Success == true)
             {
-                _CategoriaDTO = response.Data!.ToList()[0];
+                _categoriaDTO = response.Data!.ToList()[0];
             }
             else
             {
@@ -82,33 +79,7 @@
                 });
         }
     }
-
-    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
-    {
-        var response = await Swal.FireAsync(new SweetAlertOptions
-            {
-                Text = $"Desea salir y perder los datos ingresados",
-                Title = "Atención",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-                ShowConfirmButton = true
-            });
-
-        if (!response.IsConfirmed)
-        {
-            context.PreventNavigation();
-        }
-
-        /*
-        // Si sirve
-        var isConfirm = await JS.InvokeAsync<bool>("confirm", "Salir sin salvar cambios ?");
-        if (!isConfirm)
-        {
-            context.PreventNavigation();
-        }
-        */
-    }
-   
+     
 
     private void OnClose()
     {
@@ -119,18 +90,46 @@
     {
         try
         {
-            await ProxyCategoria.UpdateAsync(Id, _CategoriaDTO);
 
-            await Swal.FireAsync(new SweetAlertOptions()
-                {
-                    Title = "Atención",
-                    Text = "Registro actualizado con exito",
-                    Icon = SweetAlertIcon.Success,
-                    Timer = 1500,
-                    TimerProgressBar = true
-                });
+            if (string.IsNullOrEmpty(_categoriaDTO.NombreCategoria))
+            {
+                await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = $"La descripción de la categoría es requerido ",
+                        Title = "Atención",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                        Timer = 1500
+                    });
+                return;
+            }
 
-            NavigationManager.NavigateTo("CategoriaListPage");
+            var response = await ProxyCategoria.UpdateAsync(Id, _categoriaDTO);
+
+            if (response.Success)
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = "Atención",
+                        Text = "Registro actualizado con exito",
+                        Icon = SweetAlertIcon.Success,
+                        Timer = 1500,
+                        TimerProgressBar = true
+                    });
+
+                NavigationManager.NavigateTo("CategoriaListPage");
+            }
+            else
+            {
+                _ = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = response.ErrorMessage,
+                        Title = "Error",
+                        Icon = SweetAlertIcon.Error,
+                        ShowCloseButton = true
+                    });
+            }
         }
         catch (Exception ex)
         {
@@ -143,7 +142,4 @@
                 });
         }
     }
-
-
-
 }

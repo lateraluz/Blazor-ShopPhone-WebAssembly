@@ -17,12 +17,12 @@ namespace ShopPhone.Server.Controllers
     public class ClienteController : ControllerBase
     {
 
-        private IClienteService _ClienteService;
-        private ILog _Logger;
+        private IClienteService _clienteService;
+        private ILog _logger;
         public ClienteController(IClienteService service, ILog logger)
         {
-            _ClienteService = service;
-            _Logger = logger;
+            _clienteService = service;
+            _logger = logger;
         }
 
         [HttpGet("FindByDescription")]
@@ -30,13 +30,13 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.FindByDescriptionAsync(description);
+                var response = await _clienteService.FindByDescriptionAsync(description);
 
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -47,13 +47,13 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.ListAsync();
+                var response = await _clienteService.ListAsync();
 
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -65,12 +65,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.UpdateAsync(id, request);
+                var response = await _clienteService.UpdateAsync(id, request);
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -80,12 +80,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.FindByIdAsync(id);
+                var response = await _clienteService.FindByIdAsync(id);
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -95,12 +95,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.AddAsync(request);
+                var response = await _clienteService.AddAsync(request);
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -112,12 +112,12 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
-                var response = await _ClienteService.DeleteAsync(id);
+                var response = await _clienteService.DeleteAsync(id);
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }

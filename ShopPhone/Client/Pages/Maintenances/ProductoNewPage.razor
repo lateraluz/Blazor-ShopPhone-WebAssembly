@@ -13,23 +13,23 @@
         <h5 class="card-header">Agregar Producto</h5>
         <div class="card-body border-radius: .5rem ">
 
-            <EditForm Model="@_ProductoDTO" OnSubmit="OnSave">
+            <EditForm Model="@_productoDTO" OnSubmit="OnSave">
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Código Producto</label>
-                        <input type="number" class="form-control" placeholder="Código del Producto" @bind-value="@_ProductoDTO.IdProducto">
+                        <input type="number" class="form-control" placeholder="Código del Producto" @bind-value="@_productoDTO.IdProducto">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nombre del Producto</label>
-                        <input type="text" class="form-control" placeholder="Nombre Producto" @bind-value="@_ProductoDTO.Descripcion">
+                        <input type="text" class="form-control" placeholder="Nombre Producto" @bind-value="@_productoDTO.Descripcion">
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6 ">
                         <label class="form-label">Categoría</label>
-                        <InputSelect class="form-select" @bind-Value="@_ProductoDTO.IdCategoria" id="categoria">
-                            @foreach (var item in _ListCategoria)
+                        <InputSelect class="form-select" @bind-Value="@_productoDTO.IdCategoria" id="categoria">
+                            @foreach (var item in _listCategoria)
                             {
                                 <option value="@item.IdCategoria">@item.NombreCategoria</option>
                             }
@@ -38,18 +38,18 @@
                     </div>
                     <div class="col-md-6 ">
                         <label class="form-label">Stock Inventario</label>
-                        <input type="number" class="form-control" placeholder="Stock Inventario" @bind-value="@_ProductoDTO.Inventario">
+                        <input type="number" class="form-control" placeholder="Stock Inventario" @bind-value="@_productoDTO.Inventario">
                     </div>
                 </div>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label">Precio Unitario</label>
-                        <input type="number" class="form-control" placeholder="Precio Unitario" @bind-value="@_ProductoDTO.PrecioUnitario">
+                        <input type="number" class="form-control" placeholder="Precio Unitario" @bind-value="@_productoDTO.PrecioUnitario">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Comentarios</label>
-                        <input type="text" class="form-control" placeholder="Comentarios" @bind-value="@_ProductoDTO.Comentarios">
+                        <input type="text" class="form-control" placeholder="Comentarios" @bind-value="@_productoDTO.Comentarios">
                     </div>
                 </div>
 
@@ -58,22 +58,22 @@
                         <label class="form-check-label">Estado</label>
                     </div>
                     <div class=" form-switch  col-md-11  mx-3">
-                        <input class="form-check-input" type="checkbox" @bind-value="@_ProductoDTO.Estado" checked="@(_ProductoDTO.Estado? "checked":null)">
+                        <input class="form-check-input" type="checkbox" @bind-value="@_productoDTO.Estado" checked="@(_productoDTO.Estado? "checked":null)">
                     </div>
                 </div>
 
                 <div class="col mb-2">
                     <div class="card">
                         <div class="card-body">
-                            @if (_ProductoDTO.Base64Image is not null)
+                            @if (_productoDTO.Base64Image is not null)
                             {
                                 <div style="margin:10px">
-                                    <img src="data:image/jpeg;base64,@_ProductoDTO.Base64Image" style="width: 150px;height: 150px" />
+                                    <img src="data:image/jpeg;base64,@_productoDTO.Base64Image" style="width: 150px;height: 150px" />
                                 </div>
                             }
                             else
                             {
-                                <img src="@_ProductoDTO.URLImagen" style="width: 150px" />
+                                <img src="@_productoDTO.URLImagen" style="width: 150px" />
                             }
                         </div>
                         <div class="card-footer">
@@ -97,9 +97,8 @@
 
 
 @code {
-    private ProductoDTO _ProductoDTO { get; set; } = new() { Estado = true };
-    private List<CategoriaDTO> _ListCategoria { get; set; } = new();
-
+    private ProductoDTO _productoDTO { get; set; } = new() { Estado = true };
+    private List<CategoriaDTO> _listCategoria { get; set; } = new(); 
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,8 +116,8 @@
         {
             var response = await ProxyCategoria.ListAsync();
 
-            _ListCategoria = response.Data!.ToList();
-            _ProductoDTO.IdCategoria = 0;
+            _listCategoria = response.Data!.ToList();
+            _productoDTO.IdCategoria = 0;
         }
         catch (Exception ex)
         {
@@ -135,7 +134,7 @@
 
     private void OnClear()
     {
-        _ProductoDTO = new ProductoDTO() { Estado = true };
+        _productoDTO = new ProductoDTO() { Estado = true };
 
     }
 
@@ -144,11 +143,11 @@
         try
         {
             // Validations
-            if (_ProductoDTO.IdProducto <= 0)
+            if (_productoDTO.IdProducto <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
-                        Text = $"El código de Producto no puede ser {_ProductoDTO.IdProducto} ",
+                        Text = $"El código de Producto no puede ser {_productoDTO.IdProducto} ",
                         Title = "Atención",
                         Icon = SweetAlertIcon.Warning,
                         ShowCloseButton = true,
@@ -158,7 +157,7 @@
                 return;
             }
 
-            if (string.IsNullOrEmpty(_ProductoDTO.Descripcion))
+            if (string.IsNullOrEmpty(_productoDTO.Descripcion))
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -173,7 +172,7 @@
             }
 
 
-            if (_ProductoDTO.Inventario < 0)
+            if (_productoDTO.Inventario < 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -187,7 +186,7 @@
                 return;
             }
 
-            if (_ProductoDTO.PrecioUnitario <= 0)
+            if (_productoDTO.PrecioUnitario <= 0)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -201,7 +200,7 @@
                 return;
             }
 
-            if (string.IsNullOrEmpty(_ProductoDTO.Base64Image) == true)
+            if (string.IsNullOrEmpty(_productoDTO.Base64Image) == true)
             {
                 await Swal.FireAsync(new SweetAlertOptions
                     {
@@ -216,7 +215,7 @@
             }
 
 
-            var response = await ProxyProducto.AddAsync(_ProductoDTO);
+            var response = await ProxyProducto.AddAsync(_productoDTO);
 
             if (!response.Success)
             {
@@ -241,13 +240,11 @@
                 });
 
             OnClear();
-            _ProductoDTO = new ProductoDTO();
-            _ProductoDTO.Estado = true;
+            _productoDTO = new ProductoDTO();
+            _productoDTO.Estado = true;
         }
-        catch (Exception e)
-        {
-            Exception ex = e;
-
+        catch (Exception ex)
+        {  
             _ = await Swal.FireAsync(new SweetAlertOptions
                 {
                     Text = ex.Message,
@@ -266,9 +263,9 @@
             var buffer = new byte[imagen.Size];
             var _ = await imagen.OpenReadStream().ReadAsync(buffer);
 
-            _ProductoDTO.Base64Image = Convert.ToBase64String(buffer);
-            _ProductoDTO.FileName = imagen.Name;
-            _ProductoDTO.URLImagen = "";
+            _productoDTO.Base64Image = Convert.ToBase64String(buffer);
+            _productoDTO.FileName = imagen.Name;
+            _productoDTO.URLImagen = "";
         }
         catch (Exception ex)
         {

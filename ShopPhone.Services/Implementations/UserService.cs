@@ -23,15 +23,15 @@ namespace ShopPhone.Services.Implementations;
 public class UserService : IUserService
 {
 
-    private readonly IOptions<AppConfig> _Options;
-    private IUserRepository _UserRepository;
-    private ILog _Logger;
+    private readonly IOptions<AppConfig> _options;
+    private IUserRepository _userRepository;
+    private ILog _logger;
 
     public UserService(IOptions<AppConfig> options, IUserRepository repository, ILog logger)
     {
-        _Options = options;
-        _UserRepository = repository;
-        _Logger = logger;
+        _options = options;
+        _userRepository = repository;
+        _logger = logger;
 
     }
 
@@ -43,7 +43,7 @@ public class UserService : IUserService
         List<string> roles = new List<string>();
         try
         {
-            var user = await _UserRepository.FindAsync(request.UserName.Trim());
+            var user = await _userRepository.FindAsync(request.UserName.Trim());
 
             // Encriptar para comparar
             passwordCrypted = Cryptography.EncryptAes(request.Password.Trim());
@@ -51,19 +51,19 @@ public class UserService : IUserService
 
             if (user == null)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario no existe {request.UserName}");
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario no existe {request.UserName}");
                 throw new SecurityException("Usuario no existe");
             }
 
             if (!user.Estado)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario está deshabilitado {request.UserName}");
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario está deshabilitado {request.UserName}");
                 throw new SecurityException("Usuario deshabilitado, contacte al administrador");
             }
 
             if (user.Contrasena.Trim().Equals(passwordCrypted.Trim()) == false)
             {
-                _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario con contraseña no valida: {request.UserName}");
+                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario con contraseña no valida: {request.UserName}");
                 throw new SecurityException("Verfique su usuario / contraseña");
             }
 
@@ -82,14 +82,14 @@ public class UserService : IUserService
             claims.AddRange(roles.Select(c => new Claim(ClaimTypes.Role, c)));
            
             // Creacion del JWT
-            var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Options.Value.Jwt.SecretKey));
+            var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Jwt.SecretKey));
 
             var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
 
             var header = new JwtHeader(credentials);
 
-            var payload = new JwtPayload(_Options.Value.Jwt.Issuer,
-                _Options.Value.Jwt.Audience,
+            var payload = new JwtPayload(_options.Value.Jwt.Issuer,
+                _options.Value.Jwt.Audience,
                 claims,
                 DateTime.Now,
                 expiredDate);
@@ -106,14 +106,14 @@ public class UserService : IUserService
         catch (SecurityException ex1)
         {
             response.ErrorMessage = ex1.Message;
-            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
+            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
             return response;
 
         }
         catch (Exception ex2)
         {
             response.ErrorMessage = "Error al momento de hacer la autenticacion";
-            _Logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
+            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
             return response; 
         }
 

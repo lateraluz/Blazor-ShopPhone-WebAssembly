@@ -20,13 +20,13 @@ namespace ShopPhone.Server.Controllers;
 [EnableRateLimiting("concurrency")]
 public class VentaController : ControllerBase
 {
-    private IVentaService _VentaService;
-    private ILog _Logger;
+    private IVentaService _ventaService;
+    private ILog _logger;
 
     public VentaController(IVentaService service, ILog logger)
     {
-        _VentaService = service;
-        _Logger = logger;
+        _ventaService = service;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -34,13 +34,13 @@ public class VentaController : ControllerBase
     {
         try
         {
-            var response = await _VentaService.AddAsync(request);
+            var response = await _ventaService.AddAsync(request);
 
             return response.Success ? Ok(response) : NotFound(response);
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -50,13 +50,13 @@ public class VentaController : ControllerBase
     {
         try
         {
-            var response = await _VentaService.ListAsync();
+            var response = await _ventaService.ListAsync();
 
             return response.Success ? Ok(response) : NotFound(response);
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -68,12 +68,12 @@ public class VentaController : ControllerBase
     {
         try
         {
-            var response = await _VentaService.FindByIdAsync(id);
+            var response = await _ventaService.FindByIdAsync(id);
             return response.Success ? Ok(response) : NotFound(response);
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }    
