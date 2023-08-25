@@ -20,6 +20,7 @@ using HealthChecks.UI.Client;
 using static System.Net.WebRequestMethods;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NuGet.Protocol;
+using ShopPhone.Server.Performance;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +43,8 @@ builder.Services.AddHealthChecks()
                  .AddCheck<DirectoryHealthCheck>("VirtualDirectory");
 builder.Services.AddHealthChecksUI(option =>
                                     {
-                                        option.SetMinimumSecondsBetweenFailureNotifications(55);
-                                        option.SetEvaluationTimeInSeconds(5); // Time in seconds between check
+                                        option.SetMinimumSecondsBetweenFailureNotifications(60);
+                                        option.SetEvaluationTimeInSeconds(120); // Time in seconds between check
                                         option.MaximumHistoryEntriesPerEndpoint(60); //maximum history of checks
                                         option.SetApiMaxActiveRequests(1); //api requests concurrency
                                         option.AddHealthCheckEndpoint("My Services", "/health"); // End Point get data
@@ -157,6 +158,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+MethodTimeLogger.Logger = LogManager.GetLogger(typeof(Program)); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

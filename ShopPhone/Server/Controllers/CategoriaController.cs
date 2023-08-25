@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Shared.Response;
 using ShopPhone.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using MethodTimer;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -28,12 +29,13 @@ public class CategoriaController : ControllerBase
 
         // Global Cache Settings
         _cacheEntryOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromSeconds(36000))
-                        .SetAbsoluteExpiration(TimeSpan.FromSeconds(36000))
+                        .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                        .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
                         .SetPriority(CacheItemPriority.Normal)
                         .SetSize(1024);
     }
 
+    [Time("description = {description}")]
     [HttpGet("FindByDescription")]
     public async Task<IActionResult> FindByDescriptionAsync(string description)
     {
@@ -61,7 +63,7 @@ public class CategoriaController : ControllerBase
         }
     }
 
-
+    [Time]
     [HttpGet("List")]
     public async Task<IActionResult> ListAsync()
     {
@@ -72,13 +74,13 @@ public class CategoriaController : ControllerBase
             //Automatly Cache is clean once time is running out.
             if (_cache.TryGetValue("Categories", out IEnumerable<CategoriaDTO>? listaCategorias))
             {
-                _logger.Info("Read cache");
+                _logger.Info($"Read cache");
                 response.Success = true;
                 response.Data = listaCategorias!.ToList();
             }
             else
             {
-                _logger.Info("Cache created. Fetching from database.");
+                _logger.Info($"Cache created. Fetching from database.");
                 // Getting from Database
                 response = await _categoriaService.ListAsync();
                 // Create the cache 
@@ -94,7 +96,7 @@ public class CategoriaController : ControllerBase
         }
     }
 
-
+    [Time("Id = {id}")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Put(int id, CategoriaDTO request)
     {
@@ -125,6 +127,7 @@ public class CategoriaController : ControllerBase
         }
     }
 
+    [Time("Id = {id}")]
     [HttpGet("FindById")]
     public async Task<IActionResult> FindByIdAsync(int id)
     {
@@ -157,6 +160,7 @@ public class CategoriaController : ControllerBase
         }
     }
 
+    [Time]
     [HttpPost]
     public async Task<IActionResult> Post(CategoriaDTO request)
     {
@@ -185,7 +189,7 @@ public class CategoriaController : ControllerBase
     }
 
 
-
+    [Time("Id = {id}")]
     [HttpDelete("Delete")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
