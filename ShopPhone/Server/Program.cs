@@ -18,7 +18,8 @@ using ShopPhone.Server.Health;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using static System.Net.WebRequestMethods;
-
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NuGet.Protocol;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,7 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
-// Add Health checks
+// Add Health checks https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#UI-Storage-Providers
 builder.Services.AddHealthChecks()
                  .AddCheck<DatabaseHealthCheck>("Database")
                  .AddCheck<DirectoryHealthCheck>("VirtualDirectory");
@@ -46,8 +47,15 @@ builder.Services.AddHealthChecksUI(option =>
                                         option.MaximumHistoryEntriesPerEndpoint(60); //maximum history of checks
                                         option.SetApiMaxActiveRequests(1); //api requests concurrency
                                         option.AddHealthCheckEndpoint("My Services", "/health"); // End Point get data
-                                        option.AddWebhookNotification("webhook1", uri: "https://webhook.site/456d587c-7bb1-4fe6-bbd3-9e3cd6e06826", payload: "{\"error:\":\"Error in PhoneShop\"}"); // Tested https://webhook.site works!
-                                    }).AddInMemoryStorage();
+                                        option.AddWebhookNotification("MyWebhook1 https://webhook.site/", uri: "https://webhook.site/456d587c-7bb1-4fe6-bbd3-9e3cd6e06826", payload: "{\"error:\":\"Error in PhoneShop\"}"); // Tested https://webhook.site works!
+                                    }).AddSqlServerStorage(   
+                                        connectionString: builder.Configuration.GetConnectionString("HealthDataBaseTempdb")!, 
+                                        configureOptions => {
+                                            
+                                        },configureSqlServerOptions => {
+                                            configureSqlServerOptions.EnableRetryOnFailure(10);
+                                        }
+                                     );
 
 // Add Memory Cache
 builder.Services.AddMemoryCache();
