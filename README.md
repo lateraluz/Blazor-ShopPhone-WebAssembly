@@ -26,8 +26,8 @@ maria
 
 # How to Checking Healths
 1. Health (raw json)
-[![IMAGE ALT TEXT](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy.png)
+[![IMAGE](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy.png)
 
 2. Health UI
-[![IMAGE ALT TEXT](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy-ui.png)
+[![IMAGE](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy-ui.png)
 
