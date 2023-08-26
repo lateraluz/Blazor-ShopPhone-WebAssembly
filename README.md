@@ -23,12 +23,12 @@ admin
 
 maria
 123456*
-![1](https://user-images.githubusercontent.com/43474323/64068442-5da48580-cbf5-11e9-86fa-afcc998273f2.JPG)
+
 
 # How to Checking Healths
-1. Health (raw json)
+1. Health (raw json) <BR>
 ![1](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy.png)
 
-2. Health UI
+2. Health UI <BR>
 ![2](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy-ui.png)
 
