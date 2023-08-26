@@ -25,9 +25,11 @@ maria
 123456*
 
 # How to Checking Healths
-1. Health (raw json)
+Health (raw json)
+
 ![IMAGE](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy.png)
 
-2. Health UI
+Health UI
+
 ![IMAGE](https://github.com/lateraluz/Blazor-ShopPhone/blob/2947ce1ace8982479b46d27c9bb472f604a48723/Video/Healthy-ui.png)
 
