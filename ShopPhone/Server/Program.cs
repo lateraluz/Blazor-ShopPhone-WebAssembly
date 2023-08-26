@@ -40,7 +40,7 @@ builder.Services.AddTransient<IFileUploader, FileUploader>();
 // Add Health checks https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#UI-Storage-Providers
 builder.Services.AddHealthChecks()
                  .AddCheck<DatabaseHealthCheck>("Database")
-                 .AddCheck<DirectoryHealthCheck>("VirtualDirectory");
+                 .AddCheck<ImageHealthCheck>("ImageSite");
 builder.Services.AddHealthChecksUI(option =>
                                     {
                                         option.SetMinimumSecondsBetweenFailureNotifications(60);

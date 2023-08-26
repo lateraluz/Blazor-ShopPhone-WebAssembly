@@ -37,7 +37,7 @@ public class DatabaseHealthCheck : IHealthCheck
 
             if (response.ErrorMessage!.ToLower().Contains("Usuario".ToLower()))
             {
-                return await Task.FromResult(HealthCheckResult.Healthy());
+                return await Task.FromResult(HealthCheckResult.Healthy("Db response OK"));
             }
             else
             {
