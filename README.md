@@ -24,7 +24,7 @@ admin
 maria
 123456*
 
-# How to Checking Healths
+# How to Check Healths
 1. Health (raw json) <BR>
 ![1](https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy.png)
 
