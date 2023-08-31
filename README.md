@@ -40,5 +40,4 @@ maria
 5. Carrusel using swiper.js  Library
 6. Test cases
 7. Fix withdraw inventory
-8. Change Log4Net to Serilog
 
