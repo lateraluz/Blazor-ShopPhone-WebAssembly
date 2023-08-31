@@ -31,3 +31,14 @@ maria
 2. Health UI <BR>
 ![2](https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy-ui.png)
 
+
+# Todo
+1. Concurrency Control
+2. Drag and drop images
+3. Telemetry
+4. Refresh API JWT
+5. Carrusel using swiper.js  Library
+6. Test cases
+7. Fix withdraw inventory
+8. Change Log4Net to Serilog
+
