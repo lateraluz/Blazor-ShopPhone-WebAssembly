@@ -19,7 +19,8 @@ public static class MethodTimeLogger
         Logger.Info($"{methodBase.DeclaringType!.Name} {methodBase.Name} {timeSpan} {message}");
         
         // Dummy file just for testing
-        //File.AppendAllText(@"C:\Temp\ShopPhone\myMetrics.txt", $"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}  {timeSpan} {message} \n");
+        //File.AppendAllText(@"C:\Temp\ShopPhone\my
+        //s.txt", $"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}  {timeSpan} {message} \n");
     }
 
 }
