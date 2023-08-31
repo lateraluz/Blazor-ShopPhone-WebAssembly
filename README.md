@@ -32,7 +32,7 @@ maria
 ![2](https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy-ui.png)
 
 
-# Todo
+# To-Do
 1. Concurrency Control
 2. Drag and drop images
 3. Telemetry
