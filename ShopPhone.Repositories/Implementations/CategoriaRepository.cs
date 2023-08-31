@@ -1,20 +1,21 @@
-﻿using log4net;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
-
+using System.Reflection;
 namespace ShopPhone.Repositories.Implementations;
+
+using Microsoft.Extensions.Logging;
 
 
 public class CategoriaRepository : ICategoriaRepository
 {
 
-    private ILog _Logger;
+    private ILogger<CategoriaRepository> _logger;
     private readonly ShopPhoneContext _Context;                     
-    public CategoriaRepository(ShopPhoneContext context, ILog logger)
+    public CategoriaRepository(ShopPhoneContext context, ILogger<CategoriaRepository> logger)
     {
         _Context = context;
-        _Logger = logger;
+        _logger = logger;
     }
 
 
@@ -22,6 +23,8 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
+           
+
             var response = await _Context
                                 .Set<Categorium>()
                                 .AsNoTracking()
@@ -30,9 +33,9 @@ public class CategoriaRepository : ICategoriaRepository
             return response;
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -42,6 +45,8 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
+
+            _logger.LogInformation($"List all Categoria");
             var response = await _Context
                                 .Set<Categorium>()
                                  .AsNoTracking()
@@ -49,9 +54,9 @@ public class CategoriaRepository : ICategoriaRepository
             return response;
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -68,9 +73,9 @@ public class CategoriaRepository : ICategoriaRepository
             await _Context.Database.CommitTransactionAsync(); ;
             return entity.IdCategoria;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -88,12 +93,12 @@ public class CategoriaRepository : ICategoriaRepository
             }
             else
             {
-                throw new InvalidOperationException($"No se encontro el registro con el Id {id}");
+                throw new Exception($"No se encontro el registro con el Id {id}");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -107,9 +112,9 @@ public class CategoriaRepository : ICategoriaRepository
                                 .FindAsync(id);
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         } 
     } 
@@ -120,9 +125,9 @@ public class CategoriaRepository : ICategoriaRepository
         {
             await _Context.SaveChangesAsync();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 

@@ -1,18 +1,11 @@
 ﻿using AutoMapper;
-using Azure.Core;
-using log4net;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.Logging;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+
 
 namespace ShopPhone.Services.Implementations;
 
@@ -21,9 +14,9 @@ public class CategoriaService : ICategoriaService
 
     private ICategoriaRepository _categoriaRepository;
     private readonly IMapper _mapper;
-    private ILog _logger;
+    private ILogger<CategoriaService> _logger;
 
-    public CategoriaService(ICategoriaRepository repository, IMapper mapper, ILog logger)
+    public CategoriaService(ICategoriaRepository repository, IMapper mapper, ILogger<CategoriaService> logger)
     {
         _categoriaRepository = repository;
         _mapper = mapper;
@@ -46,7 +39,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception e)
         {
             Exception ex = e;
-            _logger.Error(ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -68,7 +61,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception e)
         {
             Exception ex = e;
-            _logger.Error(ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -83,7 +76,7 @@ public class CategoriaService : ICategoriaService
             response.Data = await _categoriaRepository.AddAsync(@object);
             response.Success = true;
 
-            _logger.Info("Categoria agregado con exito");
+            _logger.LogInformation("Categoria agregado con exito");
 
             return response;
         }
@@ -91,7 +84,7 @@ public class CategoriaService : ICategoriaService
         {
             response.Success = false;
             response.ErrorMessage = "Error al Agregar el Categoria";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -111,7 +104,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Eliminar";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -135,7 +128,7 @@ public class CategoriaService : ICategoriaService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -166,7 +159,7 @@ public class CategoriaService : ICategoriaService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Actualizar el Genero";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 

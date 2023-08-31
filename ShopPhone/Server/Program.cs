@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ShopPhone.DataAccess;
 using ShopPhone.Shared.Entities;
-using log4net;
-using log4net.Config;
 using ShopPhone.Services.Implementations;
 using ShopPhone.Repositories.Implementations;
 using ShopPhone.Services.Mappers;
@@ -17,12 +15,36 @@ using System.Threading.RateLimiting;
 using ShopPhone.Server.Health;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using static System.Net.WebRequestMethods;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using NuGet.Protocol;
 using ShopPhone.Server.Performance;
+using Serilog;
+using NuGet.Protocol;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Config log4Net
+// Solo si se inyecta
+//builder.Logging.ClearProviders();
+//builder.Logging.AddLog4Net("log4nettest.config", true);
+// Config Log4NEt
+//XmlConfigurator.Configure(new FileInfo("log4net.config"));
+//builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
+//builder.Logging.AddLog4Net();
+
+
+var logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+    .WriteTo.File("c:\\temp\\ShopPhone\\log-.txt",
+                  rollingInterval: RollingInterval.Day,
+                  outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                  fileSizeLimitBytes: 400000,
+                  shared: true)                  
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 // Dependency Injection
 builder.Services.AddTransient<ICategoriaService, CategoriaService>();
@@ -37,6 +59,7 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
+
 // Add Health checks https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#UI-Storage-Providers
 builder.Services.AddHealthChecks()
                  .AddCheck<DatabaseHealthCheck>("Database")
@@ -49,11 +72,13 @@ builder.Services.AddHealthChecksUI(option =>
                                         option.SetApiMaxActiveRequests(1); //api requests concurrency
                                         option.AddHealthCheckEndpoint("My Services", "/health"); // End Point get data
                                         option.AddWebhookNotification("MyWebhook1 https://webhook.site/", uri: "https://webhook.site/456d587c-7bb1-4fe6-bbd3-9e3cd6e06826", payload: "{\"error:\":\"Error in PhoneShop\"}"); // Tested https://webhook.site works!
-                                    }).AddSqlServerStorage(   
-                                        connectionString: builder.Configuration.GetConnectionString("HealthDataBaseTempdb")!, 
-                                        configureOptions => {
-                                            
-                                        },configureSqlServerOptions => {
+                                    }).AddSqlServerStorage(
+                                        connectionString: builder.Configuration.GetConnectionString("HealthDataBaseTempdb")!,
+                                        configureOptions =>
+                                        {
+
+                                        }, configureSqlServerOptions =>
+                                        {
                                             configureSqlServerOptions.EnableRetryOnFailure(10);
                                         }
                                      );
@@ -95,13 +120,6 @@ builder.Services.AddIdentity<ShopPhoneUserIdentity, IdentityRole>(policies =>
 }).AddEntityFrameworkStores<ShopPhoneContext>()
     .AddDefaultTokenProviders();
 
-// Config log4Net
-// Solo si se inyecta
-//builder.Logging.ClearProviders();
-//builder.Logging.AddLog4Net("log4nettest.config", true);
-XmlConfigurator.Configure(new FileInfo("log4net.config"));
-builder.Services.AddSingleton(LogManager.GetLogger(typeof(Program)));
-builder.Logging.AddLog4Net();
 
 
 // Automap config
@@ -157,10 +175,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+// Log4Net config
+//MethodTimeLogger.Logger = LogManager.GetLogger(typeof(Program)); 
 var app = builder.Build();
-
-
-MethodTimeLogger.Logger = LogManager.GetLogger(typeof(Program)); 
+MethodTimeLogger.Logger = app.Logger;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

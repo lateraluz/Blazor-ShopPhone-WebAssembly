@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
-using log4net;
+using Microsoft.Extensions.Logging;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace ShopPhone.Services.Implementations;
 
@@ -16,9 +12,9 @@ public class ClienteService : IClienteService
 {
     private IClienteRepository _clienteRepository;
     private readonly IMapper _mapper;
-    private ILog _logger;
+    private ILogger<ClienteService> _logger;
 
-    public ClienteService(IClienteRepository repository, IMapper mapper, ILog logger)
+    public ClienteService(IClienteRepository repository, IMapper mapper, ILogger<ClienteService> logger)
     {
         _clienteRepository = repository;
         _mapper = mapper;
@@ -41,7 +37,7 @@ public class ClienteService : IClienteService
         catch (Exception e)
         {
             Exception ex = e;
-            _logger.Error(ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -63,7 +59,7 @@ public class ClienteService : IClienteService
         catch (Exception e)
         {
             Exception ex = e;
-            _logger.Error(ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -78,7 +74,7 @@ public class ClienteService : IClienteService
             response.Data = await _clienteRepository.AddAsync(@object);
             response.Success = true;
 
-            _logger.Info("Cliente agregado con exito");
+            _logger.LogInformation("Cliente agregado con exito");
 
             return response;
         }
@@ -86,7 +82,7 @@ public class ClienteService : IClienteService
         {
             response.Success = false;
             response.ErrorMessage = "Error al Agregar el Cliente";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -106,7 +102,7 @@ public class ClienteService : IClienteService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Eliminar";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -130,7 +126,7 @@ public class ClienteService : IClienteService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -161,7 +157,7 @@ public class ClienteService : IClienteService
         catch (Exception ex)
         {
             response.ErrorMessage = "Error al Actualizar el Cliente";
-            _logger.Error(ex.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 

@@ -1,22 +1,17 @@
-﻿using log4net;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ShopPhone.Shared.Entities;
 using ShopPhone.Shared.Request;
 using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security;
 using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using System.Security.Cryptography;
 using ShopPhone.Shared.Util;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ShopPhone.Services.Implementations;
 
@@ -25,9 +20,9 @@ public class UserService : IUserService
 
     private readonly IOptions<AppConfig> _options;
     private IUserRepository _userRepository;
-    private ILog _logger;
+    private ILogger<UserService> _logger;
 
-    public UserService(IOptions<AppConfig> options, IUserRepository repository, ILog logger)
+    public UserService(IOptions<AppConfig> options, IUserRepository repository, ILogger<UserService> logger)
     {
         _options = options;
         _userRepository = repository;
@@ -48,22 +43,22 @@ public class UserService : IUserService
             // Encriptar para comparar
             passwordCrypted = Cryptography.EncryptAes(request.Password.Trim());
 
-
+            _logger.LogInformation("Applying Cripto");
             if (user == null)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario no existe {request.UserName}");
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario no existe {request.UserName}");
                 throw new SecurityException("Usuario no existe");
             }
 
             if (!user.Estado)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario está deshabilitado {request.UserName}");
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario está deshabilitado {request.UserName}");
                 throw new SecurityException("Usuario deshabilitado, contacte al administrador");
             }
 
             if (user.Contrasena.Trim().Equals(passwordCrypted.Trim()) == false)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario con contraseña no valida: {request.UserName}");
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Usuario con contraseña no valida: {request.UserName}");
                 throw new SecurityException("Verfique su usuario / contraseña");
             }
 
@@ -106,16 +101,15 @@ public class UserService : IUserService
         catch (SecurityException ex1)
         {
             response.ErrorMessage = ex1.Message;
-            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
+            _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
             return response;
 
         }
         catch (Exception ex2)
         {
             response.ErrorMessage = "Error al momento de hacer la autenticacion";
-            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
+            _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
             return response; 
         }
-
     }
 }

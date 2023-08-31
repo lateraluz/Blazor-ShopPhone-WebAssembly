@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Serilog;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using ShopPhone.Services.Implementations;
@@ -7,6 +7,7 @@ using ShopPhone.Shared.Request;
 using ShopPhone.Shared.Response;
 using System.Net;
 using System.Reflection;
+using ILogger = Serilog.ILogger;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -16,9 +17,9 @@ namespace ShopPhone.Server.Controllers;
 public class SecurityController : ControllerBase
 {
     private IUserService _userService;
-    private ILog _logger;
+    private ILogger<SecurityController> _logger;
 
-    public SecurityController(IUserService pUserService, ILog logger)
+    public SecurityController(IUserService pUserService, ILogger<SecurityController> logger)
     {
         _userService = pUserService;
         _logger = logger;
@@ -33,6 +34,14 @@ public class SecurityController : ControllerBase
         
         try
         {
+            /*
+            _logger.LogInformation("*LogInformation");
+            _logger.LogCritical("*LogCritical");
+            _logger.LogError("*LogError");
+            _logger.LogWarning("*LogWarning");
+            _logger.LogTrace("*LogTrace");
+            _logger.LogDebug("*LogDebug");
+            */
 
             // Tested responses 
             // return BadRequest("Dummy: BadRequest");
@@ -50,7 +59,7 @@ public class SecurityController : ControllerBase
             {
                 response.Success = false;
                 response.ErrorMessage = "Usuario requerido";
-                _logger.Warn(response.ErrorMessage);
+                _logger.LogWarning(response.ErrorMessage);
                 return Ok(response);
             }
 
@@ -58,18 +67,21 @@ public class SecurityController : ControllerBase
             {
                 response.Success = false;
                 response.ErrorMessage = "Password requerido";
-                _logger.Warn(response.ErrorMessage);
+                _logger.LogWarning(response.ErrorMessage);
                 return Ok(response);
             }
 
-
+            
             response = await _userService.LoginAsync(request);
-
+            if (response.Success)
+                _logger.LogInformation($"Logged {request.UserName}");
+            else
+                _logger.LogError($"Error Logged {request.UserName}");
             return response.Success ? Ok(response) : NotFound(response);
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 

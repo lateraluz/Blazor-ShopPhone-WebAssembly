@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using log4net;
-using System.Reflection;
+﻿using MethodTimer;
 using Microsoft.AspNetCore.Authorization;
-using ShopPhone.Shared.Response;
-using ShopPhone.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using MethodTimer;
+using ShopPhone.Services.Interfaces;
+using ShopPhone.Shared.Response;
+using System.Reflection;
+
 
 namespace ShopPhone.Server.Controllers;
 
@@ -19,9 +19,9 @@ public class CategoriaController : ControllerBase
 {
     private IMemoryCache _cache;
     private ICategoriaService _categoriaService;
-    private ILog _logger;
+    private ILogger<CategoriaController> _logger;
     private MemoryCacheEntryOptions _cacheEntryOptions;
-    public CategoriaController(ICategoriaService categoriaService, ILog logger, IMemoryCache cache)
+    public CategoriaController(ICategoriaService categoriaService, ILogger<CategoriaController> logger, IMemoryCache cache)
     {
         _categoriaService = categoriaService;
         _logger = logger;
@@ -45,7 +45,7 @@ public class CategoriaController : ControllerBase
             // Is Valid Cache?
             if (_cache.TryGetValue("Categories", out IEnumerable<CategoriaDTO>? listaCategorias))
             {
-                _logger.Info($"Read from cache {description}");
+                _logger.LogInformation($"Read from cache {description}");
                 response.Success = true;
                 response.Data = listaCategorias!.Where(p => p.NombreCategoria.ToLower().Contains(description.ToLower())).ToList();
             }
@@ -58,7 +58,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -74,13 +74,13 @@ public class CategoriaController : ControllerBase
             //Automatly Cache is clean once time is running out.
             if (_cache.TryGetValue("Categories", out IEnumerable<CategoriaDTO>? listaCategorias))
             {
-                _logger.Info($"Read cache");
+                _logger.LogInformation($"Read cache");
                 response.Success = true;
                 response.Data = listaCategorias!.ToList();
             }
             else
             {
-                _logger.Info($"Cache created. Fetching from database.");
+                _logger.LogInformation($"Cache created. Fetching from database.");
                 // Getting from Database
                 response = await _categoriaService.ListAsync();
                 // Create the cache 
@@ -91,7 +91,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -114,7 +114,7 @@ public class CategoriaController : ControllerBase
                     listaCategorias.Add(request);
                     // Recreate cache
                     _cache.Set("Categories", listaCategorias.AsEnumerable(), _cacheEntryOptions);
-                    _logger.Info($"Update cache Element Id - {id}");
+                    _logger.LogInformation($"Update cache Element Id - {id}");
                 }
             }
 
@@ -122,7 +122,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -138,7 +138,7 @@ public class CategoriaController : ControllerBase
             // Is Valid Cache?
             if (_cache.TryGetValue("Categories", out IEnumerable<CategoriaDTO>? listaCategorias))
             {
-                _logger.Info($"Read cache. Id = {id} ");
+                _logger.LogInformation($"Read cache. Id = {id} ");
                 categoria = listaCategorias!.Where(p => p.IdCategoria == id).FirstOrDefault()!;
                 response.Success = true;
                 var list = new List<CategoriaDTO>();
@@ -155,7 +155,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -174,7 +174,7 @@ public class CategoriaController : ControllerBase
                 if (_cache.TryGetValue("Categories", out List<CategoriaDTO>? listaCategorias))
                 {                    
                     listaCategorias!.Add(request);
-                    _logger.Info($"Read cache and add new Object Id= {request.IdCategoria} ");
+                    _logger.LogInformation($"Read cache and add new Object Id= {request.IdCategoria} ");
                     _cache.Set("Categories", listaCategorias.AsEnumerable(), _cacheEntryOptions);
                 }
             }
@@ -183,7 +183,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -204,7 +204,7 @@ public class CategoriaController : ControllerBase
                 {
                     int index = listaCategorias!.FindIndex(f => f.IdCategoria == id)!;
                     listaCategorias[index].Estado = false;                     
-                    _logger.Info($"Read cache and add update Id= {id} ");
+                    _logger.LogInformation($"Read cache and soft delete Id= {id} ");
                     _cache.Set("Categories", listaCategorias.AsEnumerable(), _cacheEntryOptions);
                 }
             } 
@@ -213,7 +213,7 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

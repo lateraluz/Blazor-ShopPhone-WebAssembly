@@ -6,6 +6,7 @@
 @inject ProxyUser ProxyUser
 @inject SweetAlertService Swal
 @inject IJSRuntime JS
+@inject ILogger<LoginPage> Logger
 
 <PageTitle>Login Versión @typeof(Program).Assembly.GetName().Version</PageTitle>
 
@@ -78,6 +79,7 @@
 
             if (response.Success)
             {
+                Logger.LogInformation($"Logged {LoginRequest.UserName}");
                 await ((CustomeAuthenticationStateProvider)AuthenticationStateProvider).Authenticate(response);
                 NavigationManager.NavigateTo("/main");
             }

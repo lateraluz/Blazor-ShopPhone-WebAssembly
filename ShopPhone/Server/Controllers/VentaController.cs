@@ -1,16 +1,11 @@
-﻿using iTextSharp.text.pdf;
-using iTextSharp.text;
-using log4net;
-using Microsoft.AspNetCore.Http;
+﻿using Serilog;
 using Microsoft.AspNetCore.Mvc;
-using ShopPhone.Services.Implementations;
 using ShopPhone.Shared.Response;
 using System.Reflection;
-using System.Reflection.Metadata;
-using static iTextSharp.text.pdf.AcroFields;
 using Microsoft.AspNetCore.Authorization;
 using ShopPhone.Services.Interfaces;
 using Microsoft.AspNetCore.RateLimiting;
+using ILogger = Serilog.ILogger;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -21,9 +16,9 @@ namespace ShopPhone.Server.Controllers;
 public class VentaController : ControllerBase
 {
     private IVentaService _ventaService;
-    private ILog _logger;
+    private ILogger<VentaController> _logger;
 
-    public VentaController(IVentaService service, ILog logger)
+    public VentaController(IVentaService service, ILogger<VentaController> logger)
     {
         _ventaService = service;
         _logger = logger;
@@ -40,7 +35,7 @@ public class VentaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -56,7 +51,7 @@ public class VentaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -73,7 +68,7 @@ public class VentaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }    

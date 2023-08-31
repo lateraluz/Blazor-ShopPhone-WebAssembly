@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
-using Azure.Core;
-using log4net;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ShopPhone.Services.Implementations;
 
@@ -20,10 +13,10 @@ public class ProductoService : IProductoService
 
     private IProductoRepository _productoRepository;
     private readonly IMapper _mapper;
-    private ILog _logger;
+    private ILogger<ProductoService> _logger;
     private IFileUploader _fileUploader;
 
-    public ProductoService(IProductoRepository repository, IMapper mapper, ILog logger, IFileUploader fileUploader)
+    public ProductoService(IProductoRepository repository, IMapper mapper, ILogger<ProductoService> logger, IFileUploader fileUploader)
     {
         _productoRepository = repository;
         _mapper = mapper;
@@ -48,7 +41,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage = $"Error al buscar el Producto con al descripción {description}";
-            _logger.Error($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
             throw;
         }
@@ -66,14 +59,14 @@ public class ProductoService : IProductoService
             var baseResponse = await _productoRepository.AddAsync(@object);
             response.Success = true;
             response.ErrorMessage = baseResponse.ErrorMessage;
-            _logger.Info($"Producto agregado con exito");
+            _logger.LogInformation($"Producto agregado con exito");
             return response;
         }
         catch (Exception ex)
         {
             response.Success = false;
             response.ErrorMessage = $"Error al Agregar el Producto {identity.IdProducto}- {identity.Descripcion}";
-            _logger.Error($"{response.ErrorMessage} {identity.IdProducto} {identity.Descripcion} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
     }
@@ -91,7 +84,7 @@ public class ProductoService : IProductoService
         {            
             response.Success = false;
             response.ErrorMessage = $"Error al eliminar el Producto {id}";
-            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -117,7 +110,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage =$"Error al Buscar  el Producto {id}";
-            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -152,7 +145,7 @@ public class ProductoService : IProductoService
         {             
             response.Success = false;
             response.ErrorMessage = $"Error al Actualizar el Producto {id}";
-            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
 
@@ -175,7 +168,7 @@ public class ProductoService : IProductoService
         {
             response.Success = false;
             response.ErrorMessage = $"Error al listar producto";
-            _logger.Error($"{response.ErrorMessage}  en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

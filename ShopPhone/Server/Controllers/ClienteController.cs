@@ -1,13 +1,12 @@
-﻿using log4net;
+﻿using Serilog;
 using MethodTimer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using ShopPhone.Services.Implementations;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
 using System.Reflection;
+using ILogger = Serilog.ILogger;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -19,8 +18,8 @@ public class ClienteController : ControllerBase
 {
 
     private IClienteService _clienteService;
-    private ILog _logger;
-    public ClienteController(IClienteService service, ILog logger)
+    private ILogger<ClienteController> _logger;
+    public ClienteController(IClienteService service, ILogger<ClienteController> logger)
     {
         _clienteService = service;
         _logger = logger;
@@ -38,7 +37,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+           _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -55,7 +54,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -72,7 +71,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -88,7 +87,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -103,7 +102,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -120,7 +119,7 @@ public class ClienteController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

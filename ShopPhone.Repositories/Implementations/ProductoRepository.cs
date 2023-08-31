@@ -1,23 +1,22 @@
-﻿using Azure;
-using log4net;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Shared.Response;
 using System.Reflection;
-using System.Security.Principal;
+
 
 
 namespace ShopPhone.Repositories.Implementations;
 
 public class ProductoRepository : IProductoRepository
 {
-    private ILog _Logger;    
+    private ILogger<ProductoRepository> _logger;    
     private readonly ShopPhoneContext _Context;
-    public ProductoRepository(ShopPhoneContext context, ILog logger)
+    public ProductoRepository(ShopPhoneContext context, ILogger<ProductoRepository> logger)
     {
         _Context = context;
-        _Logger = logger;
+        _logger = logger;
     }
 
     public async Task<ICollection<Producto>> FindByDescriptionAsync(string description)
@@ -33,7 +32,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -49,7 +48,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);            
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -71,7 +70,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -87,7 +86,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -101,7 +100,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -119,7 +118,7 @@ public class ProductoRepository : IProductoRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

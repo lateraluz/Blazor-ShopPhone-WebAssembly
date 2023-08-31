@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,7 @@ using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
 using System.Net;
 using System.Reflection;
+using ILogger = Serilog.ILogger;
 
 namespace ShopPhone.Server.Controllers
 {
@@ -18,8 +19,8 @@ namespace ShopPhone.Server.Controllers
     public class ProductoController : ControllerBase
     {
         private IProductoService _productoService;
-        private ILog _logger;
-        public ProductoController(IProductoService service, ILog logger)
+        private ILogger<IProductoService> _logger;
+        public ProductoController(IProductoService service, ILogger<IProductoService> logger)
         {
             _productoService = service;
             _logger = logger;
@@ -36,7 +37,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -52,7 +53,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -69,7 +70,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -84,7 +85,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -100,7 +101,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -116,7 +117,7 @@ namespace ShopPhone.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }

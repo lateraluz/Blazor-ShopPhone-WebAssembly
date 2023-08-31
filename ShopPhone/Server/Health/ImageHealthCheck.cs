@@ -3,7 +3,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using ShopPhone.Shared.Entities;
 using System.Reflection;
-using log4net;
 using System.Net;
 using System.Security.Policy;
 using System;
@@ -13,10 +12,10 @@ namespace ShopPhone.Server.Health;
 public class ImageHealthCheck : IHealthCheck
 {
     private IOptions<AppConfig> _option;
-    private ILog _logger;
+    private ILogger<ImageHealthCheck> _logger;
     private HttpClient _httpClient  ;
 
-    public ImageHealthCheck(IOptions<AppConfig> option, ILog logger , HttpClient httpClient)
+    public ImageHealthCheck(IOptions<AppConfig> option, ILogger<ImageHealthCheck> logger , HttpClient httpClient)
     {
         _option = option;
         _logger = logger;
@@ -56,7 +55,7 @@ public class ImageHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
-            _logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return HealthCheckResult.Unhealthy(exception: ex);
         }
     }

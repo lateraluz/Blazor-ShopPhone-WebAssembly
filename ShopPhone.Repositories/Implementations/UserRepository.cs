@@ -1,24 +1,20 @@
-﻿using log4net;
-using ShopPhone.DataAccess;
+﻿using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace ShopPhone.Repositories.Implementations
 {
     public class UserRepository : IUserRepository
     {
 
-        private ILog _Logger;
+        private ILogger<UserRepository> _logger;
         private readonly ShopPhoneContext _Context;
-        public UserRepository(ShopPhoneContext context, ILog logger)
+        public UserRepository(ShopPhoneContext context, ILogger<UserRepository> logger)
         {
             _Context = context;
-            _Logger = logger;
+            _logger = logger;
         }
 
         public async Task<string> AddAsync(User entity)
@@ -29,9 +25,9 @@ namespace ShopPhone.Repositories.Implementations
                 await _Context.SaveChangesAsync();
                 return entity.Login;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _Logger.Error(e.Message);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -50,9 +46,9 @@ namespace ShopPhone.Repositories.Implementations
                                     .FindAsync(id);
                 return response;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _Logger.Error(e.Message);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }
@@ -72,9 +68,9 @@ namespace ShopPhone.Repositories.Implementations
                 return response;
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _Logger.Error(e.Message);
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
                 throw;
             }
         }

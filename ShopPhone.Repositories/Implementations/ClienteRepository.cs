@@ -1,13 +1,8 @@
-﻿using log4net;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ShopPhone.DataAccess;
 using ShopPhone.Repositories.Interfaces;
-using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace ShopPhone.Repositories.Implementations;
 
@@ -15,12 +10,12 @@ namespace ShopPhone.Repositories.Implementations;
 public class ClienteRepository : IClienteRepository
 {
 
-    private ILog _Logger;
+    private ILogger<ClienteRepository> _logger;
     private readonly ShopPhoneContext _Context;
-    public ClienteRepository(ShopPhoneContext context, ILog logger)
+    public ClienteRepository(ShopPhoneContext context, ILogger<ClienteRepository> logger)
     {
         _Context = context;
-        _Logger = logger;
+        _logger = logger;
     }
 
 
@@ -35,9 +30,9 @@ public class ClienteRepository : IClienteRepository
             return response;
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -53,9 +48,9 @@ public class ClienteRepository : IClienteRepository
             return response;
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -70,9 +65,9 @@ public class ClienteRepository : IClienteRepository
             await _Context.SaveChangesAsync();
             return entity.IdCliente;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -93,9 +88,9 @@ public class ClienteRepository : IClienteRepository
                 throw new InvalidOperationException($"No se encontro el registro con el Id {id}");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -109,9 +104,9 @@ public class ClienteRepository : IClienteRepository
                                 .FindAsync(id);
             return response;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -122,9 +117,9 @@ public class ClienteRepository : IClienteRepository
         {
             await _Context.SaveChangesAsync();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 

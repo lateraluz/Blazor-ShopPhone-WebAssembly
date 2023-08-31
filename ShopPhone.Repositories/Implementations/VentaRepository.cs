@@ -1,27 +1,21 @@
-﻿using log4net;
-using System.Data.SqlClient;
-using ShopPhone.DataAccess;
+﻿using ShopPhone.DataAccess;
 using ShopPhone.Shared.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ShopPhone.Repositories.Implementations;
 
 public class VentaRepository : IVentaRepository
 {
-    private ILog _Logger;
+    private ILogger<VentaRepository> _logger;
     private readonly ShopPhoneContext _Context;
 
-    public VentaRepository(ShopPhoneContext context, ILog logger)
+    public VentaRepository(ShopPhoneContext context, ILogger<VentaRepository> logger)
     {
         _Context = context;
-        _Logger = logger;
+        _logger = logger;
     }
 
     /// <summary>
@@ -62,7 +56,7 @@ public class VentaRepository : IVentaRepository
         }
         catch (Exception ex)
         {
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
 
@@ -91,7 +85,7 @@ public class VentaRepository : IVentaRepository
         catch (Exception ex)
         {
             await _Context.Database.RollbackTransactionAsync();
-            _Logger.Error($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -103,13 +97,22 @@ public class VentaRepository : IVentaRepository
 
     public async Task<FacturaEncabezado?> FindAsync(int id)
     {
-        var response = await _Context
-                                .Set<FacturaEncabezado>()                                
-                                .Include(c => c.IdClienteNavigation)
-                                .Include(g => g.FacturaDetalles)
-                                .Include("FacturaDetalles.IdProductoNavigation")
-                                .FirstOrDefaultAsync(p => p.IdFactura == id);
-        return response;
+        try
+        {
+            var response = await _Context
+                               .Set<FacturaEncabezado>()
+                               .Include(c => c.IdClienteNavigation)
+                               .Include(g => g.FacturaDetalles)
+                               .Include("FacturaDetalles.IdProductoNavigation")
+                               .FirstOrDefaultAsync(p => p.IdFactura == id);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            throw;
+        }
+       
     }
 
     public Task<BaseResponse> UpdateAsync()
@@ -131,9 +134,9 @@ public class VentaRepository : IVentaRepository
             return response;
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _Logger.Error(e.Message);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }

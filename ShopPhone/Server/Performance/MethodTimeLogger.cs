@@ -1,7 +1,7 @@
 ﻿
-using log4net;
-using Microsoft.Extensions.Logging.Log4Net.AspNetCore.Extensions;
+using Serilog;
 using System.Reflection;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ShopPhone.Server.Performance;
 
@@ -11,12 +11,12 @@ namespace ShopPhone.Server.Performance;
 /// </summary>
 public static class MethodTimeLogger
 {
-    public static ILog Logger =null!;
+    public static ILogger Logger =null!;
     
     public static void Log(MethodBase methodBase, TimeSpan timeSpan, string message)
     {
         // Save Log4Net   
-        Logger.Info($"{methodBase.DeclaringType!.Name} {methodBase.Name} {timeSpan} {message}");
+        Logger.LogInformation($"MethodTimeLogger Metrics {methodBase.DeclaringType!.Name} {methodBase.Name} {timeSpan} {message}");
         
         // Dummy file just for testing
         //File.AppendAllText(@"C:\Temp\ShopPhone\my
