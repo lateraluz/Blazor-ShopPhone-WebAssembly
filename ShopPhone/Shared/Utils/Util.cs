@@ -42,7 +42,8 @@ public static class Util
         catch (Exception e)
         {
             Exception ex = e;
-            throw;
+            return "";
+            
         }
     }
 

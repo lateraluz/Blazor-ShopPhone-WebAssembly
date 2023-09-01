@@ -34,17 +34,25 @@ public class ProxyUser
              // Validate posible returns 
              1- Json   {"type":"https://tools.ietf.org/html/rfc7231#section-6.5.1","title":"One or more validation errors occurred.","status":400,"traceId":"00-92b6d12047f71312b1ab71666b0c2aa3-82dc2310d8bb7f37-00","errors":{"Password":["The Password field is required."],"UserName":["The UserName field is required."]}}
              2- return BadRequest("Dummy Error ");
-             3- DTO Object
+             3- return (DTO) Object Success true
+             4- return (DTO) Object Success false
             */
             //if (!(httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK))
             if (!httpResponseMessage.IsSuccessStatusCode)
-            {               
+            {
+                response = await httpResponseMessage!.Content.ReadFromJsonAsync<LoginResponseDTO>();
+
+                if (!response!.Success) {
+                    response.ErrorMessage = response.ErrorMessage +" [{httpResponseMessage.StatusCode}]";
+                    return response;
+                }
+
                 string json = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 // It is a Json?
                 if (Util.IsValidJson(json))
                 {
                     response.Success = false;
-                    response.ErrorMessage = $"{httpResponseMessage.ReasonPhrase} - {Util.GetStandarErrorMessages(json)}";
+                    response.ErrorMessage = $"{httpResponseMessage.ReasonPhrase} - {Util.GetStandarErrorMessages(json)} [{httpResponseMessage.StatusCode}]";
                 }
                 else
                 {

@@ -17,11 +17,17 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using ShopPhone.Server.Performance;
 using Serilog;
-using NuGet.Protocol;
 using Serilog.Events;
+using ShopPhone.Server.Validators;
+using FluentValidation;
+using ShopPhone.Shared.Request;
+
+using System.Reflection;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
 
 // Config log4Net
 // Solo si se inyecta
@@ -43,6 +49,7 @@ var logger = new LoggerConfiguration()
                   shared: true)                  
     .CreateLogger();
 
+
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
@@ -59,6 +66,8 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
+// Validator
+builder.Services.AddTransient<IValidator<LoginRequestDTO>, LoginValidator>();
 
 // Add Health checks https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks#UI-Storage-Providers
 builder.Services.AddHealthChecks()

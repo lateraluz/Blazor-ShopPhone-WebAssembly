@@ -10,7 +10,7 @@
 
 <PageTitle>Login Versión @typeof(Program).Assembly.GetName().Version</PageTitle>
 
- 
+
 
 <div class="container">
     <div class="row justify-content-center">
@@ -74,6 +74,21 @@
     {
         try
         {
+            if (string.IsNullOrEmpty(LoginRequest.UserName) || string.IsNullOrEmpty(LoginRequest.Password))
+            {
+                await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Text = $"El Usuario y password son requeridos",
+                        Title = "Atención",
+                        Icon = SweetAlertIcon.Warning,
+                        ShowCloseButton = true,
+                        TimerProgressBar = true,
+                        Timer = 1500
+                    });
+                return;
+            }
+
+
             IsLoading = true;
             var response = await ProxyUser.LoginAsync(LoginRequest);
 
@@ -84,7 +99,7 @@
                 NavigationManager.NavigateTo("/main");
             }
             else
-            { 
+            {
                 IsLoading = false;
                 // https://learn.microsoft.com/en-us/aspnet/core/blazor/components/lifecycle?view=aspnetcore-7.0
                 StateHasChanged();
@@ -99,7 +114,7 @@
 
         }
         catch (Exception ex)
-        {            
+        {
             IsLoading = false;
             StateHasChanged();
             _ = await Swal.FireAsync(new SweetAlertOptions
