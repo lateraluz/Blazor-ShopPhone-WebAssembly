@@ -11,10 +11,10 @@ public class CategoriaRepository : ICategoriaRepository
 {
 
     private ILogger<CategoriaRepository> _logger;
-    private readonly ShopPhoneContext _Context;                     
+    private readonly ShopPhoneContext _context;                     
     public CategoriaRepository(ShopPhoneContext context, ILogger<CategoriaRepository> logger)
     {
-        _Context = context;
+        _context = context;
         _logger = logger;
     }
 
@@ -25,7 +25,7 @@ public class CategoriaRepository : ICategoriaRepository
         {
            
 
-            var response = await _Context
+            var response = await _context
                                 .Set<Categorium>()
                                 .AsNoTracking()
                                 .Where(p => p.NombreCategoria.Contains(description))
@@ -47,7 +47,7 @@ public class CategoriaRepository : ICategoriaRepository
         {
 
             _logger.LogInformation($"List all Categoria");
-            var response = await _Context
+            var response = await _context
                                 .Set<Categorium>()
                                  .AsNoTracking()
                                 .ToListAsync();
@@ -67,10 +67,10 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
-            await _Context.Database.BeginTransactionAsync();
-            await _Context.Set<Categorium>().AddAsync(entity);
-            await _Context.SaveChangesAsync();
-            await _Context.Database.CommitTransactionAsync(); ;
+            await _context.Database.BeginTransactionAsync();
+            await _context.Set<Categorium>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            await _context.Database.CommitTransactionAsync(); ;
             return entity.IdCategoria;
         }
         catch (Exception ex)
@@ -107,7 +107,7 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Categorium>()
                                 .FindAsync(id);
             return response;
@@ -123,7 +123,7 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
-            await _Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

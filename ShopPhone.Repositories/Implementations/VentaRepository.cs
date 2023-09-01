@@ -10,11 +10,11 @@ namespace ShopPhone.Repositories.Implementations;
 public class VentaRepository : IVentaRepository
 {
     private ILogger<VentaRepository> _logger;
-    private readonly ShopPhoneContext _Context;
+    private readonly ShopPhoneContext _context;
 
     public VentaRepository(ShopPhoneContext context, ILogger<VentaRepository> logger)
     {
-        _Context = context;
+        _context = context;
         _logger = logger;
     }
 
@@ -38,7 +38,7 @@ public class VentaRepository : IVentaRepository
 
             System.Data.DataTable dataTable = new System.Data.DataTable();
 
-            System.Data.Common.DbConnection connection = _Context.Database.GetDbConnection();
+            System.Data.Common.DbConnection connection = _context.Database.GetDbConnection();
             System.Data.Common.DbProviderFactory dbFactory = System.Data.Common.DbProviderFactories.GetFactory(connection!)!;
             using (var cmd = dbFactory!.CreateCommand())
             {
@@ -69,22 +69,22 @@ public class VentaRepository : IVentaRepository
         {
             entity.FechaVenta = DateTime.Now;
             // inicio de transaccion
-            await _Context.Database.BeginTransactionAsync();
+            await _context.Database.BeginTransactionAsync();
             // Salvar encabezado
-            await _Context.Set<FacturaEncabezado>().AddAsync(entity);
-            await _Context.SaveChangesAsync();
+            await _context.Set<FacturaEncabezado>().AddAsync(entity);
+            await _context.SaveChangesAsync();
 
             // Rebajar inventario
             foreach (var item in entity.FacturaDetalles)
             {
-                await _Context.Database.ExecuteSqlAsync($"Update Producto set Inventario = Inventario - {item.Cantidad} where IdProducto = {item.IdProducto}");
+                await _context.Database.ExecuteSqlAsync($"Update Producto set Inventario = Inventario - {item.Cantidad} where IdProducto = {item.IdProducto}");
             }
-            await _Context.Database.CommitTransactionAsync();
+            await _context.Database.CommitTransactionAsync();
             return new BaseResponse() { Success = true };
         }
         catch (Exception ex)
         {
-            await _Context.Database.RollbackTransactionAsync();
+            await _context.Database.RollbackTransactionAsync();
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
@@ -99,7 +99,7 @@ public class VentaRepository : IVentaRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                .Set<FacturaEncabezado>()
                                .Include(c => c.IdClienteNavigation)
                                .Include(g => g.FacturaDetalles)
@@ -124,7 +124,7 @@ public class VentaRepository : IVentaRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<FacturaEncabezado>()
                                 .Include(c => c.IdClienteNavigation)
                                 .Include(g => g.FacturaDetalles)

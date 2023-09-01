@@ -11,10 +11,10 @@ public class ClienteRepository : IClienteRepository
 {
 
     private ILogger<ClienteRepository> _logger;
-    private readonly ShopPhoneContext _Context;
+    private readonly ShopPhoneContext _context;
     public ClienteRepository(ShopPhoneContext context, ILogger<ClienteRepository> logger)
     {
-        _Context = context;
+        _context = context;
         _logger = logger;
     }
 
@@ -23,7 +23,7 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Cliente>()
                                 .Where(p => p.Nombre.Contains(description) || p.Apellidos.Contains(description))
                                 .ToListAsync();
@@ -42,7 +42,7 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Cliente>()
                                 .ToListAsync();
             return response;
@@ -61,8 +61,8 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
-            await _Context.Set<Cliente>().AddAsync(entity);
-            await _Context.SaveChangesAsync();
+            await _context.Set<Cliente>().AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity.IdCliente;
         }
         catch (Exception ex)
@@ -99,7 +99,7 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Cliente>()
                                 .FindAsync(id);
             return response;
@@ -115,7 +115,7 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
-            await _Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

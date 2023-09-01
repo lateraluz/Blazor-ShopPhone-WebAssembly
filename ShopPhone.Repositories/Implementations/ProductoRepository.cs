@@ -12,10 +12,10 @@ namespace ShopPhone.Repositories.Implementations;
 public class ProductoRepository : IProductoRepository
 {
     private ILogger<ProductoRepository> _logger;    
-    private readonly ShopPhoneContext _Context;
+    private readonly ShopPhoneContext _context;
     public ProductoRepository(ShopPhoneContext context, ILogger<ProductoRepository> logger)
     {
-        _Context = context;
+        _context = context;
         _logger = logger;
     }
 
@@ -23,7 +23,7 @@ public class ProductoRepository : IProductoRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Producto>()
                                 .Include(c => c.IdCategoriaNavigation)
                                 .Where(p => p.Descripcion.Contains(description))
@@ -42,8 +42,8 @@ public class ProductoRepository : IProductoRepository
     {
         try
         {
-            await _Context.Set<Producto>().AddAsync(entity);
-            await _Context.SaveChangesAsync();
+            await _context.Set<Producto>().AddAsync(entity);
+            await _context.SaveChangesAsync();
             return new BaseResponse() { Success = true };
         }
         catch (Exception ex)
@@ -79,7 +79,7 @@ public class ProductoRepository : IProductoRepository
     {
         try
         {
-            var response = await _Context
+            var response = await _context
                                 .Set<Producto>()
                                 .FindAsync(id);
             return response!;
@@ -95,7 +95,7 @@ public class ProductoRepository : IProductoRepository
     {
         try
         {
-            await _Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return new BaseResponse() { Success = true };
         }
         catch (Exception ex)
@@ -110,7 +110,7 @@ public class ProductoRepository : IProductoRepository
     {
         try
         { 
-            var response = await _Context
+            var response = await _context
                                 .Set<Producto>()
                                 .Include(c=>c.IdCategoriaNavigation)
                                 .ToListAsync();

@@ -10,10 +10,10 @@ namespace ShopPhone.Repositories.Implementations
     {
 
         private ILogger<UserRepository> _logger;
-        private readonly ShopPhoneContext _Context;
+        private readonly ShopPhoneContext _context;
         public UserRepository(ShopPhoneContext context, ILogger<UserRepository> logger)
         {
-            _Context = context;
+            _context = context;
             _logger = logger;
         }
 
@@ -21,8 +21,8 @@ namespace ShopPhone.Repositories.Implementations
         {
             try
             {
-                await _Context.Set<User>().AddAsync(entity!);
-                await _Context.SaveChangesAsync();
+                await _context.Set<User>().AddAsync(entity!);
+                await _context.SaveChangesAsync();
                 return entity.Login;
             }
             catch (Exception ex)
@@ -41,7 +41,7 @@ namespace ShopPhone.Repositories.Implementations
         {
             try
             {
-                var response = await _Context
+                var response = await _context
                                     .Set<User>()                                    
                                     .FindAsync(id);
                 return response;
@@ -62,7 +62,7 @@ namespace ShopPhone.Repositories.Implementations
         {
             try
             {
-                var response = await _Context
+                var response = await _context
                                     .Set<User>().ToListAsync();
                                     
                 return response;
