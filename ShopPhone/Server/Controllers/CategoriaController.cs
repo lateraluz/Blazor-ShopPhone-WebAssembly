@@ -1,8 +1,12 @@
-﻿using MethodTimer;
+﻿using FluentValidation;
+using k8s.KubeConfigModels;
+using MethodTimer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using ShopPhone.Server.Extensions;
 using ShopPhone.Services.Interfaces;
+using ShopPhone.Shared.Request;
 using ShopPhone.Shared.Response;
 using System.Reflection;
 
@@ -14,18 +18,23 @@ namespace ShopPhone.Server.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class CategoriaController : ControllerBase
 {
     private IMemoryCache _cache;
     private ICategoriaService _categoriaService;
     private ILogger<CategoriaController> _logger;
     private MemoryCacheEntryOptions _cacheEntryOptions;
-    public CategoriaController(ICategoriaService categoriaService, ILogger<CategoriaController> logger, IMemoryCache cache)
+    private IValidator<CategoriaDTO> _validator;
+    public CategoriaController(ICategoriaService categoriaService,
+                               ILogger<CategoriaController> logger,
+                               IMemoryCache cache,
+                               IValidator<CategoriaDTO> validator)
     {
         _categoriaService = categoriaService;
         _logger = logger;
         _cache = cache;
+        _validator = validator;
 
         // Global Cache Settings
         _cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -102,6 +111,16 @@ public class CategoriaController : ControllerBase
     {
         try
         {
+            var validationResult =await _validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                BaseResponseGeneric<int> validResponse = new();
+                validResponse.Success = false;
+                validResponse.ErrorMessage = validationResult.ToListErrorsString();
+                return Ok(validResponse);
+            }
+
             var response = await _categoriaService.UpdateAsync(id, request);
 
             if (response.Success)
@@ -164,15 +183,26 @@ public class CategoriaController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(CategoriaDTO request)
     {
+       
         try
         {
+            var validationResult = await _validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                BaseResponseGeneric<int> invalidResponse = new();
+                invalidResponse.Success = false;
+                invalidResponse.ErrorMessage = validationResult.ToListErrorsString();
+                return Ok(invalidResponse);
+            }
+
             var response = await _categoriaService.AddAsync(request);
 
             if (response.Success)
             {
                 // Add into Cache
                 if (_cache.TryGetValue("Categories", out List<CategoriaDTO>? listaCategorias))
-                {                    
+                {
                     listaCategorias!.Add(request);
                     _logger.LogInformation($"Read cache and add new Object Id= {request.IdCategoria} ");
                     _cache.Set("Categories", listaCategorias.AsEnumerable(), _cacheEntryOptions);
@@ -203,11 +233,11 @@ public class CategoriaController : ControllerBase
                 if (_cache.TryGetValue("Categories", out List<CategoriaDTO>? listaCategorias))
                 {
                     int index = listaCategorias!.FindIndex(f => f.IdCategoria == id)!;
-                    listaCategorias[index].Estado = false;                     
+                    listaCategorias[index].Estado = false;
                     _logger.LogInformation($"Read cache and soft delete Id= {id} ");
                     _cache.Set("Categories", listaCategorias.AsEnumerable(), _cacheEntryOptions);
                 }
-            } 
+            }
 
             return response.Success ? Ok(response) : NotFound(response);
         }

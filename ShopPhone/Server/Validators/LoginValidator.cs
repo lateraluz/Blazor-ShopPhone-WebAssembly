@@ -18,9 +18,8 @@ public class LoginValidator :AbstractValidator<LoginRequestDTO>
                
 
         RuleFor(u => u.Password).
-            Cascade(CascadeMode.Stop).
-            NotNull().
-            NotEmpty().WithMessage("La contrasenna es un dato requerido").
-            MinimumLength(5).WithMessage("El largo mínimo es 5 caracteres");
+               Cascade(CascadeMode.Stop).
+               NotNull().NotEmpty().WithMessage("La contrasenna es un dato requerido").
+               MinimumLength(5).WithMessage("El largo mínimo es 5 caracteres");
     }
 }

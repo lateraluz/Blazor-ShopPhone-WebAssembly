@@ -11,7 +11,7 @@ public static class ValidatorExtension
         StringBuilder? str = new StringBuilder();
         foreach (var item in validationResult.Errors)
         {
-            str.AppendFormat("{0} ,", item.ErrorMessage.Trim());
+            str.AppendFormat("{0},", item.ErrorMessage.Trim());
         }
 
         return str.ToString().Substring(0, str.Length - 1);

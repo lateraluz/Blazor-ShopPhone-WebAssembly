@@ -73,6 +73,7 @@ public class CategoriaService : ICategoriaService
         try
         {
             var @object = _mapper.Map<Categorium>(identitiy);
+
             response.Data = await _categoriaRepository.AddAsync(@object);
             response.Success = true;
 
@@ -120,9 +121,12 @@ public class CategoriaService : ICategoriaService
 
             response.Success = true;
             var @object = _mapper.Map<CategoriaDTO>(entity);
-            List<CategoriaDTO> lista = new List<CategoriaDTO>();
-            lista.Add(@object);
-            response.Data = lista;
+            if (@object != null)
+            {
+                List<CategoriaDTO> lista = new List<CategoriaDTO>();
+                lista.Add(@object);
+                response.Data = lista;
+            }
 
             return response;
         }

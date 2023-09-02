@@ -27,7 +27,9 @@ using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Config  Fluent Validators
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 
 // Config log4Net
 // Solo si se inyecta
@@ -66,6 +68,7 @@ builder.Services.AddTransient<IClienteRepository, ClienteRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IFileUploader, FileUploader>();
 
+ 
 // Validator
 builder.Services.AddTransient<IValidator<LoginRequestDTO>, LoginValidator>();
 

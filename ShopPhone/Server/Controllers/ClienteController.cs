@@ -7,6 +7,8 @@ using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Response;
 using System.Reflection;
 using ILogger = Serilog.ILogger;
+using FluentValidation;
+using ShopPhone.Server.Extensions;
 
 namespace ShopPhone.Server.Controllers;
 
@@ -19,10 +21,14 @@ public class ClienteController : ControllerBase
 
     private IClienteService _clienteService;
     private ILogger<ClienteController> _logger;
-    public ClienteController(IClienteService service, ILogger<ClienteController> logger)
+    private IValidator<ClienteDTO> _validator;
+    public ClienteController(IClienteService service, 
+                             ILogger<ClienteController> logger,
+                              IValidator<ClienteDTO> validator)
     {
         _clienteService = service;
         _logger = logger;
+        _validator = validator;
     }
 
     [Time("description = {description}")]
@@ -97,6 +103,18 @@ public class ClienteController : ControllerBase
     {
         try
         {
+
+            var validationResult = _validator.Validate(request);
+
+            if (!validationResult.IsValid)
+            {
+                BaseResponseGeneric<int> validResponse = new();
+                validResponse.Success = false;
+                validResponse.ErrorMessage = validationResult.ToListErrorsString();
+                return Ok(validResponse);
+            }
+
+
             var response = await _clienteService.AddAsync(request);
             return Ok(response);
         }
