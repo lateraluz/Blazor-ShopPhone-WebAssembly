@@ -41,5 +41,5 @@ maria
 6. Test cases
 7. Fix withdraw inventory
 8. Fluent Validators
-9. Fix problem with catching errors thru layers
+9. Fix problem with catching errors thru layers.
 
