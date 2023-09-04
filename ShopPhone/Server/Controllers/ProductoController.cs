@@ -16,7 +16,7 @@ namespace ShopPhone.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize]
+    [Authorize]
     [EnableRateLimiting("concurrency")]
     public class ProductoController : ControllerBase
     {

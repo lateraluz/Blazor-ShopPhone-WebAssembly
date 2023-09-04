@@ -18,7 +18,7 @@ namespace ShopPhone.Server.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class CategoriaController : ControllerBase
 {
     private IMemoryCache _cache;
