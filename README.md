@@ -2,7 +2,8 @@
 
 ShopPhone Developed with Blazor for Mitocode Course
 
-Just for educational purpose
+> [!NOTE]
+> Just for educational purpose
 
 # Video Demostration
 Click on image below to see the video
