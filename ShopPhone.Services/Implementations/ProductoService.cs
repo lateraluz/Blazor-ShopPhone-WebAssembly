@@ -33,7 +33,8 @@ public class ProductoService : IProductoService
             var collection = await _productoRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _mapper.Map<ICollection<ProductoDTO>>(collection);
+            if (collection is not null)
+                response.Data = _mapper.Map<ICollection<ProductoDTO>>(collection);
 
             return response;
         }
@@ -81,7 +82,7 @@ public class ProductoService : IProductoService
             return response;
         }
         catch (Exception ex)
-        {            
+        {
             response.Success = false;
             response.ErrorMessage = $"Error al eliminar el Producto {id}";
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
@@ -99,17 +100,20 @@ public class ProductoService : IProductoService
             var entity = await _productoRepository.FindAsync(id);
 
             response.Success = true;
-            var @object = _mapper.Map<ProductoDTO>(entity);
-            List<ProductoDTO> lista = new List<ProductoDTO>();
-            lista.Add(@object);
-            response.Data = lista;
+            if (entity is not null)
+            {
+                var @object = _mapper.Map<ProductoDTO>(entity);
+                List<ProductoDTO> lista = new List<ProductoDTO>();
+                lista.Add(@object);
+                response.Data = lista;
+            }
 
             return response;
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.ErrorMessage =$"Error al Buscar  el Producto {id}";
+            response.ErrorMessage = $"Error al Buscar  el Producto {id}";
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
@@ -128,7 +132,7 @@ public class ProductoService : IProductoService
                 response.ErrorMessage = $"No se encontro el Producto {id}";
                 return response;
             }
-             
+
             if (!string.IsNullOrEmpty(identity.Base64Image) == true)
                 identity.URLImagen = await _fileUploader.UploadFileAsync(identity.Base64Image, identity.FileName);
 
@@ -142,7 +146,7 @@ public class ProductoService : IProductoService
 
         }
         catch (Exception ex)
-        {             
+        {
             response.Success = false;
             response.ErrorMessage = $"Error al Actualizar el Producto {id}";
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);

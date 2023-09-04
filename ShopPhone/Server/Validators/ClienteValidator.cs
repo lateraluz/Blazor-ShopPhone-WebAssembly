@@ -6,23 +6,35 @@ using ShopPhone.Shared.Response;
 namespace ShopPhone.Server.Validators;
 
 
-
 public class ClienteValidator : AbstractValidator<ClienteDTO>
 {
     private IClienteService _clienteService;
+    private IHttpContextAccessor _context;
 
-    public ClienteValidator(IClienteService clienteService)
+    public ClienteValidator(IClienteService clienteService, IHttpContextAccessor context)
     {
         _clienteService = clienteService;
+        _context = context;
 
         ClassLevelCascadeMode = CascadeMode.Stop;
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(u => u.IdCliente).
-            Cascade(CascadeMode.Stop).
-            NotEmpty().WithMessage("Código es requerido").
-            Must(BeUnique).WithMessage("El código {PropertyValue} ya está registrado").
-            GreaterThan(0).WithMessage("El código debe ser mayor que cero");
+           Cascade(CascadeMode.Stop).
+           NotEmpty().WithMessage("Código es requerido").           
+           GreaterThan(0).WithMessage("El código debe ser mayor que cero");
+
+        // Just POST "insert" doesn't allow duplicates!
+        if (_context!.HttpContext!.Request.Method.Equals("POST", StringComparison.CurrentCultureIgnoreCase))
+        {
+            RuleFor(u => u.IdCliente).
+               Cascade(CascadeMode.Stop).
+               MustAsync(async (id, cancellation) =>
+               {
+                   var response = await _clienteService.FindByIdAsync(id);
+                   return response.Data == null;
+               }).WithMessage("El código {PropertyValue} ya esta registrado");
+        }       
 
         RuleFor(u => u.Nombre).
                 Cascade(CascadeMode.Stop).
@@ -54,10 +66,5 @@ public class ClienteValidator : AbstractValidator<ClienteDTO>
     {
         return date <= DateTime.Now;
     }
-
-    private bool BeUnique(int id)
-    {
-        return _clienteService.FindByIdAsync(id) == null;
-    } 
-
+  
 }

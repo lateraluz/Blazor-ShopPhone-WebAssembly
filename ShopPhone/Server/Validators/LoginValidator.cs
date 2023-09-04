@@ -11,6 +11,10 @@ public class LoginValidator :AbstractValidator<LoginRequestDTO>
     /// </summary>
     public LoginValidator()
     {
+
+        ClassLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
+
         RuleFor(u => u.UserName).
                Cascade(CascadeMode.Stop).
                NotNull().NotEmpty().WithMessage("El usuario es un dato requerido").               

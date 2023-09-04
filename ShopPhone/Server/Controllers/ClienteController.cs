@@ -14,7 +14,7 @@ namespace ShopPhone.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 [EnableRateLimiting("concurrency")]
 public class ClienteController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class ClienteController : ControllerBase
     private IClienteService _clienteService;
     private ILogger<ClienteController> _logger;
     private IValidator<ClienteDTO> _validator;
-    public ClienteController(IClienteService service, 
+    public ClienteController(IClienteService service,
                              ILogger<ClienteController> logger,
                               IValidator<ClienteDTO> validator)
     {
@@ -37,13 +37,26 @@ public class ClienteController : ControllerBase
     {
         try
         {
+            if (string.IsNullOrEmpty(description))
+            {
+
+                var validResponse = new BaseResponse() { 
+                
+                    Success = false,
+                    ErrorMessage = "La descripción es un dato requerido"
+                };
+                
+                return Ok(validResponse);
+            }
+
+
             var response = await _clienteService.FindByDescriptionAsync(description);
 
             return response.Success ? Ok(response) : NotFound(response);
         }
         catch (Exception ex)
         {
-           _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
     }
@@ -72,6 +85,17 @@ public class ClienteController : ControllerBase
     {
         try
         {
+            var validationResult = await _validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                BaseResponseGeneric<int> validResponse = new();
+                validResponse.Success = false;
+                validResponse.ErrorMessage = validationResult.ToListErrorsString();
+                return Ok(validResponse);
+            }
+
+
             var response = await _clienteService.UpdateAsync(id, request);
             return response.Success ? Ok(response) : NotFound(response);
         }
@@ -88,6 +112,7 @@ public class ClienteController : ControllerBase
     {
         try
         {
+
             var response = await _clienteService.FindByIdAsync(id);
             return response.Success ? Ok(response) : NotFound(response);
         }
@@ -104,7 +129,7 @@ public class ClienteController : ControllerBase
         try
         {
 
-            var validationResult = _validator.Validate(request);
+            var validationResult = await _validator.ValidateAsync(request);
 
             if (!validationResult.IsValid)
             {
@@ -113,7 +138,6 @@ public class ClienteController : ControllerBase
                 validResponse.ErrorMessage = validationResult.ToListErrorsString();
                 return Ok(validResponse);
             }
-
 
             var response = await _clienteService.AddAsync(request);
             return Ok(response);

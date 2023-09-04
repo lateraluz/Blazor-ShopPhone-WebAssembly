@@ -51,6 +51,20 @@ public class CategoriaController : ControllerBase
         var response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
         try
         {
+
+            if (string.IsNullOrEmpty(description))
+            {
+                var validResponse = new BaseResponse()
+                {
+
+                    Success = false,
+                    ErrorMessage = "La descripción es un dato requerido"
+                };
+
+                return Ok(validResponse);
+            } 
+
+
             // Is Valid Cache?
             if (_cache.TryGetValue("Categories", out IEnumerable<CategoriaDTO>? listaCategorias))
             {
@@ -182,8 +196,7 @@ public class CategoriaController : ControllerBase
     [Time]
     [HttpPost]
     public async Task<IActionResult> Post(CategoriaDTO request)
-    {
-       
+    {       
         try
         {
             var validationResult = await _validator.ValidateAsync(request);

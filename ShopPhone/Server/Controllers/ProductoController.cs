@@ -9,21 +9,27 @@ using ShopPhone.Shared.Response;
 using System.Net;
 using System.Reflection;
 using ILogger = Serilog.ILogger;
+using FluentValidation;
+using ShopPhone.Server.Extensions;
 
 namespace ShopPhone.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     [EnableRateLimiting("concurrency")]
     public class ProductoController : ControllerBase
     {
         private IProductoService _productoService;
         private ILogger<IProductoService> _logger;
-        public ProductoController(IProductoService service, ILogger<IProductoService> logger)
+        private IValidator<ProductoDTO> _validator;
+        public ProductoController(IProductoService service, 
+                                  ILogger<IProductoService> logger,
+                                  IValidator<ProductoDTO> validator)
         {
             _productoService = service;
             _logger = logger;
+            _validator = validator;
         }
 
         [HttpGet("FindByDescription")]
@@ -31,6 +37,17 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(description))
+                {
+                    var validResponse = new BaseResponse()
+                    {
+                        Success = false,
+                        ErrorMessage = "La descripción es un dato requerido"
+                    };
+
+                    return Ok(validResponse);
+                }
+
                 var response = await _productoService.FindByDescriptionAsync(description);
 
                 return response.Success ? Ok(response) : NotFound(response);
@@ -65,6 +82,17 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(request);
+
+                if (!validationResult.IsValid)
+                {
+                    BaseResponseGeneric<int> validResponse = new();
+                    validResponse.Success = false;
+                    validResponse.ErrorMessage = validationResult.ToListErrorsString();
+                    return Ok(validResponse);
+                }
+
+
                 var response = await _productoService.UpdateAsync(id, request);
                 return Ok(response);
             }
@@ -95,6 +123,16 @@ namespace ShopPhone.Server.Controllers
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(request);
+
+                if (!validationResult.IsValid)
+                {
+                    BaseResponseGeneric<int> validResponse = new();
+                    validResponse.Success = false;
+                    validResponse.ErrorMessage = validationResult.ToListErrorsString();
+                    return Ok(validResponse);
+                }
+
                 var response = await _productoService.AddAsync(request);
 
                 return response.Success ? Ok(response) : NotFound(response);
@@ -121,7 +159,5 @@ namespace ShopPhone.Server.Controllers
                 throw;
             }
         }
-
-
     }
 }

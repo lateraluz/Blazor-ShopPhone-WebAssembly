@@ -8,10 +8,8 @@ using ShopPhone.Shared.Response;
 
 namespace ShopPhone.Server.Validators;
 
-
 public class CategoriaValidator : AbstractValidator<CategoriaDTO>
 {
-
     private ICategoriaService _categoriaService;
     private IHttpContextAccessor _context;
     public CategoriaValidator(ICategoriaService categoriaService, IHttpContextAccessor context)
@@ -27,7 +25,7 @@ public class CategoriaValidator : AbstractValidator<CategoriaDTO>
                  NotEmpty().WithMessage("Código de Categoria es requerida").
                  GreaterThan(0).WithMessage("El código debe ser mayor que cero");
 
-        // Just POST doesn't allow duplicates!
+        // Just POST "insert" doesn't allow duplicates!
         if (_context!.HttpContext!.Request.Method.Equals("POST", StringComparison.CurrentCultureIgnoreCase)) {
             RuleFor(u => u.IdCategoria).
                Cascade(CascadeMode.Stop).
@@ -38,22 +36,12 @@ public class CategoriaValidator : AbstractValidator<CategoriaDTO>
                }).WithMessage("El código {PropertyValue} ya esta registrado");
         }
 
-
-
-
         RuleFor(u => u.NombreCategoria).
                 Cascade(CascadeMode.Stop).
                 NotEmpty().WithMessage("{PropertyName} es requerida").
                 MaximumLength(50).WithMessage("{PropertyName} no debe exceder 50 caracteres");
     }
 
-    private async Task<bool> BeUnique(int id, CancellationToken token)
-    {
-        var response = await _categoriaService.FindByIdAsync(id);
-
-        return response.Data == null;
-    }
-
-
+  
 }
 

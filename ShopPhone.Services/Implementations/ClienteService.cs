@@ -30,7 +30,8 @@ public class ClienteService : IClienteService
             var collection = await _clienteRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
+            if (collection is not null)
+                response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
 
             return response;
         }
@@ -50,9 +51,10 @@ public class ClienteService : IClienteService
         try
         {
             var collection = await _clienteRepository.ListAsync();
-
             response.Success = true;
-            response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
+            
+            if (collection is not null)
+                response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
 
             return response;
         }
@@ -71,8 +73,11 @@ public class ClienteService : IClienteService
         try
         {
             var @object = _mapper.Map<Cliente>(identitiy);
-            response.Data = await _clienteRepository.AddAsync(@object);
             response.Success = true;
+            if (@object != null)
+            {
+                response.Data = await _clienteRepository.AddAsync(@object);
+            }
 
             _logger.LogInformation("Cliente agregado con exito");
 
@@ -117,10 +122,13 @@ public class ClienteService : IClienteService
             var entity = await _clienteRepository.FindAsync(id);
 
             response.Success = true;
-            var @object = _mapper.Map<ClienteDTO>(entity);
-            List<ClienteDTO> lista = new List<ClienteDTO>();
-            lista.Add(@object);
-            response.Data = lista;
+            if (entity is not null)
+            {
+                var @object = _mapper.Map<ClienteDTO>(entity);
+                List<ClienteDTO> lista = new List<ClienteDTO>();
+                lista.Add(@object);
+                response.Data = lista;
+            }
 
             return response;
         }
@@ -160,9 +168,6 @@ public class ClienteService : IClienteService
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
-
-
     }
-
 }
 

@@ -32,7 +32,8 @@ public class CategoriaService : ICategoriaService
             var collection = await _categoriaRepository.FindByDescriptionAsync(description);
 
             response.Success = true;
-            response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
+            if (collection is not null)
+                response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
 
             return response;
         }
@@ -52,9 +53,10 @@ public class CategoriaService : ICategoriaService
         try
         {
             var collection = await _categoriaRepository.ListAsync();
-
             response.Success = true;
-            response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
+            
+            if (collection is not null)
+                response.Data = _mapper.Map<ICollection<CategoriaDTO>>(collection);
 
             return response;
         }
@@ -73,9 +75,11 @@ public class CategoriaService : ICategoriaService
         try
         {
             var @object = _mapper.Map<Categorium>(identitiy);
-
-            response.Data = await _categoriaRepository.AddAsync(@object);
             response.Success = true;
+
+            if (@object is not null)
+                response.Data = await _categoriaRepository.AddAsync(@object);
+            
 
             _logger.LogInformation("Categoria agregado con exito");
 
@@ -88,13 +92,10 @@ public class CategoriaService : ICategoriaService
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
-
-
     }
 
     public async Task<BaseResponse> DeleteAsync(int id)
     {
-
         var response = new BaseResponse();
         try
         {
@@ -166,8 +167,5 @@ public class CategoriaService : ICategoriaService
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }
-
-
     }
-
 }
