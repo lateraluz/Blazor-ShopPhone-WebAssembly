@@ -40,6 +40,6 @@ maria
 5. Carrusel using swiper.js  Library
 6. Test cases
 7. Fix withdraw inventory
-8. Fluent Validators
+8. ~~Fluent Validators~~
 9. Fix problem with catching errors thru layers.
-
+10. Change DTOs instead records
