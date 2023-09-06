@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.DataAccess", "Sho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopPhone.Repositories", "ShopPhone.Repositories\ShopPhone.Repositories.csproj", "{E9F911E0-98A4-497B-8001-0C03E7118480}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopPhone.Test", "ShopPhone.Test\ShopPhone.Test.csproj", "{EBF5876D-0B1B-48D6-9C0D-83E0D2F5C5BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{E9F911E0-98A4-497B-8001-0C03E7118480}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9F911E0-98A4-497B-8001-0C03E7118480}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9F911E0-98A4-497B-8001-0C03E7118480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBF5876D-0B1B-48D6-9C0D-83E0D2F5C5BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBF5876D-0B1B-48D6-9C0D-83E0D2F5C5BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBF5876D-0B1B-48D6-9C0D-83E0D2F5C5BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBF5876D-0B1B-48D6-9C0D-83E0D2F5C5BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
