@@ -21,8 +21,7 @@ public class CategoriaValidator : AbstractValidator<CategoriaDTO>
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(u => u.IdCategoria).
-                 Cascade(CascadeMode.Stop).
-                 NotEmpty().WithMessage("Código de Categoria es requerida").
+                 Cascade(CascadeMode.Stop).                
                  GreaterThan(0).WithMessage("El código debe ser mayor que cero");
 
         // Just POST "insert" doesn't allow duplicates!
