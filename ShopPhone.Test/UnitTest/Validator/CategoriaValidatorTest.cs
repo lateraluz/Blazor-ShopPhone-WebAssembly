@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShopPhone.Test.Validator;
+namespace ShopPhone.Test.UnitTest.Validator;
 
 public class CategoriaValidatorTest
 {
@@ -42,8 +42,8 @@ public class CategoriaValidatorTest
 
 
     [Theory]
-    [InlineData(1,1)]
-    [InlineData(2,99)]
+    [InlineData(1, 1)]
+    [InlineData(2, 99)]
     public void CategoriaValidator_AddCategoria_Exist_or_Not(int id1, int id2)
     {
         // Arrange – setup the testing objects and prepare the prerequisites for your test.
@@ -68,7 +68,7 @@ public class CategoriaValidatorTest
         categoria.NombreCategoria = $"Categoria {id2}";
         categoria.Estado = true;
 
-       
+
         A.CallTo(() => _categoriaService.FindByIdAsync(categoria.IdCategoria)).Returns(dummyResponse);
 
         //Act – perform the actual work of the test.        
@@ -92,10 +92,10 @@ public class CategoriaValidatorTest
 
     }
 
-    [Theory]    
+    [Theory]
     [InlineData(1, "")]
     [InlineData(-1111, "Categoria Prueba con código negativo")]
-    [InlineData(1, "Categoria Prueba XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")]
+    [InlineData(1, "Categoria Long Test Descripcion XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")]
     public void CategoriaValidator_Categoria_MandatoryFields(int id, string nombreCategoria)
     {
         // Arrange – setup the testing objects and prepare the prerequisites for your test.
@@ -107,7 +107,7 @@ public class CategoriaValidatorTest
                                                                              Estado=false
                                                                             }
                                                         };
-        dummyResponse.Data = null; 
+        dummyResponse.Data = null;
 
         // Dummy HttpContextAccessor
         HttpContextAccessor httpContext = (HttpContextAccessor)GetHttpContext("/dummy.com", "dummy.com");
@@ -123,7 +123,7 @@ public class CategoriaValidatorTest
         var response = categoriaValidator.TestValidateAsync(categoria);
 
         //Assert – verify the result.
-        response.Result.Errors.Count.Should().BeGreaterThan(0,$"Id = {id} Descripcion ={nombreCategoria}"); 
+        response.Result.Errors.Count.Should().BeGreaterThan(0, $"Id = {id} Descripcion ={nombreCategoria}");
 
     }
 

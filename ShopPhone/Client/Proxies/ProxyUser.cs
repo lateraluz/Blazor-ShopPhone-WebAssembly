@@ -40,7 +40,7 @@ public class ProxyUser
             //if (!(httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK))
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                response = await httpResponseMessage!.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>();
 
                 if (!response!.Success) {
                     response.ErrorMessage = response.ErrorMessage +" [{httpResponseMessage.StatusCode}]";

@@ -24,7 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace ShopPhone.Test.Repository;
+namespace ShopPhone.Test.UnitTest.Repository;
 
 public class CategoriaRepositoryTest
 {
@@ -70,7 +70,7 @@ public class CategoriaRepositoryTest
 
         //Arrange
         var context = await GetDataBaseContext();
-        var categoriaRepository = new ShopPhone.Repositories.Implementations.CategoriaRepository(context, _logger);
+        var categoriaRepository = new CategoriaRepository(context, _logger);
 
         // Act
         var result = await categoriaRepository.FindAsync(id);
@@ -78,11 +78,11 @@ public class CategoriaRepositoryTest
         // Acert
         if (id == -1)
         {
-            result.Should().BeNull();
+            result.Should().BeNull($"{id} must  be null");
         }
         else
         {
-            result.Should().NotBeNull();
+            result.Should().NotBeNull($"{id} must be MANDATORY");
         }
     }
 
@@ -91,7 +91,7 @@ public class CategoriaRepositoryTest
     {
         //Arrange
         var context = await GetDataBaseContext();
-        var categoriaRepository = new ShopPhone.Repositories.Implementations.CategoriaRepository(context, _logger);
+        var categoriaRepository = new CategoriaRepository(context, _logger);
         Random rnd = new Random();
         int id = rnd.Next();
         Categorium categorium = new Categorium()
@@ -105,7 +105,7 @@ public class CategoriaRepositoryTest
         var result = await categoriaRepository.AddAsync(categorium);
 
         // Acert
-        result.Should().Be(id);
+        result.Should().Be(id,$"Because it is a new Category id = {id}");
     }
 
 
@@ -116,14 +116,14 @@ public class CategoriaRepositoryTest
 
         //Arrange
         var context = await GetDataBaseContext();
-        var categoriaRepository = new ShopPhone.Repositories.Implementations.CategoriaRepository(context, _logger);
+        var categoriaRepository = new CategoriaRepository(context, _logger);
 
         // Act
         var result = await categoriaRepository.ListAsync();
 
         // Acert
-        result.Should().HaveCountGreaterThan(1);
-        result.Should().NotBeNullOrEmpty();
+        result.Should().HaveCountGreaterThan(1,$"Because Must be > 1");
+        result.Should().NotBeNullOrEmpty("Because must be mandatory");
 
         _output.WriteLine("Categoria Rows Count {0}", result.Count);
     }
@@ -135,13 +135,13 @@ public class CategoriaRepositoryTest
 
         //Arrange
         var context = await GetDataBaseContext();
-        var categoriaRepository = new ShopPhone.Repositories.Implementations.CategoriaRepository(context, _logger);
+        var categoriaRepository = new CategoriaRepository(context, _logger);
 
         // Act
         var result = await categoriaRepository.ListAsync();
 
         // Acert
-        categoriaRepository.ExecutionTimeOf(s => s.ListAsync().Wait()).Should().BeLessThanOrEqualTo(500.Milliseconds());
+        categoriaRepository.ExecutionTimeOf(s => s.ListAsync().Wait()).Should().BeLessThanOrEqualTo(500.Milliseconds(),"Because must last <= 500 ms");
 
     }
 

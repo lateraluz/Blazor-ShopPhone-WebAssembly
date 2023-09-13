@@ -19,7 +19,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using ShopPhone.Server.Validators;
 using Microsoft.AspNetCore.Http;
 
-namespace ShopPhone.Test.Controller;
+namespace ShopPhone.Test.UnitTest.Controller;
 
 public class CategoriaControllerTest
 {
@@ -29,7 +29,7 @@ public class CategoriaControllerTest
     private IMemoryCache _cache;
     private IValidator<CategoriaDTO> _validator;
     private CategoriaController _categoriaController;
-     
+
 
     public CategoriaControllerTest()
     {
@@ -75,10 +75,10 @@ public class CategoriaControllerTest
         Func<Task> action = async () => await _categoriaController.ListAsync();
 
         //Assert – verify the result.
-        action.ExecutionTime().Should().BeLessThanOrEqualTo(200.Milliseconds());
+        action.ExecutionTime().Should().BeLessThanOrEqualTo(200.Milliseconds(),"Because is a must < 200 Ms response");
     }
 
-  
+
 
     /*
     [Fact]
