@@ -40,7 +40,7 @@ public class ProxyUser
             //if (!(httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK))
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>() ?? throw  new Exception("Error de conexión en Login");
 
                 if (!response!.Success) {
                     response.ErrorMessage = response.ErrorMessage +" [{httpResponseMessage.StatusCode}]";
@@ -63,7 +63,7 @@ public class ProxyUser
             }
             else
             {
-                response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>() ?? throw new Exception("Error de conexión en Login");
             }
 
             return response!;

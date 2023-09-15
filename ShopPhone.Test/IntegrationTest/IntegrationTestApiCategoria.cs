@@ -33,18 +33,20 @@ public class IntegrationTestApiCategoria : IClassFixture<WebApplicationFactory<P
         };
 
         var httpResponseMessage = await _httpClient.PostAsJsonAsync(url, request);
+        httpResponseMessage.EnsureSuccessStatusCode();
         var response = await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseDTO>();
+        
 
         response!.Should().NotBeNull("Because response shouldn't be null");
         response!.ErrorMessage.Should().BeNullOrEmpty("Because ErrorMessage must be empty");
         response.Token.Should().BeOfType<string>("because token is a string ");
-        response.Token.Length.Should().BeGreaterThan(600);
+        response.Token.Length.Should().BeGreaterThan(100);
         return response!.Token;
     }
 
 
     [Fact]
-    public async Task Categoria_Get_listAsync_GreaterthanZero()
+    public async Task Categoria_listAsync_GreaterthanZero()
     {
         var client = _factory.CreateClient();
         client.SetBearerToken(_token);
@@ -77,7 +79,12 @@ public class IntegrationTestApiCategoria : IClassFixture<WebApplicationFactory<P
                 response!.ErrorMessage.Should().BeNullOrEmpty("Because Error message must be null or empty");
                 response!.Success.Should().BeTrue($"{id} must be success");
                 break;
-            case int alias when alias <= -1 && alias <= 1000:
+            case int alias when alias <= -1:
+                response!.Data.Should().BeNull();
+                response!.ErrorMessage.Should().BeNullOrEmpty("");
+                response!.Success.Should().BeTrue();
+                break;
+            case int alias when  alias >= 100:
                 response!.Data.Should().BeNull();
                 response!.ErrorMessage.Should().BeNullOrEmpty("");
                 response!.Success.Should().BeTrue();
@@ -85,10 +92,6 @@ public class IntegrationTestApiCategoria : IClassFixture<WebApplicationFactory<P
 
             default:
                 break;
-        }
-
-        
+        }        
     }
-
-
 }

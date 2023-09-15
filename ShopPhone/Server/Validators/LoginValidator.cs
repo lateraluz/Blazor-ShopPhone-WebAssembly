@@ -17,7 +17,7 @@ public class LoginValidator :AbstractValidator<LoginRequestDTO>
 
         RuleFor(u => u.UserName).
                Cascade(CascadeMode.Stop).
-               NotNull().NotEmpty().WithMessage("El usuario es un dato requerido").               
+               NotNull().NotEmpty().WithMessage("El usuario es un dato requerido").
                MinimumLength(5).WithMessage("El largo mínimo es 5 caracteres");
                
 
