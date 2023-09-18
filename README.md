@@ -15,7 +15,7 @@ Click on image below to see the video
 
 # Config
 1. Create Folder at "C:\\Temp\\images" and copy all images (phone pictures)
-2. Create site at http://localhost:8081/ in order to read the images
+2. Create site at http://localhost:8081/images in order to read the images
 3. Restore Database ShopPhone.bak
 4. Run the application
 
@@ -39,9 +39,10 @@ maria
 2. Drag and drop images
 3. Telemetry
 4. Refresh API JWT
-5. Carrusel using swiper.js  Library
-6. Test cases
-7. Fix withdraw inventory
-8. ~~Fluent Validators~~
-9. Fix problem with catching errors thru layers.
-10. Change DTOs instead records
+5. ~~Carrusel~~  Bootstrap 5.1 :(
+6. ~~Test cases~~
+7. ~~Integration Testing~~
+8. Fix withdraw inventory
+9. ~~Fluent Validators~~
+10. Fix problem with catching errors thru layers.
+11. Change DTOs instead records
