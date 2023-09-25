@@ -94,85 +94,86 @@
                     </div>
                 </div>
 
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
+                        <caption></caption>
+                        <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
+                            <tr>
+                                <th scope="col">
+                                    No
+                                </th>
+                                <th scope="col" class="">
+                                    Código
+                                </th>
+                                <th scope="col" class="">
+                                    Producto
+                                </th>
+                                <th scope="col" style="text-align: right;">
+                                    Cantidad
+                                </th>
 
-                <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
-                    <caption></caption>
-                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px;text-align: left; vertical-align: middle;">
-                        <tr>
-                            <th scope="col">
-                                No
-                            </th>
-                            <th scope="col" class="">
-                                Código
-                            </th>
-                            <th scope="col" class="">
-                                Producto
-                            </th>
-                            <th scope="col" style="text-align: right;">
-                                Cantidad
-                            </th>
+                                <th scope="col" style="text-align: right;">
+                                    Precio
+                                </th>
+                                <th scope="col" style="text-align: right;">
+                                    Impuesto
+                                </th>
+                                <th scope="col" style="text-align: right;">
+                                    Total
+                                </th>
+                                <th scope="col" style="text-align: center;">
+                                    Acción
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int index = 0;
+                                double impuesto = 0d;
+                                double total = 0d;
+                                double totalImpuesto = 0d;
+                                double granTotal = 0d;
 
-                            <th scope="col" style="text-align: right;">
-                                Precio
-                            </th>
-                            <th scope="col" style="text-align: right;">
-                                Impuesto
-                            </th>
-                            <th scope="col" style="text-align: right;">
-                                Total
-                            </th>
-                            <th scope="col" style="text-align: center;">
-                                Acción
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int index = 0;
-                            double impuesto = 0d;
-                            double total = 0d;
-                            double totalImpuesto = 0d;
-                            double granTotal = 0d;
+                                if (_listaFacturaDetalleDTO.Any())
+                                    foreach (var item in _listaFacturaDetalleDTO)
+                                    {
 
-                            if (_listaFacturaDetalleDTO.Any())
-                                foreach (var item in _listaFacturaDetalleDTO)
+                                        index = index + 1;
+                                        impuesto = (double)@item.PrecioUnitario * @item.Cantidad * 0.13;
+                                        totalImpuesto = totalImpuesto + impuesto;
+                                        total = impuesto + (double)@item.PrecioUnitario * @item.Cantidad;
+                                        granTotal = granTotal + total;
+                                        <tr style="">
+                                            <td>@index</td>
+                                            <td>@item.IdProducto</td>
+                                            <td>@item.Descripcion.Trim().PadRight(40,'.').Substring(0,20)</td>
+                                            <td align="right">@item.Cantidad</td>
+                                            <td align="right">@item.PrecioUnitario.ToString("N2")</td>
+                                            <td align="right">@impuesto.ToString("N2")</td>
+                                            <td align="right">@total.ToString("N2")</td>
+                                            <td align="Center">
+                                                <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto)">Delete</button>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                if (_listaFacturaDetalleDTO.Any())
                                 {
-
-                                    index = index + 1;
-                                    impuesto = (double)@item.PrecioUnitario * @item.Cantidad * 0.13;
-                                    totalImpuesto = totalImpuesto + impuesto;
-                                    total = impuesto + (double)@item.PrecioUnitario * @item.Cantidad;
-                                    granTotal = granTotal + total;
-                                    <tr style="">
-                                        <td>@index</td>
-                                        <td>@item.IdProducto</td>
-                                        <td>@item.Descripcion.Trim().PadRight(40,'.').Substring(0,20)</td>
-                                        <td align="right">@item.Cantidad</td>
-                                        <td align="right">@item.PrecioUnitario.ToString("N2")</td>
-                                        <td align="right">@impuesto.ToString("N2")</td>
-                                        <td align="right">@total.ToString("N2")</td>
-                                        <td align="Center">
-                                            <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto)">Delete</button>
-                                        </td>
+                                    <tr style="background-color:black">
+                                        <td> </td>
+                                        <td> </td>
+                                        <td> </td>
+                                        <td align="right"></td>
+                                        <td align="right"></td>
+                                        <td align="right" style="color:whitesmoke;  font-weight: bold"> Total</td>
+                                        <td align="right" style="color:whitesmoke;  font-weight: bold">@granTotal.ToString("N2")</td>
+                                        <td> </td>
                                     </tr>
-
                                 }
-                            if (_listaFacturaDetalleDTO.Any())
-                            {
-                                <tr style="background-color:black">
-                                    <td> </td>
-                                    <td> </td>
-                                    <td> </td>
-                                    <td align="right"></td>
-                                    <td align="right"></td>
-                                    <td align="right" style="color:whitesmoke;  font-weight: bold"> Total</td>
-                                    <td align="right" style="color:whitesmoke;  font-weight: bold">@granTotal.ToString("N2")</td>
-                                    <td> </td>
-                                </tr>
                             }
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="btn-group" role="group" style="gap: 10px">
                     <button class="btn btn-success w-300  " @onclick="OnSave">Finalizar </button>
                     <button class="btn btn-danger w-300 " @onclick="OnClear">Cancelar</button>
@@ -490,7 +491,7 @@
                 return;
             }
 
-            
+
             await Swal.FireAsync(new SweetAlertOptions
                 {
                     Title = "Factura Procesada",
@@ -541,7 +542,7 @@
         Console.WriteLine("Key");
         await Task.FromResult(1);
     }
-     
+
     private async Task OnClear()
     {
 

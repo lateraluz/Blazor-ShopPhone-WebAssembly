@@ -33,62 +33,64 @@
     <div class="card mt-2">
         <div class="card-body">
             <section class="intro">
-                <table class="table table-responsive-md table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
-                    <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px; vertical-align: middle;">
-                        <tr style="">
-                            <th scope="col" @onclick='(()=> Sort("IdProducto"))'>
-                                Producto
-                            </th>
-                            <th scope="col" class="" @onclick='(()=> Sort("Descripcion"))'>
-                                Descripción
-                            </th>
-                            <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
-                                Categoria
-                            </th>
-                            <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Stock"))'>
-                                Stock
-                            </th>
-                            <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Precio"))'>
-                                Precio
-                            </th>
-                            <th scope="col" style="text-align: center;" @onclick='(()=> Sort("Estado"))'>
-                                Estado
-                            </th>
-                            <th scope="col" style="text-align: center;">
-                                Foto
-                            </th>
-                            <th scope="col" style="text-align: center;">
-                                Comentario
-                            </th>
-                            <th scope="col" style="text-align: center;">
-                                Accion
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in _list!.Skip(RECORDS_PER_PAGE * (_paginaActual - 1)).Take(RECORDS_PER_PAGE))
-                        {
+                <div class="table-responsive">
+                    <table class="table  table-striped table-hover table-sm mt-3" style="border-radius: 6px; overflow: hidden; font-size:medium">
+                        <thead style="background-color: black; color: #fff; cursor:pointer ; height: 50px; vertical-align: middle;">
                             <tr style="">
-                                <td>@item.IdProducto</td>
-                                <td>@item.Descripcion</td>
-                                <td>@item._Categoria!.NombreCategoria</td>
-                                <td align="right">@item.Inventario</td>
-                                <td align="right">@item.PrecioUnitario.ToString("N2")</td>
-                                <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
-                                <td align="Center">
-                                    <a class="thumbnail" href="#thumb">
-                                        <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" class="zoom" />
-                                    </a>
-                                </td>
-                                <td>@item.Comentarios.PadRight(21,'.').Substring(0,19).Trim()</td>
-                                <td align="Center">
-                                    <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
-                                    <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
-                                </td>
+                                <th scope="col" @onclick='(()=> Sort("IdProducto"))'>
+                                    Producto
+                                </th>
+                                <th scope="col" class="" @onclick='(()=> Sort("Descripcion"))'>
+                                    Descripción
+                                </th>
+                                <th scope="col" class="" @onclick='(()=> Sort("Estado"))'>
+                                    Categoria
+                                </th>
+                                <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Stock"))'>
+                                    Stock
+                                </th>
+                                <th scope="col" style="text-align: right;" @onclick='(()=> Sort("Precio"))'>
+                                    Precio
+                                </th>
+                                <th scope="col" style="text-align: center;" @onclick='(()=> Sort("Estado"))'>
+                                    Estado
+                                </th>
+                                <th scope="col" style="text-align: center;">
+                                    Foto
+                                </th>
+                                <th scope="col" style="text-align: center;">
+                                    Comentario
+                                </th>
+                                <th scope="col" style="text-align: center;">
+                                    Accion
+                                </th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in _list!.Skip(RECORDS_PER_PAGE * (_paginaActual - 1)).Take(RECORDS_PER_PAGE))
+                            {
+                                <tr style="">
+                                    <td>@item.IdProducto</td>
+                                    <td>@item.Descripcion</td>
+                                    <td>@item._Categoria!.NombreCategoria</td>
+                                    <td align="right">@item.Inventario</td>
+                                    <td align="right">@item.PrecioUnitario.ToString("N2")</td>
+                                    <td align="Center">@(item.Estado == true ? "Activo" : "Inactivo")</td>
+                                    <td align="Center">
+                                        <a class="thumbnail" href="#thumb">
+                                            <img src="@item.URLImagen" alt="@item.Descripcion" width="150" height="150" class="zoom" />
+                                        </a>
+                                    </td>
+                                    <td>@item.Comentarios.PadRight(21,'.').Substring(0,19).Trim()</td>
+                                    <td align="Center">
+                                        <button class="btn btn-primary " @onclick="() => OnEdit(item.IdProducto)">Editar</button>
+                                        <button class="btn btn-danger " @onclick=" ()=> OnDelete( item.IdProducto )">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
             </section>
 
@@ -97,7 +99,7 @@
                 <div class="card-footer">
                     <div class="row">
                         <nav aria-label="Page navigation">
-                            <ul class="pagination">
+                            <ul class="pagination d-flex flex-wrap">
                                 <li class="page-item">
                                     <button class="page-link btn" @onclick="()=>Previous()">Previous</button>
                                 </li>
@@ -212,7 +214,7 @@
             else
                 response = await ProxyProducto.FindByDescriptionAsync(_descripcion);
 
-           
+
             if (response.Success == true)
             {
                 _list = response.Data!.ToList();

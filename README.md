@@ -46,3 +46,6 @@ maria
 9. ~~Fluent Validators~~
 10. Fix problem with catching errors thru layers.
 11. Change DTOs instead records
+11. ~~Tables Reponsive~~
+12. ~~Pagination Reponsive~~
+13. Create components in order to make reuse code.
