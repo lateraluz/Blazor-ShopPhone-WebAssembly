@@ -35,7 +35,7 @@ maria
 
 
 # To-Do
-1. Concurrency Control
+1. ~~Concurrency Control~~
 2. Drag and drop images
 3. Telemetry
 4. Refresh API JWT

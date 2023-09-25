@@ -15,5 +15,6 @@ namespace ShopPhone.Repositories.Interfaces
         Task DeleteAsync(int id);
         Task<Cliente?> FindAsync(int id);
         Task UpdateAsync();
+        
     }
 }

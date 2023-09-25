@@ -17,6 +17,7 @@ public record ClienteDTO
     public string Telefono { get; set; } = string.Empty;
     public string CorreoElectronico { get; set; } = string.Empty;
 
+    public DateTime LastUpdate { set; get; } = DateTime.Now;
     public override string ToString()
     {
         return $"{IdCliente} - {Nombre} {Apellidos}";

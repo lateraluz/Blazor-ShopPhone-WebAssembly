@@ -11,6 +11,7 @@ using ShopPhone.Shared.Entities;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using static iTextSharp.text.pdf.events.IndexEvents;
 
 namespace ShopPhone.Services.Implementations;
 
@@ -45,6 +46,7 @@ public class VentaService : IVentaService
                 x => x.IdFactura = identity.IdFactura
                 );
 
+            factura.LastUpdate = DateTime.Now;
             var baseResponse = await _ventaRepository.AddAsync(factura);
             response.Success = true;
             response.Data = factura.IdFactura;//identity.IdFactura;

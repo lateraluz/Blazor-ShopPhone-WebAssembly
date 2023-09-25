@@ -82,6 +82,11 @@ public class VentaRepository : IVentaRepository
             await _context.Database.CommitTransactionAsync();
             return new BaseResponse() { Success = true };
         }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
+        }
         catch (Exception ex)
         {
             await _context.Database.RollbackTransactionAsync();

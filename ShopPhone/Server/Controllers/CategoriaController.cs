@@ -99,7 +99,7 @@ public class CategoriaController : ControllerBase
             {
                 _logger.LogInformation($"Read cache");
                 response.Success = true;
-                response.Data = listaCategorias!.ToList();
+                response.Data = listaCategorias!.OrderBy(p=>p.IdCategoria).ToList();
             }
             else
             {
@@ -126,7 +126,7 @@ public class CategoriaController : ControllerBase
         try
         {
             var validationResult =await _validator.ValidateAsync(request);
-
+           
             if (!validationResult.IsValid)
             {
                 BaseResponseGeneric<int> validResponse = new();
@@ -134,12 +134,11 @@ public class CategoriaController : ControllerBase
                 validResponse.ErrorMessage = validationResult.ToListErrorsString();
                 return Ok(validResponse);
             }
-
+                        
             var response = await _categoriaService.UpdateAsync(id, request);
 
             if (response.Success)
             {
-
                 // Is Valid Cache?
                 if (_cache.TryGetValue("Categories", out List<CategoriaDTO>? listaCategorias))
                 {
@@ -176,7 +175,7 @@ public class CategoriaController : ControllerBase
                 response.Success = true;
                 var list = new List<CategoriaDTO>();
                 list!.Add(categoria!);
-                response.Data = list;
+                response.Data = list.OrderBy(p=>p.IdCategoria).ToList();
             }
 
             if (categoria is null)
@@ -202,7 +201,7 @@ public class CategoriaController : ControllerBase
             var validationResult = await _validator.ValidateAsync(request);
 
             if (!validationResult.IsValid)
-            {
+            { 
                 BaseResponseGeneric<int> invalidResponse = new();
                 invalidResponse.Success = false;
                 invalidResponse.ErrorMessage = validationResult.ToListErrorsString();

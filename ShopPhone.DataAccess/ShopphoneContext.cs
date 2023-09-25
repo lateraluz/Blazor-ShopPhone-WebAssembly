@@ -19,20 +19,24 @@ public partial class ShopPhoneContext : DbContext
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
+    public virtual DbSet<Configuration> Configurations { get; set; }
+
+   
+
     public virtual DbSet<FacturaDetalle> FacturaDetalles { get; set; }
 
-    public virtual DbSet<FacturaEncabezado> FacturaEncabezados { get; set; }
+    public virtual DbSet<FacturaEncabezado> FacturaEncabezados { get; set; } 
 
     public virtual DbSet<Producto> Productos { get; set; }
 
     public virtual DbSet<Rol> Rols { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-    /*
+
+ /*
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=ShopPhone;Integrated Security=false;user id=sa;password=123456;Encrypt=false;");
-    */
+      => optionsBuilder.UseSqlServer("Server=localhost;Database=ShopPhone;Integrated Security=false;user id=sa;password=123456;Encrypt=false;");
+ */
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Categorium>(entity =>
@@ -40,6 +44,7 @@ public partial class ShopPhoneContext : DbContext
             entity.HasKey(e => e.IdCategoria);
 
             entity.Property(e => e.IdCategoria).ValueGeneratedNever();
+            entity.Property(e => e.LastUpdate).HasColumnType("datetime");
             entity.Property(e => e.NombreCategoria)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -63,6 +68,7 @@ public partial class ShopPhoneContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.FechaNacimiento).HasColumnType("datetime");
+            entity.Property(e => e.LastUpdate).HasColumnType("datetime");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(40)
                 .IsUnicode(false)
@@ -71,6 +77,15 @@ public partial class ShopPhoneContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
         });
+
+        modelBuilder.Entity<Configuration>(entity =>
+        {
+            entity.Property(e => e.DiscoveryService).HasMaxLength(100);
+            entity.Property(e => e.Name).HasMaxLength(500);
+            entity.Property(e => e.Uri).HasMaxLength(500);
+        });
+
+      
 
         modelBuilder.Entity<FacturaDetalle>(entity =>
         {
@@ -104,12 +119,15 @@ public partial class ShopPhoneContext : DbContext
             entity.Property(e => e.FechaVenta)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.LastUpdate).HasColumnType("datetime");
 
             entity.HasOne(d => d.IdClienteNavigation).WithMany(p => p.FacturaEncabezados)
                 .HasForeignKey(d => d.IdCliente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacturaEncabezado_Cliente");
         });
+
+      
 
         modelBuilder.Entity<Producto>(entity =>
         {
@@ -127,6 +145,7 @@ public partial class ShopPhoneContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.LastUpdate).HasColumnType("datetime");
             entity.Property(e => e.PrecioUnitario).HasColumnType("numeric(18, 2)");
             entity.Property(e => e.Urlimagen)
                 .HasMaxLength(200)
@@ -168,13 +187,17 @@ public partial class ShopPhoneContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.Contrasena)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.IdRol)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.LastUpdate).HasColumnType("datetime");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(20)
                 .IsUnicode(false);

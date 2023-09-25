@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ShopPhone.DataAccess;
 
@@ -15,8 +16,11 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
-    public bool Estado { get; set; } =false;
     public string IdRol { get; set; } = null!;
+
+    public bool Estado { get; set; }
+    [ConcurrencyCheck]
+    public DateTime? LastUpdate { get; set; }
 
     public virtual Rol IdRolNavigation { get; set; } = null!;
 }

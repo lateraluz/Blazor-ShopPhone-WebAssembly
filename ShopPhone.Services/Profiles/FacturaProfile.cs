@@ -23,7 +23,9 @@ namespace ShopPhone.Services.Mappers
             .ForMember(dest => dest.FechaVenta, orig => orig.MapFrom(x => x.FechaVenta))
             .ForMember(dest => dest.IdCliente, orig => orig.MapFrom(x => x.IdCliente))
             //.ForMember(dest => dest.IdClienteNavigation, orig => orig.MapFrom(x => x._Cliente))
-            .ForMember(dest => dest.FacturaDetalles, orig => orig.MapFrom(x => x._FacturaDetalle));
+            .ForMember(dest => dest.FacturaDetalles, orig => orig.MapFrom(x => x._FacturaDetalle))
+            .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate))
+            ;
 
 
             CreateMap<FacturaEncabezado, FacturaDTO>()
@@ -32,7 +34,8 @@ namespace ShopPhone.Services.Mappers
            .ForMember(dest => dest.FechaVenta, orig => orig.MapFrom(x => x.FechaVenta))
            .ForMember(dest => dest.IdCliente, orig => orig.MapFrom(x => x.IdCliente))
            .ForMember(dest => dest._Cliente, orig => orig.MapFrom(x => x.IdClienteNavigation))
-           .ForMember(dest => dest._FacturaDetalle, orig => orig.MapFrom(x => x.FacturaDetalles));
+           .ForMember(dest => dest._FacturaDetalle, orig => orig.MapFrom(x => x.FacturaDetalles))
+           .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
 
             /*
             CreateMap<FacturaDetalle, FacturaDetalleDTO>()

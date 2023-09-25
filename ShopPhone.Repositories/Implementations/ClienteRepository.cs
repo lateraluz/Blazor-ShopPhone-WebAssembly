@@ -41,7 +41,8 @@ public class ClienteRepository : IClienteRepository
     public async Task<ICollection<Cliente>> ListAsync()
     {
         try
-        {
+        {         
+
             var response = await _context
                                 .Set<Cliente>()
                                 .ToListAsync();
@@ -61,9 +62,15 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
+            entity.LastUpdate = DateTime.Now;
             await _context.Set<Cliente>().AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.IdCliente;
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -77,9 +84,11 @@ public class ClienteRepository : IClienteRepository
     {
         try
         {
+             
             var entity = await FindAsync(id);
             if (entity != null)
             {
+                entity.LastUpdate = DateTime.Now;
                 entity.Estado = false;
                 await UpdateAsync();
             }
@@ -87,6 +96,10 @@ public class ClienteRepository : IClienteRepository
             {
                 throw new InvalidOperationException($"No se encontro el registro con el Id {id}");
             }
+        }
+        catch (DbUpdateConcurrencyException concurrencyError) {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -103,7 +116,7 @@ public class ClienteRepository : IClienteRepository
                                 .Set<Cliente>()
                                 .FindAsync(id);
             return response;
-        }
+        }        
         catch (Exception ex)
         {
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
@@ -111,18 +124,23 @@ public class ClienteRepository : IClienteRepository
         }
     }
 
+  
     public async Task UpdateAsync()
     {
         try
-        {
+        {            
             await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             throw;
         }
-
     }
 
 

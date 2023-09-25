@@ -52,7 +52,7 @@ public class ClienteService : IClienteService
         {
             var collection = await _clienteRepository.ListAsync();
             response.Success = true;
-            
+
             if (collection is not null)
                 response.Data = _mapper.Map<ICollection<ClienteDTO>>(collection);
 
@@ -156,7 +156,7 @@ public class ClienteService : IClienteService
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
             _mapper.Map(request, entity);
-
+            entity.LastUpdate = DateTime.Now;
             await _clienteRepository.UpdateAsync();
             response.Success = true;
             return response;

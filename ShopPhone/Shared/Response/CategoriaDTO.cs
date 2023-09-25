@@ -11,6 +11,8 @@ public record CategoriaDTO
     public int IdCategoria { set; get; }
     public string NombreCategoria { set; get; } = string.Empty;
     public bool Estado { set; get; }
+
+    public DateTime LastUpdate { set; get; } = DateTime.Now;
 };
 
 /*

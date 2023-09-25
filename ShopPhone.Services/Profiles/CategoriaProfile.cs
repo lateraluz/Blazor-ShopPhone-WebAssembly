@@ -18,12 +18,14 @@ public class CategoriaProfile : Profile
         CreateMap<Categorium, CategoriaDTO>()
             .ForMember(dest => dest.IdCategoria, orig => orig.MapFrom(x => x.IdCategoria))
             .ForMember(dest => dest.NombreCategoria, orig => orig.MapFrom(x => x.NombreCategoria.Trim()))
-            .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado));
+            .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado))
+            .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
 
         CreateMap<CategoriaDTO, Categorium>()
           .ForMember(dest => dest.IdCategoria, orig => orig.MapFrom(x => x.IdCategoria))
           .ForMember(dest => dest.NombreCategoria, orig => orig.MapFrom(x => x.NombreCategoria.Trim()))
-          .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado));
+          .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado))
+          .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
 
     }
 }

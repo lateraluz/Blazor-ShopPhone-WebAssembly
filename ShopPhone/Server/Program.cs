@@ -78,9 +78,9 @@ builder.Services.AddHealthChecks()
                  .AddCheck<ImageHealthCheck>("ImageSite");
 builder.Services.AddHealthChecksUI(option =>
                                     {
-                                        option.SetMinimumSecondsBetweenFailureNotifications(60);
-                                        option.SetEvaluationTimeInSeconds(120); // Time in seconds between check
-                                        option.MaximumHistoryEntriesPerEndpoint(60); //maximum history of checks
+                                        option.SetMinimumSecondsBetweenFailureNotifications(60 * 1000);
+                                        option.SetEvaluationTimeInSeconds(120 * 1000); // Time in seconds between check
+                                        option.MaximumHistoryEntriesPerEndpoint(60 * 1000); //maximum history of checks
                                         option.SetApiMaxActiveRequests(1); //api requests concurrency
                                         option.AddHealthCheckEndpoint("My Services", "/health"); // End Point get data
                                         option.AddWebhookNotification("MyWebhook1 https://webhook.site/", uri: "https://webhook.site/456d587c-7bb1-4fe6-bbd3-9e3cd6e06826", payload: "{\"error:\":\"Error in PhoneShop\"}"); // Tested https://webhook.site works!

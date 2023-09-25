@@ -14,6 +14,6 @@ public  record FacturaDTO
     public bool Estado { get; set; }
     public DateTime FechaVenta { get; set; } = DateTime.Now;
     public List<FacturaDetalleDTO> _FacturaDetalle { get; set; } = new List<FacturaDetalleDTO>();
-
+    public DateTime LastUpdate { set; get; } = DateTime.Now;
 }
 

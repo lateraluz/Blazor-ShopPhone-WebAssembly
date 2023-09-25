@@ -25,7 +25,8 @@ namespace ShopPhone.Services.Mappers
                .ForMember(dest => dest.Comentarios, orig => orig.MapFrom(x => x.Comentarios!.Trim()))
                .ForMember(dest => dest.PrecioUnitario, orig => orig.MapFrom(x => x.PrecioUnitario))
                .ForMember(dest => dest.URLImagen, orig => orig.MapFrom(x => x.Urlimagen!.Trim()))
-               .ForMember(dest => dest._Categoria, orig => orig.MapFrom(x => x.IdCategoriaNavigation));
+               .ForMember(dest => dest._Categoria, orig => orig.MapFrom(x => x.IdCategoriaNavigation))
+               .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
 
 
             CreateMap<ProductoDTO, Producto>()
@@ -36,7 +37,8 @@ namespace ShopPhone.Services.Mappers
                .ForMember(dest => dest.Inventario, orig => orig.MapFrom(x => x.Inventario))
                .ForMember(dest => dest.Comentarios, orig => orig.MapFrom(x => x.Comentarios.Trim()))
                .ForMember(dest => dest.PrecioUnitario, orig => orig.MapFrom(x => x.PrecioUnitario))
-               .ForMember(dest => dest.Urlimagen, orig => orig.MapFrom(x => x.URLImagen.Trim()));
+               .ForMember(dest => dest.Urlimagen, orig => orig.MapFrom(x => x.URLImagen.Trim()))
+               .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
                
         }
 

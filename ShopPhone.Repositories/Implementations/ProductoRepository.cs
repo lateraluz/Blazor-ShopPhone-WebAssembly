@@ -42,9 +42,15 @@ public class ProductoRepository : IProductoRepository
     {
         try
         {
+            entity.LastUpdate = DateTime.Now;
             await _context.Set<Producto>().AddAsync(entity);
             await _context.SaveChangesAsync();
             return new BaseResponse() { Success = true };
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -61,12 +67,18 @@ public class ProductoRepository : IProductoRepository
             if (entity != null)
             {
                 entity.Estado = false;
+                entity.LastUpdate = DateTime.Now;
                 await UpdateAsync();
             }
             else
             {
                 throw new InvalidOperationException($"No se encontro el registro con el Id {id}");
             }
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -97,6 +109,11 @@ public class ProductoRepository : IProductoRepository
         {
             await _context.SaveChangesAsync();
             return new BaseResponse() { Success = true };
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {

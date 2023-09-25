@@ -21,6 +21,7 @@ namespace ShopPhone.Shared.Response
         public string? FileName { get; set; }
 
         public CategoriaDTO? _Categoria { get; set; } = new CategoriaDTO();
+        public DateTime LastUpdate { set; get; } = DateTime.Now;
 
     }
 }

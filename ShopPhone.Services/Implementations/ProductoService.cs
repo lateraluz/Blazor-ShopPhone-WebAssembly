@@ -139,7 +139,7 @@ public class ProductoService : IProductoService
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
             _mapper.Map(identity, entity);
-
+            entity.LastUpdate = DateTime.Now;
             await _productoRepository.UpdateAsync();
             response.Success = true;
             return response;

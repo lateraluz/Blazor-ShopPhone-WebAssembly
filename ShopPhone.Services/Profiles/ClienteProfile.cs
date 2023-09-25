@@ -23,7 +23,17 @@ public class ClienteProfile : Profile
             .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado))
             .ForMember(dest => dest.Telefono, orig => orig.MapFrom(x => x.Telefono.Trim()))
             .ForMember(dest => dest.CorreoElectronico, orig => orig.MapFrom(x => x.CorreoElectronico.Trim()))
-            .ForMember(dest => dest.FechaNacimiento, orig => orig.MapFrom(x => x.FechaNacimiento));
+            .ForMember(dest => dest.FechaNacimiento, orig => orig.MapFrom(x => x.FechaNacimiento))
+            .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
+        CreateMap<ClienteDTO, Cliente>()
+           .ForMember(dest => dest.IdCliente, orig => orig.MapFrom(x => x.IdCliente))
+           .ForMember(dest => dest.Nombre, orig => orig.MapFrom(x => x.Nombre.Trim()))
+           .ForMember(dest => dest.Apellidos, orig => orig.MapFrom(x => x.Apellidos.Trim()))
+           .ForMember(dest => dest.Estado, orig => orig.MapFrom(x => x.Estado))
+           .ForMember(dest => dest.Telefono, orig => orig.MapFrom(x => x.Telefono.Trim()))
+           .ForMember(dest => dest.CorreoElectronico, orig => orig.MapFrom(x => x.CorreoElectronico.Trim()))
+           .ForMember(dest => dest.FechaNacimiento, orig => orig.MapFrom(x => x.FechaNacimiento))
+           .ForMember(dest => dest.LastUpdate, orig => orig.MapFrom(x => x.LastUpdate));
     }
 
 

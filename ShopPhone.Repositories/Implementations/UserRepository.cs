@@ -3,6 +3,7 @@ using ShopPhone.Repositories.Interfaces;
 using System.Data.Entity;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using System.Data.Entity.Infrastructure;
 
 namespace ShopPhone.Repositories.Implementations
 {
@@ -21,9 +22,15 @@ namespace ShopPhone.Repositories.Implementations
         {
             try
             {
+                entity.LastUpdate = DateTime.Now;
                 await _context.Set<User>().AddAsync(entity!);
                 await _context.SaveChangesAsync();
                 return entity.Login;
+            }
+            catch (DbUpdateConcurrencyException concurrencyError)
+            {
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+                throw;
             }
             catch (Exception ex)
             {

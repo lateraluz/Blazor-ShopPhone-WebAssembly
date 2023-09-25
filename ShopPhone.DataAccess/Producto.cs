@@ -17,9 +17,11 @@ public partial class Producto
 
     public bool Estado { get; set; }
 
+    public string? Comentarios { get; set; }
+
     public string? Urlimagen { get; set; }
 
-    public string? Comentarios { get; set; }
+    public DateTime? LastUpdate { get; set; }
 
     public virtual ICollection<FacturaDetalle> FacturaDetalles { get; set; } = new List<FacturaDetalle>();
 

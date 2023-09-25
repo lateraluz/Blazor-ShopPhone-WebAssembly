@@ -155,7 +155,7 @@ public class CategoriaService : ICategoriaService
             // Request va a reemplazar todos los valores coincidentes en el objeto de destino
             // que se encuentra en el lado derecho
             _mapper.Map(request, entity);
-
+            entity.LastUpdate = DateTime.Now;
             await _categoriaRepository.UpdateAsync();
             response.Success = true;
             return response;
@@ -163,7 +163,7 @@ public class CategoriaService : ICategoriaService
         }
         catch (Exception ex)
         {
-            response.ErrorMessage = "Error al Actualizar el Genero";
+            response.ErrorMessage = "Error al Actualizar la Categoria";
             _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex);
             return response;
         }

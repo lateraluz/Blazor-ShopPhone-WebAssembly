@@ -4,6 +4,7 @@ using ShopPhone.Repositories.Interfaces;
 using System.Reflection;
 namespace ShopPhone.Repositories.Implementations;
 
+using Azure.Core;
 using Microsoft.Extensions.Logging;
 
 
@@ -22,8 +23,7 @@ public class CategoriaRepository : ICategoriaRepository
     public async Task<ICollection<Categorium>> FindByDescriptionAsync(string description)
     {
         try
-        {
-           
+        {          
 
             var response = await _context
                                 .Set<Categorium>()
@@ -49,8 +49,7 @@ public class CategoriaRepository : ICategoriaRepository
             _logger.LogInformation($"List all Categoria");
             var response = await _context
                                 .Set<Categorium>()
-                                .AsNoTracking()
-                                .OrderBy(p => p.IdCategoria)
+                                .AsNoTracking()                               
                                 .ToListAsync();
             return response;
 
@@ -68,11 +67,16 @@ public class CategoriaRepository : ICategoriaRepository
     {
         try
         {
+            entity.LastUpdate = DateTime.Now;
             await _context.Database.BeginTransactionAsync();
             await _context.Set<Categorium>().AddAsync(entity);
             await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync(); ;
             return entity.IdCategoria;
+        }
+        catch (DbUpdateConcurrencyException concurrencyError) {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -90,12 +94,18 @@ public class CategoriaRepository : ICategoriaRepository
             if (entity != null)
             {
                 entity.Estado = false;
+                entity.LastUpdate = DateTime.Now;
                 await UpdateAsync();
             }
             else
             {
                 throw new Exception($"No se encontro el registro con el Id {id}");
             }
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
@@ -123,8 +133,13 @@ public class CategoriaRepository : ICategoriaRepository
     public async Task UpdateAsync()
     {
         try
-        {
+        {            
             await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException concurrencyError)
+        {
+            _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", concurrencyError);
+            throw;
         }
         catch (Exception ex)
         {
