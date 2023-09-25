@@ -7,23 +7,19 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Shared.Response;
 
-public class ClienteDTO
+public record ClienteDTO
 {
     public int IdCliente { get; set; }
-    public string Nombre { get; set; } = "";
-    public string Apellidos { get; set; } = "";
+    public string Nombre { get; set; } = string.Empty;
+    public string Apellidos { get; set; } = string.Empty;
     public bool Estado { get; set; } = default!;
     public DateTime FechaNacimiento { get; set; }  
-    public string Telefono { get; set; } = "";
-    public string CorreoElectronico { get; set; } = "";
+    public string Telefono { get; set; } = string.Empty;
+    public string CorreoElectronico { get; set; } = string.Empty;
 
     public override string ToString()
     {
         return $"{IdCliente} - {Nombre} {Apellidos}";
     }
-
-
-
-
 
 }

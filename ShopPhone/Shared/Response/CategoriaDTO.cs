@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Shared.Response;
 
+public record CategoriaDTO
+{
+    public int IdCategoria { set; get; }
+    public string NombreCategoria { set; get; } = string.Empty;
+    public bool Estado { set; get; }
+};
+
+/*
 public class CategoriaDTO
 {
     public int IdCategoria { get; set; } = 0;
@@ -13,3 +21,4 @@ public class CategoriaDTO
     public bool Estado { get; set; } = true;
 
 }
+*/

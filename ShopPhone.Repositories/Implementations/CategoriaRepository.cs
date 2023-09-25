@@ -49,7 +49,8 @@ public class CategoriaRepository : ICategoriaRepository
             _logger.LogInformation($"List all Categoria");
             var response = await _context
                                 .Set<Categorium>()
-                                 .AsNoTracking()
+                                .AsNoTracking()
+                                .OrderBy(p => p.IdCategoria)
                                 .ToListAsync();
             return response;
 

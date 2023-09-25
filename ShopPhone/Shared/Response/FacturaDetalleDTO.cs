@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Shared.Response;
 
-public class FacturaDetalleDTO
+public record FacturaDetalleDTO
 {
     public int IdFactura { get; set; }
     public int Secuencia { get; set; }

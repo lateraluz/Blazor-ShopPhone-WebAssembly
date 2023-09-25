@@ -45,7 +45,9 @@ maria
 8. Fix withdraw inventory
 9. ~~Fluent Validators~~
 10. Fix problem with catching errors thru layers.
-11. Change DTOs instead records
+11. ~~Change DTOs to records~~
 11. ~~Tables Reponsive~~
 12. ~~Pagination Reponsive~~
 13. Create components in order to make reuse code.
+14. Add Icons Button
+15. Fix Algortim used in order to encrypt data "Warning": The default hash algorithm and iteration counts in Rfc2898DeriveBytes constructors are outdated and insecure. Use a constructor that accepts the hash algorithm and the number of iterations.

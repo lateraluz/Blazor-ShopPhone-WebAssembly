@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShopPhone.Shared.Response
 {
-    public class ProductoDTO 
+    public record ProductoDTO 
     {
         public int IdProducto { get; set; }
         public string Descripcion { get; set; } = "";
