@@ -192,32 +192,32 @@ builder.Services.AddRateLimiter(options =>
 });
 
 
-// Config Open Console
-//builder.Services.AddOpenTelemetry().WithTracing(builder => builder
-//            .AddAspNetCoreInstrumentation()
-//            .AddConsoleExporter());
-
-// Config Open Telemety with Jagger
-/*
+// Config Open Telemety Tacing
+// https://code-maze.com/tracing-dotnet-applications-opentelemetry/
+/* 
 builder.Services.AddOpenTelemetry()
-   .WithTracing(builder => builder
-       .AddAspNetCoreInstrumentation()
-       .AddHttpClientInstrumentation()     
-       .AddConsoleExporter()
-       .AddOtlpExporter()) ;
+    .WithTracing(builder => builder
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()        
+        .AddConsoleExporter()
+         );
 */
 
-using var tracerProvider = Sdk.CreateTracerProviderBuilder()
-    .AddOtlpExporter(opt =>
-    {
-        opt.Endpoint = new Uri("http://localhost:6831");
-        opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-    })
 
-    // Other setup code, like setting a resource goes here too
 
-    .Build();
+// Config Open Telemety with Jagger
 
+builder.Services.AddOpenTelemetry()
+   .WithTracing(builder => builder
+       .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(
+                serviceName: "ShopPhone",
+                serviceVersion: "1.0.0"))
+       .AddAspNetCoreInstrumentation()
+       .AddHttpClientInstrumentation()
+       .AddSource("OpenTelemetry.ShopPhone.Jaeger")
+       .AddOtlpExporter()) ;
+
+ 
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

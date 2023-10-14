@@ -8,6 +8,7 @@ using ShopPhone.Server.Extensions;
 using ShopPhone.Services.Interfaces;
 using ShopPhone.Shared.Request;
 using ShopPhone.Shared.Response;
+using System.Diagnostics;
 using System.Reflection;
 
 
@@ -89,7 +90,7 @@ public class CategoriaController : ControllerBase
     [Time]
     [HttpGet("List")]
     public async Task<IActionResult> ListAsync()
-    {
+    {         
 
         var response = new BaseResponseGeneric<ICollection<CategoriaDTO>>();
         try
