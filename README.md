@@ -41,11 +41,12 @@ maria
 # How to Check Healths
 1. Health (raw json) <BR>
 <p align="center">
-  <img src="https://github.com/lateraluz/Blazor-ShopPhone/blob/4c2ddd6a248c588b5c8d89ec483d237062a78ab6/Video/Telemery_Jaeger.png" alt="Jaeger" width="80%" height="70%">
+  <img src="https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy.png" alt="Jaeger" width="80%" height="70%">
 ![1](https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy.png)
 </p>
 2. Health UI <BR>
 <p align="center">
+   <img src="https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy-ui.png" alt="Health UI" width="80%" height="70%">
 ![2](https://github.com/lateraluz/Blazor-ShopPhone/blob/12afe94c8e7688c038e1c5bb496f4e2d5a122445/Video/Healthy-ui.png)
 </p>
 
