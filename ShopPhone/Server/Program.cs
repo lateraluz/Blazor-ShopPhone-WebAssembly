@@ -21,9 +21,19 @@ using Serilog.Events;
 using ShopPhone.Server.Validators;
 using FluentValidation;
 using ShopPhone.Shared.Request;
-
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Exporter.OpenTelemetryProtocol;
 using System.Reflection;
 using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+using NuGet.Protocol;
+using System.Diagnostics.Metrics;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -180,6 +190,33 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsync("DoS Protection. Too many requests. Please try later again... ", cancellationToken: token);
     };
 });
+
+
+// Config Open Console
+//builder.Services.AddOpenTelemetry().WithTracing(builder => builder
+//            .AddAspNetCoreInstrumentation()
+//            .AddConsoleExporter());
+
+// Config Open Telemety with Jagger
+/*
+builder.Services.AddOpenTelemetry()
+   .WithTracing(builder => builder
+       .AddAspNetCoreInstrumentation()
+       .AddHttpClientInstrumentation()     
+       .AddConsoleExporter()
+       .AddOtlpExporter()) ;
+*/
+
+using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+    .AddOtlpExporter(opt =>
+    {
+        opt.Endpoint = new Uri("http://localhost:6831");
+        opt.Protocol = OtlpExportProtocol.HttpProtobuf;
+    })
+
+    // Other setup code, like setting a resource goes here too
+
+    .Build();
 
 
 builder.Services.AddControllersWithViews();
