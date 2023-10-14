@@ -22,7 +22,7 @@ Click on image below to see the video
 # Open Telemetry with Jagger (Docker)
 1. docker run --rm --name jaeger  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411  -p 6831:6831/udp  -p 6832:6832/udp   -p 5778:5778   -p 16686:16686   -p 4317:4317   -p 4318:4318   -p 14250:14250   -p 14268:14268 -p 14269:14269  -p 9411:9411   jaegertracing/all-in-one:1.50
 2. http://localhost:16686
-<img src="[url](https://github.com/lateraluz/Blazor-ShopPhone/blob/4c2ddd6a248c588b5c8d89ec483d237062a78ab6/Video/Telemery_Jaeger.png)" alt="Jaeger" width="80%" height="70%">
+<img src="https://github.com/lateraluz/Blazor-ShopPhone/blob/4c2ddd6a248c588b5c8d89ec483d237062a78ab6/Video/Telemery_Jaeger.png" alt="Jaeger" width="80%" height="70%">
 ![1](https://github.com/lateraluz/Blazor-ShopPhone/blob/4c2ddd6a248c588b5c8d89ec483d237062a78ab6/Video/Telemery_Jaeger.png)  
 
 References
