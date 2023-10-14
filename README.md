@@ -55,3 +55,4 @@ maria
 13. Create components in order to make reuse code.
 14. Add Icons Button
 15. Fix Algortim used in order to encrypt data "Warning": The default hash algorithm and iteration counts in Rfc2898DeriveBytes constructors are outdated and insecure. Use a constructor that accepts the hash algorithm and the number of iterations.
+16. Error boundaries.
