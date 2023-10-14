@@ -191,22 +191,8 @@ builder.Services.AddRateLimiter(options =>
     };
 });
 
-
-// Config Open Telemety Tacing
-// https://code-maze.com/tracing-dotnet-applications-opentelemetry/
-/* 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(builder => builder
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()        
-        .AddConsoleExporter()
-         );
-*/
-
-
-
+ 
 // Config Open Telemety with Jagger
-
 builder.Services.AddOpenTelemetry()
    .WithTracing(builder => builder
        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(
@@ -216,8 +202,6 @@ builder.Services.AddOpenTelemetry()
        .AddHttpClientInstrumentation()
        .AddSource("OpenTelemetry.ShopPhone.Jaeger")
        .AddOtlpExporter()) ;
-
- 
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
