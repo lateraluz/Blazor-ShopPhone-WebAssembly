@@ -59,6 +59,6 @@ https://www.jaegertracing.io/docs/1.50/getting-started/
 11. ~~Tables Reponsive~~
 12. ~~Pagination Reponsive~~
 13. Create components in order to reuse code.
-14. Add Icons Button
+14. Add Icons Button and hide text button at Mobile View
 15. Fix Algortim used in order to encrypt data "Warning": The default hash algorithm and iteration counts in Rfc2898DeriveBytes constructors are outdated and insecure. Use a constructor that accepts the hash algorithm and the number of iterations.
 16. Error boundaries.
