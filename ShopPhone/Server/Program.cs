@@ -171,7 +171,8 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.FromSeconds(30)
+        ClockSkew = TimeSpan.Zero
+        //ClockSkew = TimeSpan.FromSeconds(30)
     };
 });
 

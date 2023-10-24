@@ -12,6 +12,9 @@ using ShopPhone.Shared.Util;
 using ShopPhone.Repositories.Interfaces;
 using ShopPhone.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
+using ShopPhone.DataAccess;
+using Azure;
 
 namespace ShopPhone.Services.Implementations;
 
@@ -63,31 +66,28 @@ public class UserService : IUserService
             }
 
             roles.Add(user.IdRol.Trim());
-
             
-            expiredDate = DateTime.Now.AddHours(2);
+
+            expiredDate = DateTime.Now.AddMinutes(_options.Value.Jwt.TTL);
 
             List<Claim> claims = new List<Claim>();
             claims!.Add(new Claim(ClaimTypes.Sid, request.UserName));
             claims!.Add(new Claim(ClaimTypes.WindowsAccountName, request.UserName));
             claims!.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
             claims!.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
-            claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
+            //claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
 
             claims.AddRange(roles.Select(c => new Claim(ClaimTypes.Role, c)));
-           
+
             // Creacion del JWT
             var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Jwt.SecretKey));
-
             var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
-
             var header = new JwtHeader(credentials);
-
             var payload = new JwtPayload(_options.Value.Jwt.Issuer,
-                _options.Value.Jwt.Audience,
-                claims,
-                DateTime.Now,
-                expiredDate);
+                                        _options.Value.Jwt.Audience,
+                                        claims,
+                                        DateTime.Now,
+                                        expiredDate);
 
             var token = new JwtSecurityToken(header, payload);
             response.Token = new JwtSecurityTokenHandler().WriteToken(token);
@@ -100,6 +100,7 @@ public class UserService : IUserService
         }
         catch (SecurityException ex1)
         {
+            response.Success = false;
             response.ErrorMessage = ex1.Message;
             _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
             return response;
@@ -107,9 +108,135 @@ public class UserService : IUserService
         }
         catch (Exception ex2)
         {
-            response.ErrorMessage = "Error al momento de hacer la autenticacion";
+            response.Success = false;
+            response.ErrorMessage = "Error de Seguridad";
             _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
-            return response; 
+            return response;
         }
     }
+
+    public async Task<RefreshTokenDTO> RefreshAsync(RefreshTokenDTO request)
+    {
+        RefreshTokenDTO response = new RefreshTokenDTO();
+
+        try
+        { 
+
+            var principal = GetPrincipalFromExpiredToken(request.Token);
+
+            var claim = principal.Claims.ToList().FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid");
+
+            if (claim == null) {
+                return new RefreshTokenDTO()
+                {
+                     Success = false,ErrorMessage="Error de Seguridad"
+                };
+            }
+
+            var userId = claim.Value;
+            //string username = principal.Identity.Name;
+            
+
+            var user = await _userRepository.FindAsync(userId!);
+
+            if (user == null) {
+                return new RefreshTokenDTO()
+                {
+                    Success = false,
+                    ErrorMessage = "Error de Seguridad"
+                };
+            }
+
+            var signingCredentials = GetSigningCredentials();
+            var claims = await GetClaims(user);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+            response.Success = true;
+            response.Token= token;            
+            return response;
+
+        }
+        catch (SecurityException ex1)
+        {
+            response.Success = false;
+            response.ErrorMessage = ex1.Message;
+            _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex1);
+            return response;
+
+        }
+        catch (Exception ex2)
+        {
+            response.Success = false;
+            response.ErrorMessage = "Error de Seguridad";
+            _logger.LogError($"{response.ErrorMessage} en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}", ex2);
+            return response;
+        }
+    }
+
+    /*********************************************************************/
+
+    public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Jwt.SecretKey)),
+            ValidateLifetime = false            
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken;
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+
+        var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+        if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+            StringComparison.InvariantCultureIgnoreCase))
+        {
+            _logger.LogError($"Token Invalido en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}" );
+            throw new SecurityTokenException("Error de Seguridad");
+        }
+
+        return principal;
+    }
+
+    public SigningCredentials GetSigningCredentials()
+    {
+        var key = Encoding.UTF8.GetBytes(_options.Value.Jwt.SecretKey);
+        var secret = new SymmetricSecurityKey(key);
+
+        return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+    }
+
+    public async Task<List<Claim>> GetClaims(User user)
+    {
+        DateTime expiredDate = DateTime.Now.AddMinutes(_options.Value.Jwt.TTL);
+
+        List<Claim> claims = new List<Claim>();
+        claims!.Add(new Claim(ClaimTypes.Sid, user.Login));
+        claims!.Add(new Claim(ClaimTypes.WindowsAccountName, user.Login));
+        claims!.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
+        claims!.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
+       // claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
+         
+        return await Task.FromResult(claims);
+    }
+
+    public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+    {
+        var tokenOptions = new JwtSecurityToken(
+            issuer: _options.Value.Jwt.Issuer, 
+            audience: _options.Value.Jwt.Audience,
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(_options.Value.Jwt.TTL),
+            signingCredentials: signingCredentials);
+
+        return tokenOptions;
+    }
+
+
+
 }

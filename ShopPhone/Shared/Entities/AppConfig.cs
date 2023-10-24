@@ -29,6 +29,7 @@ public class Jwt
     public string SecretKey { get; set; } = default!;
     public string Audience { get; set; } = default!;
     public string Issuer { get; set; } = default!;
+    public int TTL { get; set; } = 0;
 }
 
 public class SmtpConfiguration

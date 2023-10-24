@@ -11,4 +11,5 @@ namespace ShopPhone.Services.Interfaces;
 public interface IUserService
 {
     Task<LoginResponseDTO> LoginAsync(LoginRequestDTO request);
+    Task<RefreshTokenDTO> RefreshAsync(RefreshTokenDTO request);
 }
