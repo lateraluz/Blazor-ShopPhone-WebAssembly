@@ -34,6 +34,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NuGet.Protocol;
 using System.Diagnostics.Metrics;
 using System.Diagnostics;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,7 +121,7 @@ builder.Services.AddDbContext<ShopPhoneContext>(options =>
         options.EnableSensitiveDataLogging();
 });
 /*
- No necesary because I dont use Entity Framework for store users
+ No necesary because I dont use Entity Framework in order to save users
 builder.Services.AddDefaultIdentity<IdentityUser>
     (options => options.SignIn.RequireConfirmedAccount = true).
     AddEntityFrameworkStores<ShopPhoneContext>();
@@ -171,8 +172,8 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.Zero
-        //ClockSkew = TimeSpan.FromSeconds(30)
+        //ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.FromSeconds(30)
     };
 });
 
@@ -207,7 +208,30 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Config Swagger in order to allow add jwt Bearer
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter 'Bearer [jwt]'",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    var scheme = new OpenApiSecurityScheme
+    {
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement { { scheme, Array.Empty<string>() } });
+});
+
 
 
 // Log4Net config

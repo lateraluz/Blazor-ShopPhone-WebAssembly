@@ -36,7 +36,7 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
             _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", response.Token);
 
             claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims.ToList(), "JWT"));
-
+            // Save session
             await _SessionStorageService.SaveStorage("sesion", response);
         }
         else

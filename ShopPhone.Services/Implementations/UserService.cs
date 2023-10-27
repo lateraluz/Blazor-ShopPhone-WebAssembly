@@ -66,7 +66,7 @@ public class UserService : IUserService
             }
 
             roles.Add(user.IdRol.Trim());
-            
+
 
             expiredDate = DateTime.Now.AddMinutes(_options.Value.Jwt.TTL);
 
@@ -120,26 +120,29 @@ public class UserService : IUserService
         RefreshTokenDTO response = new RefreshTokenDTO();
 
         try
-        { 
+        {
 
             var principal = GetPrincipalFromExpiredToken(request.Token);
 
             var claim = principal.Claims.ToList().FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid");
 
-            if (claim == null) {
+            if (claim == null)
+            {
                 return new RefreshTokenDTO()
                 {
-                     Success = false,ErrorMessage="Error de Seguridad"
+                    Success = false,
+                    ErrorMessage = "Error de Seguridad"
                 };
             }
 
             var userId = claim.Value;
             //string username = principal.Identity.Name;
-            
+
 
             var user = await _userRepository.FindAsync(userId!);
 
-            if (user == null) {
+            if (user == null)
+            {
                 return new RefreshTokenDTO()
                 {
                     Success = false,
@@ -153,7 +156,7 @@ public class UserService : IUserService
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
             response.Success = true;
-            response.Token= token;            
+            response.Token = token;
             return response;
 
         }
@@ -184,7 +187,7 @@ public class UserService : IUserService
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Jwt.SecretKey)),
-            ValidateLifetime = false            
+            ValidateLifetime = false
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -196,7 +199,7 @@ public class UserService : IUserService
         if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
             StringComparison.InvariantCultureIgnoreCase))
         {
-            _logger.LogError($"Token Invalido en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}" );
+            _logger.LogError($"Token Invalido en {MethodBase.GetCurrentMethod()!.DeclaringType!.FullName}");
             throw new SecurityTokenException("Error de Seguridad");
         }
 
@@ -220,15 +223,15 @@ public class UserService : IUserService
         claims!.Add(new Claim(ClaimTypes.WindowsAccountName, user.Login));
         claims!.Add(new Claim(ClaimTypes.Name, user.Nombre.Trim() + " " + user.Apellidos.Trim()));
         claims!.Add(new Claim(ClaimTypes.Email, user.Email.Trim()));
-       // claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
-         
+        // claims!.Add(new Claim(ClaimTypes.Expiration, expiredDate.ToString("dd-MM-yyyy HH:mm:ss")));
+
         return await Task.FromResult(claims);
     }
 
     public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
         var tokenOptions = new JwtSecurityToken(
-            issuer: _options.Value.Jwt.Issuer, 
+            issuer: _options.Value.Jwt.Issuer,
             audience: _options.Value.Jwt.Audience,
             claims: claims,
             expires: DateTime.Now.AddMinutes(_options.Value.Jwt.TTL),
