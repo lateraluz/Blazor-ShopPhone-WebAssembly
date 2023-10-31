@@ -126,8 +126,9 @@ public class UserService : IUserService
 
             var claim = principal.Claims.ToList().FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid");
 
-            if (claim == null)
+            if (claim is null)
             {
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} Claim es null");
                 return new RefreshTokenDTO()
                 {
                     Success = false,
@@ -135,9 +136,40 @@ public class UserService : IUserService
                 };
             }
 
+            // Validate dateTime expiration
+            var unixTime = principal!.Claims!.ToList()!.FirstOrDefault(x => x.Type == "exp")!.Value!;
+
+            if (string.IsNullOrEmpty(unixTime)) {
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} UnixTime viene vacío");
+                return new RefreshTokenDTO()
+                {
+                    Success = false,
+                    ErrorMessage = "Error de Seguridad"
+            };
+            }
+
+            if (!long.TryParse(unixTime, out long result)) {
+                _logger.LogError($"{MethodBase.GetCurrentMethod()!.DeclaringType!.FullName} UnixTime no se puede convertir a Long");
+                return new RefreshTokenDTO()
+                {
+                    Success = false,
+                    ErrorMessage = "Error de Seguridad"
+                };
+            }
+
+            // Convert UnixTime to DateTime
+            var fechaExpiracion = DateTimeOffset.FromUnixTimeSeconds(long.Parse(unixTime));
+            fechaExpiracion = fechaExpiracion.AddHours(-6); // CRI -6 
+
+            // Token out of time ?
+            if (fechaExpiracion.DateTime > DateTime.Now  && fechaExpiracion.DateTime.Subtract(DateTime.Now).TotalMinutes > 5) {
+                response.Success = true;
+                response.Token = request.Token;
+                return response;
+            }
+
             var userId = claim.Value;
             //string username = principal.Identity.Name;
-
 
             var user = await _userRepository.FindAsync(userId!);
 
@@ -239,7 +271,6 @@ public class UserService : IUserService
 
         return tokenOptions;
     }
-
 
 
 }

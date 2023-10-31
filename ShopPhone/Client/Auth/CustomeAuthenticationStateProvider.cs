@@ -37,12 +37,18 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
 
             claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims.ToList(), "JWT"));
             // Save session
-            await _SessionStorageService.SaveStorage("sesion", response);
+            await _SessionStorageService.SaveStorage("token", response.Token);
+            await _SessionStorageService.SaveStorage("rols", response.Roles[0]);
+            await _SessionStorageService.SaveStorage("id", response.Identificacion.ToString());
+            await _SessionStorageService.SaveStorage("names", response.FullName);
         }
         else
         {
             claimsPrincipal = _Anonymous;
-            await _SessionStorageService.RemoveItemAsync("sesion");
+            await _SessionStorageService.RemoveItemAsync("token");
+            await _SessionStorageService.RemoveItemAsync("rols");
+            await _SessionStorageService.RemoveItemAsync("id");
+            await _SessionStorageService.RemoveItemAsync("names");
         }
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
@@ -50,7 +56,7 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var sesionUsuario = await _SessionStorageService.GetStorage<LoginResponseDTO>("sesion");
+        var sesionUsuario = await _SessionStorageService.GetStorage<LoginResponseDTO>("session");
 
         if (sesionUsuario is null)
             return await Task.FromResult(new AuthenticationState(_Anonymous));

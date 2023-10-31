@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ShopPhone.Client;
 using ShopPhone.Client.Auth;
 using ShopPhone.Client.Proxies;
+using System.Net.Http.Json;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -21,12 +22,18 @@ builder.Services.AddScoped<ProxyVenta>();
 builder.Services.AddScoped<ProxyCliente>();
 builder.Services.AddScoped<ProxyUser>();
 
+
 builder.Services.AddSweetAlert2();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredToast();
 //builder.Services.AddBlazoredModal();
-// Aqui se resuelve la dependencia de el estado de la autenticacion con nuestra clase
+// Auth dependency
 builder.Services.AddScoped<AuthenticationStateProvider, CustomeAuthenticationStateProvider>();
+
+
 builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();
+
+
+

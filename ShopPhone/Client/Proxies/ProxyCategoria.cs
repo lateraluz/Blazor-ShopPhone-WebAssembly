@@ -1,10 +1,17 @@
 ﻿
+using ApexCharts;
+using Blazored.SessionStorage;
+using Blazored.SessionStorage.Serialization;
+using Microsoft.IdentityModel.Tokens;
+using ShopPhone.Client.Auth;
 using ShopPhone.Shared.Response;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Policy;
 using System.Text.Json;
+
 
 namespace ShopPhone.Client.Proxies;
 
@@ -12,10 +19,13 @@ public class ProxyCategoria
 {
 
     private readonly HttpClient _httpClient;
+    private ISessionStorageService _sessionStorage;
 
-    public ProxyCategoria(HttpClient pHttpClient)
+
+    public ProxyCategoria(HttpClient pHttpClient, ISessionStorageService sessionStorage)
     {
         _httpClient = pHttpClient;
+        _sessionStorage = sessionStorage;
     }
 
     public async Task<BaseResponse> UpdateAsync(int id, CategoriaDTO request)
@@ -59,8 +69,13 @@ public class ProxyCategoria
 
     public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> ListAsync()
     {
+                
+       
         try
         {
+            ProxyUser proxyUser = new ProxyUser(_httpClient, _sessionStorage);
+            await proxyUser.RefreshToken();
+
             string url = $"api/categoria/List";
             var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<CategoriaDTO>>>(url);
             return response!;
@@ -70,8 +85,8 @@ public class ProxyCategoria
             Exception ex = e;
             throw;
         }
-
     }
+
 
 
     public async Task<BaseResponseGeneric<ICollection<CategoriaDTO>>> FindByDescriptionAsync(string description)
@@ -143,3 +158,6 @@ public class ProxyCategoria
 
 
 }
+
+
+
