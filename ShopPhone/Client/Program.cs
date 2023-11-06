@@ -28,7 +28,7 @@ builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddBlazoredToast();
 //builder.Services.AddBlazoredModal();
 // Auth dependency
-builder.Services.AddScoped<AuthenticationStateProvider, CustomeAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 
 builder.Services.AddAuthorizationCore();

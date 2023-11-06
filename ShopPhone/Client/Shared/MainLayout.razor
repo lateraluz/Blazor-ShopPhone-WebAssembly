@@ -54,7 +54,7 @@
 
         if (result.IsConfirmed)
         {
-            var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+            var auth = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
             await auth.Authenticate(null);
             NavigationManager.NavigateTo("/", true);
         }

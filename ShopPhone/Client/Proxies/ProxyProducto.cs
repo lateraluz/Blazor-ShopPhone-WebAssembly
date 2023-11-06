@@ -1,19 +1,25 @@
-﻿using ShopPhone.Shared;
+﻿using Blazored.SessionStorage;
+using ShopPhone.Shared;
 using ShopPhone.Shared.Response;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ShopPhone.Client.Proxies;
 
-public class ProxyProducto
+public class ProxyProducto : Proxy
 {
-    private readonly HttpClient _HttpClient;
+    private readonly HttpClient _httpClient;
+    private const string _URL = $"/api/Security/refresh";
+    private const string _IDSTORAGE = "token";
 
-    public ProxyProducto(HttpClient pHttpClient)
+    public ProxyProducto(HttpClient httpClient, ISessionStorageService sessionStorage) :
+        base(httpClient, sessionStorage, _URL!, _IDSTORAGE!)
     {
-        _HttpClient = pHttpClient;
+        _httpClient = httpClient;
     }
+
 
     public async Task<BaseResponse> UpdateAsync(int id, ProductoDTO request)
     {
@@ -24,7 +30,10 @@ public class ProxyProducto
 
         try
         {
-            var response = await _HttpClient.PutAsJsonAsync(url, request);
+
+            await RefreshToken();
+
+            var response = await _httpClient.PutAsJsonAsync(url, request);
 
             json = response.Content.ReadAsStringAsync().Result;
 
@@ -66,8 +75,10 @@ public class ProxyProducto
     {
         try
         {
+            await RefreshToken();
+
             string url = $"api/producto/FindById?id={id}";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
             return response!;
         }
         catch (Exception e)
@@ -84,7 +95,10 @@ public class ProxyProducto
         try
         {
             string url = $"api/producto/FindByDescription?description={description}";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
+
+            await RefreshToken();
+
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
 
             return response!;
         }
@@ -104,9 +118,10 @@ public class ProxyProducto
         string json = "";
         try
         {
+            await RefreshToken();
 
             //ShopPhone.Shared.Response.BaseResponse<ProductoDTO> d = new ShopPhone.Shared.Response.BaseResponse<ProductoDTO>();
-            var response = await _HttpClient.PostAsJsonAsync(url, request);
+            var response = await _httpClient.PostAsJsonAsync(url, request);
 
             json = response.Content.ReadAsStringAsync().Result;
 
@@ -153,7 +168,9 @@ public class ProxyProducto
 
         try
         {
-            var response = await _HttpClient.DeleteAsync(url);
+            await RefreshToken();
+
+            var response = await _httpClient.DeleteAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -173,7 +190,10 @@ public class ProxyProducto
         try
         {
             string url = $"api/producto/List";
-            var response = await _HttpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
+
+            await RefreshToken();
+
+            var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ProductoDTO>>>(url);
             return response!;
         }
         catch (Exception e)

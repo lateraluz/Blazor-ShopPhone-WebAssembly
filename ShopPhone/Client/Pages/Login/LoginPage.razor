@@ -94,7 +94,7 @@
             if (response.Success)
             {
                 Logger.LogInformation($"Logged {LoginRequest.UserName}");
-                await ((CustomeAuthenticationStateProvider)AuthenticationStateProvider).Authenticate(response);
+                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).Authenticate(response);
                 NavigationManager.NavigateTo("/main");
             }
             else
@@ -135,7 +135,7 @@
 
     public async Task CloseSession()
     {
-        var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+        var auth = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
         await auth.Logout();
         // NavigationManager.NavigateTo("/", false);
     }

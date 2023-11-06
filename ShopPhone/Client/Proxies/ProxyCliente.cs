@@ -1,4 +1,5 @@
-﻿using ShopPhone.Shared;
+﻿using Blazored.SessionStorage;
+using ShopPhone.Shared;
 using ShopPhone.Shared.Response;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -6,14 +7,19 @@ using System.Text.Json.Serialization;
 namespace ShopPhone.Client.Proxies;
 
 
-public class ProxyCliente
+public class ProxyCliente :Proxy    
 {
     private readonly HttpClient _httpClient;
+    private const string _URL = $"/api/Security/refresh";
+    private const string _IDSTORAGE = "token";
 
-    public ProxyCliente(HttpClient httpClient)
+    public ProxyCliente(HttpClient httpClient, ISessionStorageService sessionStorage) :
+        base(httpClient, sessionStorage, _URL!, _IDSTORAGE!)
     {
-        _httpClient =httpClient;
+        _httpClient = httpClient;        
     }
+
+
 
     public async Task<BaseResponse> UpdateAsync(int id, ClienteDTO request)
     {
@@ -23,6 +29,8 @@ public class ProxyCliente
 
         try
         {
+            await RefreshToken();
+
             var response = await _httpClient.PutAsJsonAsync(url, request);
 
             json = response.Content.ReadAsStringAsync().Result;
@@ -45,6 +53,9 @@ public class ProxyCliente
         try
         {
             string url = $"api/Cliente/FindById?id={id}";
+
+            await RefreshToken();
+
             var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
             return response!;
         }
@@ -82,6 +93,7 @@ public class ProxyCliente
         string json = "";
         try
         {
+            await RefreshToken();
 
             //ShopPhone.Shared.Response.BaseResponse<ProductoDTO> d = new ShopPhone.Shared.Response.BaseResponse<ProductoDTO>();
             var response = await _httpClient.PostAsJsonAsync(url, request);
@@ -106,6 +118,8 @@ public class ProxyCliente
 
         try
         {
+            await RefreshToken();
+
             var response = await _httpClient.DeleteAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -126,6 +140,9 @@ public class ProxyCliente
         try
         {
             string url = $"api/Cliente/List";
+
+            await RefreshToken();
+
             var response = await _httpClient.GetFromJsonAsync<BaseResponseGeneric<ICollection<ClienteDTO>>>(url);
 
             return response!;

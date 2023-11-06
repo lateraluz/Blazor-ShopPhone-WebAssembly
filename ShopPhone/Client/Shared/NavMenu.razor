@@ -69,7 +69,7 @@
     public async Task CloseSession()
     {
 
-        var auth = (CustomeAuthenticationStateProvider)AuthenticationStateProvider;
+        var auth = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
         await auth.Logout();
         NavigationManager.NavigateTo("/", false);
     }

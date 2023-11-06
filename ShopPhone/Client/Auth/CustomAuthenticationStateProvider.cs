@@ -1,26 +1,22 @@
 ﻿using Blazored.SessionStorage;
-
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.IdentityModel.Tokens.Jwt;
-using ShopPhone.Client.Auth;
 using ShopPhone.Shared.Response;
 
 namespace ShopPhone.Client.Auth;
 
-public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
+public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly ClaimsPrincipal _Anonymous = new ClaimsPrincipal(new ClaimsIdentity());
-    private readonly ISessionStorageService _SessionStorageService;
-    private readonly HttpClient _HttpClient;
+    private readonly ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+    private readonly ISessionStorageService _sessionStorageService;
+    private readonly HttpClient _httpClient;
 
-    public CustomeAuthenticationStateProvider(ISessionStorageService sessionStorageService, HttpClient httpClient)
+    public CustomAuthenticationStateProvider(ISessionStorageService sessionStorageService, HttpClient httpClient)
     {
-        _SessionStorageService = sessionStorageService;
-        _HttpClient = httpClient;
+        _sessionStorageService = sessionStorageService;
+        _httpClient = httpClient;
     }
 
     public async Task Authenticate(LoginResponseDTO? response)
@@ -33,22 +29,22 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
             var token = ParseToken(response);
 
             // Establecemos al objeto HttpClient el token en el header
-            _HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", response.Token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", response.Token);
 
             claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims.ToList(), "JWT"));
             // Save session
-            await _SessionStorageService.SaveStorage("token", response.Token);
-            await _SessionStorageService.SaveStorage("rols", response.Roles[0]);
-            await _SessionStorageService.SaveStorage("id", response.Identificacion.ToString());
-            await _SessionStorageService.SaveStorage("names", response.FullName);
+            await _sessionStorageService.SetItemAsync<string>("token", response.Token);
+            await _sessionStorageService.SetItemAsync<string>("rols", response.Roles[0]);
+            await _sessionStorageService.SetItemAsync<string>("id", response.Identificacion.ToString());
+            await _sessionStorageService.SetItemAsync<string>("names", response.FullName);
         }
         else
         {
-            claimsPrincipal = _Anonymous;
-            await _SessionStorageService.RemoveItemAsync("token");
-            await _SessionStorageService.RemoveItemAsync("rols");
-            await _SessionStorageService.RemoveItemAsync("id");
-            await _SessionStorageService.RemoveItemAsync("names");
+            claimsPrincipal = _anonymous;
+            await _sessionStorageService.RemoveItemAsync("token");
+            await _sessionStorageService.RemoveItemAsync("rols");
+            await _sessionStorageService.RemoveItemAsync("id");
+            await _sessionStorageService.RemoveItemAsync("names");
         }
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
@@ -56,10 +52,10 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var sesionUsuario = await _SessionStorageService.GetStorage<LoginResponseDTO>("session");
+        var sesionUsuario = await _sessionStorageService.GetItemAsync<LoginResponseDTO>("session");
 
         if (sesionUsuario is null)
-            return await Task.FromResult(new AuthenticationState(_Anonymous));
+            return await Task.FromResult(new AuthenticationState(_anonymous));
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(ParseToken(sesionUsuario).Claims, "JWT"));
 
@@ -70,7 +66,7 @@ public class CustomeAuthenticationStateProvider : AuthenticationStateProvider
     public async Task Logout()
     {
         ClaimsPrincipal claimsPrincipal;
-        claimsPrincipal = _Anonymous;
+        claimsPrincipal = _anonymous;
         await Task.FromResult(claimsPrincipal);
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
     }
