@@ -48,7 +48,7 @@ https://www.jaegertracing.io/docs/1.50/getting-started/
 1. ~~Concurrency Control~~
 2. Drag and drop images
 3. ~~Telemetry~~
-4. Refresh API JWT
+4. ~~Smart refresh JWT Client/Server~~
 5. ~~Carrusel~~  Bootstrap 5.1 :(
 6. ~~Test cases~~
 7. ~~Integration Testing~~
