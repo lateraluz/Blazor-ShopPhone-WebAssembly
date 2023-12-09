@@ -1,4 +1,6 @@
-# ShopPhone
+# :x::x: I will no longer support this this project since Blazor .NET 8 has a lot of new features and it's complex to migrate. :x::x:
+
+# ShopPhone 
 
 ShopPhone Developed with Blazor for Mitocode Course
 
