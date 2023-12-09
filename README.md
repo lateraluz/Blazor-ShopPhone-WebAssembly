@@ -1,4 +1,4 @@
-# :x::x: I will no longer support this this project since Blazor .NET 8 has a lot of new features and it's complex to migrate. :x::x:
+# :x::x: I will no longer support this project since Blazor .NET 8 has a lot of new features and it's complex to migrate. :x::x:
 
 # ShopPhone 
 
